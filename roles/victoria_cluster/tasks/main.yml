@@ -1,0 +1,30 @@
+---
+- name: gather facts
+  setup:
+
+- name: Create data directory
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+  - "{{ vmstorage_host_path }}"
+  - "{{ vm_conf_host_path }}"
+
+- name: ensure victoria metrics unit files
+  notify: "restart service {{ vm_role }}"
+  template:
+    src: "{{ vm_role }}.service.j2"
+    dest: "/etc/systemd/system/{{ vm_role }}.service"
+
+- name: Execute handlers
+  meta: flush_handlers
+
+- name: start services
+  systemd:
+    name: "{{ vm_role }}"
+    daemon_reload: yes
+    enabled: yes
+    state: started

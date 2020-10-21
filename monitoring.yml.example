@@ -1,0 +1,18 @@
+---
+- name: ensure victoria_storage
+  hosts: victoria_cluster
+  roles: [ victoria_cluster ]
+  vars: { vm_role: victoria_storage }
+  tags: [ 'vm_storage', 'victoria_cluster' ]
+
+- name: ensure victoria_select
+  hosts: victoria_cluster
+  roles: [ victoria_cluster ]
+  vars: { vm_role: victoria_select }
+  tags: [ 'vm_select', 'victoria_cluster' ]
+
+- name: ensure victoria_insert
+  hosts: victoria_cluster
+  roles: [ victoria_cluster ]
+  vars: { vm_role: victoria_insert }
+  tags: [ 'vm_insert', 'victoria_cluster' ]

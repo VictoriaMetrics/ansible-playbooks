@@ -1,0 +1,26 @@
+[Unit]
+Requires=docker.service
+After=docker.service
+[Service]
+EnvironmentFile={{ vminsert_environment_file | default(environment_file) }}
+ExecStartPre=-/usr/bin/docker rm --force %N
+ExecStart=/usr/bin/docker run \
+  --name=%N \
+  --rm=true \
+  --network=host \
+  --stop-timeout=30 \
+  {{ vminsert_docker_repository }}:{{ vminsert_docker_version | default(vm_docker_image_tag) }} \
+    -replicationFactor {{ vminsert_replication_factor }} \
+{% for host in groups[vmstorage_group] %}
+    -storageNode={{ hostvars[host]['ansible_default_ipv4']['address'] }}:8400 {% if not loop.last %}\{% endif %}
+
+{% endfor %}
+ExecStartPost={{ vminsert_exec_start_post | default(exec_start_post) }}
+ExecStop={{ vminsert_exec_stop | default(exec_stop) }}
+ExecStop=-/usr/bin/docker stop %N
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+KillMode=process
+[Install]
+WantedBy=multi-user.target
