@@ -13,6 +13,9 @@ victoria-01
 victoria-02
 victoria-03
 
+[load-balancer]
+load-balancer-01
+
 [victoria_cluster:children]
 victoria_select
 victoria_insert

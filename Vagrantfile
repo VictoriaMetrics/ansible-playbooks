@@ -12,6 +12,12 @@ Vagrant.configure("2") do |config|
 
   N = 3
   (1..N).each do |machine_id|
+    config.vm.define "load-balancer-1" do |n|
+      n.vm.hostname = "load-balancer-1"
+      n.vm.network "private_network", ip: "192.168.77.1"
+      n.vm.box = "debian/buster64"
+    end
+
     config.vm.define "victoria-#{machine_id}" do |n|
       n.vm.hostname = "victoria-#{machine_id}"
       n.vm.network "private_network", ip: "192.168.77.#{20+machine_id}"
@@ -23,7 +29,9 @@ Vagrant.configure("2") do |config|
           ansible.playbook = "monitoring.yml.example"
           ansible.groups = {
             "victoria_cluster" => [ "victoria-[1:#{N}]" ],
-            "victoria_cluster:vars" => { "if_name" => "eth1", "vminsert_replication_factor" => 2 }
+            "victoria_cluster:vars" => { "if_name" => "eth1", "vminsert_replication_factor" => 2 },
+            "load_balancer" => [ "load-balancer-1" ],
+            "load_balancer:vars" => { "if_name" => "eth1" }
           }
           ansible.raw_arguments = [ "-D"]
         end

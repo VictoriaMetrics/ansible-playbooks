@@ -24,3 +24,8 @@
   roles: [ victoria_cluster ]
   vars: { vm_role: victoria-insert }
   tags: [ 'vm_insert', 'victoria_cluster' ]
+
+- name: ensure load_balancer
+  become: true
+  hosts: load_balancer
+  roles: [ load_balancer ]

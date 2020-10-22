@@ -1,0 +1,22 @@
+- name: ensure nginx package
+  when: ansible_distribution == "Debian"
+  apt:
+    update_cache: yes
+    install_recommends: no
+    name: nginx
+
+- name: ensure nginx config
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: reload nginx service
+
+- name: Execute handlers
+  meta: flush_handlers
+
+- name: start nginx service
+  systemd:
+    name: nginx
+    daemon_reload: yes
+    enabled: yes
+    state: started
