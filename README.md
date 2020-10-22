@@ -24,15 +24,17 @@ The following table lists the configurable parameters of the playbook and their 
 | `vm_docker_image_tag`                                     | Default docker tag for all images                                                                                                                 | `latest`                                                     |
 | `vm_conf_host_path`                                       | Host path to configuration files                                                                                                                  | `/etc/victoriametrics`                                       |
 | `environment_file_path`                                   | Path to directory with environment file for systemd EnvironmentFile directive                                                                     | `/etc/default/vm_environment`                                |
-| `use_environment`                                         | Variable that controls whether pass parameters to vm binary, or to create environment file. or both of them. possible values: true, false, both.  | `false`
+| `use_environment`                                         | Variable that controls whether pass parameters to vm binary, or to create environment file. or both of them. possible values: true, false, both.  | `false`                                                      |
 | `exec_stop`                                               | Systemd additional ExecStop directive                                                                                                             | `nil`                                                        |
 | `exec_start_post`                                         | Systemd additional ExecStartStop directive                                                                                                        | `nil`                                                        |
+| `systemd_environment_file`                                | Systemd additional EnvironmentFile directive                                                                                                      | `nil`                                                        |
 | `if_name`                                                 | Interface name to gather ip addresses of storage nodes                                                                                            | defaults to first interface                                  |
 
 # TODO
 - add non-docker environment
 - add vmalert role
-- fix storageNode param
+- fix storageNode param (Done)
+- fix hardcoded ports
 
 # Testing
 

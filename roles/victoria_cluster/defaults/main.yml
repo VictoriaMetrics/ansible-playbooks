@@ -11,6 +11,7 @@ vmstorage_docker_repository: victoriametrics/vmstorage
 
 # Systemd settings
 environment_file_path: "/etc/default"
+systemd_environment_file: ""
 exec_stop: ""
 ## ExecStop overrides for particular components
 # vmstorage_exec_stop: ""

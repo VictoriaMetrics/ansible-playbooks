@@ -2,15 +2,16 @@
 Requires=docker.service
 After=docker.service
 [Service]
-{% if use_environment | bool %}
-EnvironmentFile=-{{ environment_file_path }}/{{ vm_role }}
-{% endif %}
+EnvironmentFile=-{{ systemd_environment_file }}
 ExecStartPre=-/usr/bin/docker rm --force %N
 ExecStart=/usr/bin/docker run \
   --name=%N \
   --rm=true \
   --network=host \
   --stop-timeout=30 \
+{% if use_environment != false %}
+  --env-file {{ environment_file_path }}/{{ vm_role }} \
+{% endif %}
   {{ vmselect_docker_repository }}:{{ vmselect_docker_version | default(vm_docker_image_tag) }} \
 {% if use_environment == "true" %}
     -envflag.enable=true
