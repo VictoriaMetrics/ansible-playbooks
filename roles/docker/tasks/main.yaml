@@ -1,0 +1,55 @@
+- name: Install Docker into Debian like system
+  block:
+  - name: install packages
+    package:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg2
+        - software-properties-common
+      state: present
+
+  - name: install repo key
+    apt_key:
+      url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+      state: present
+
+  - apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+      state: present
+
+  - name: install docker
+    apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      update_cache: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install Docker into RedHat like system
+  block:
+    - name: Add Docker repo
+      copy:
+        src: docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+
+    - name: Enable Docker Edge repo
+      ini_file:
+        dest: /etc/yum.repos.d/docker-ce.repo
+        section: 'docker-ce-edge'
+        option: enabled
+        value: 0
+
+    - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: put docker config
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+  notify: restart docker daemon

@@ -1,0 +1,19 @@
+{% if vm_role == "victoria-storage" %}
+{% for item in vmstorage_params %}
+{{ item.param | replace(".","_") }}={{ item.value }}
+{% endfor %}
+{% elif vm_role == "victoria-select" %}
+{% for item in vmselect_params %}
+{{ item.param | replace(".","_") }}={{ item.value }}
+{% endfor %}
+{% for host in groups[vmstorage_group] %}
+storageNode={{ hostvars[host]['ansible_default_ipv4']['address'] }}:8401
+{% endfor %}
+{% elif vm_role == "victoria-insert" %}
+{% for item in vminsert_params %}
+{{ item.param | replace(".","_") }}={{ item.value }}
+{% endfor %}
+{% for host in groups[vmstorage_group] %}
+storageNode={{ hostvars[host]['ansible_default_ipv4']['address'] }}:8400
+{% endfor %}
+{% endif %}

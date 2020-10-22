@@ -13,11 +13,18 @@
   - "{{ vmstorage_host_path }}"
   - "{{ vm_conf_host_path }}"
 
-- name: ensure victoria metrics unit files
+- name: "ensure {{ vm_role }} unit file"
   notify: "restart service {{ vm_role }}"
   template:
     src: "{{ vm_role }}.service.j2"
     dest: "/etc/systemd/system/{{ vm_role }}.service"
+
+- name: "ensure {{ vm_role }} environment_file"
+  template:
+    src: vm_environment.j2
+    dest: "{{ environment_file_path }}/{{ vm_role }}"
+  notify: "restart service {{ vm_role }}"
+  when: use_environment | bool == true
 
 - name: Execute handlers
   meta: flush_handlers

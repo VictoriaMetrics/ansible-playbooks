@@ -2,7 +2,9 @@
 Requires=docker.service
 After=docker.service
 [Service]
-EnvironmentFile={{ vminsert_environment_file | default(environment_file) }}
+{% if use_environment | bool %}
+EnvironmentFile=-{{ environment_file_path }}/{{ vm_role }}
+{% endif %}
 ExecStartPre=-/usr/bin/docker rm --force %N
 ExecStart=/usr/bin/docker run \
   --name=%N \
@@ -10,11 +12,22 @@ ExecStart=/usr/bin/docker run \
   --network=host \
   --stop-timeout=30 \
   {{ vminsert_docker_repository }}:{{ vminsert_docker_version | default(vm_docker_image_tag) }} \
-    -replicationFactor {{ vminsert_replication_factor }} \
-{% for host in groups[vmstorage_group] %}
-    -storageNode={{ hostvars[host]['ansible_default_ipv4']['address'] }}:8400 {% if not loop.last %}\{% endif %}
-
+{% if use_environment == "true" %}
+    -envflag.enable=true
+{% else %}
+{% for item in vminsert_params %}
+    -{{ item.param }}={{ item.value }} \
 {% endfor %}
+{% for host in groups[vmstorage_group] %}
+    -storageNode={{ hostvars[host]['ansible_'~if_name].ipv4.address }}:8400 \
+{% endfor %}
+{% if use_environment == "false" %}
+    -envflag.enable=false
+{% else %}
+    -envflag.enable=true
+{% endif %}
+{% endif %}
+
 ExecStartPost={{ vminsert_exec_start_post | default(exec_start_post) }}
 ExecStop={{ vminsert_exec_stop | default(exec_stop) }}
 ExecStop=-/usr/bin/docker stop %N

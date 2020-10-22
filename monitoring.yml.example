@@ -1,18 +1,26 @@
 ---
+- name: ensure docker
+  become: true
+  hosts: victoria_cluster
+  roles: [ docker ]
+
 - name: ensure victoria_storage
+  become: true
   hosts: victoria_cluster
   roles: [ victoria_cluster ]
-  vars: { vm_role: victoria_storage }
+  vars: { vm_role: victoria-storage }
   tags: [ 'vm_storage', 'victoria_cluster' ]
 
 - name: ensure victoria_select
+  become: true
   hosts: victoria_cluster
   roles: [ victoria_cluster ]
-  vars: { vm_role: victoria_select }
+  vars: { vm_role: victoria-select }
   tags: [ 'vm_select', 'victoria_cluster' ]
 
 - name: ensure victoria_insert
+  become: true
   hosts: victoria_cluster
   roles: [ victoria_cluster ]
-  vars: { vm_role: victoria_insert }
+  vars: { vm_role: victoria-insert }
   tags: [ 'vm_insert', 'victoria_cluster' ]
