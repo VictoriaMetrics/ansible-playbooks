@@ -1,0 +1,57 @@
+---
+# Docker images defaults
+vm_docker_image_tag: latest
+vminsert_docker_repository: victoriametrics/vminsert
+vmselect_docker_repository: victoriametrics/vmselect
+vmstorage_docker_repository: victoriametrics/vmstorage
+## docker image overrides for particular components
+# vmstorage_docker_version: ""
+# vminsert_docker_version: ""
+# vmselect_docker_version: ""
+
+# Systemd settings
+environment_file_path: "/etc/default"
+systemd_environment_file: ""
+exec_stop: ""
+## ExecStop overrides for particular components
+# vmstorage_exec_stop: ""
+# vminsert_exec_stop: ""
+# vmselect_exec_stop: ""
+exec_start_post: ""
+## ExecStartPost overrides for particular components
+# vmstorage_exec_start_post: ""
+# vminsert_exec_start_post: ""
+# vmselect_exec_start_post: ""
+
+# Group of servers with victoria metrics storage role. Used to collect ip addresses for vmselect and vminsert
+vmstorage_group: victoria_cluster
+
+# host defaults
+vmstorage_host_path: /var/lib/victoriametrics
+vm_conf_host_path: /etc/victoriametrics
+
+########################
+##### PARAMS BLOCK #####
+########################
+# Current limitations:
+# 1) do not pass storageNode param anywhere. it is generated automatically.
+# 2) u cannot use set environment usage per component. variable defines behavior for all components.
+
+# possible values: true, false, both
+use_environment: false
+
+# VM storage defaults
+vmstorage_params: []
+
+# VM insert defaults
+vminsert_params:
+- param: replicationFactor
+  value: 1
+
+# VM select defaults
+vmselect_params:
+- param: dedup.minScrapeInterval
+  value: "1ms"
+
+# interface to gather ip address
+if_name: "{{ vars['ansible_default_ipv4'].interface }}"

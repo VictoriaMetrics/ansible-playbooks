@@ -1,0 +1,40 @@
+[Unit]
+Requires=docker.service
+After=docker.service
+[Service]
+EnvironmentFile=-{{ systemd_environment_file }}
+ExecStartPre=-/usr/bin/docker rm --force %N
+ExecStart=/usr/bin/docker run \
+  --name=%N \
+  --rm=true \
+  --network=host \
+  --stop-timeout=30 \
+{% if use_environment != false %}
+  --env-file {{ environment_file_path }}/{{ vm_role }} \
+{% endif %}
+  {{ vminsert_docker_repository }}:{{ vminsert_docker_version | default(vm_docker_image_tag) }} \
+{% if use_environment == "true" %}
+    -envflag.enable=true
+{% else %}
+{% for item in vminsert_params %}
+    -{{ item.param }}={{ item.value }} \
+{% endfor %}
+{% for host in groups[vmstorage_group] %}
+    -storageNode={{ hostvars[host]['ansible_'~if_name].ipv4.address }}:8400 \
+{% endfor %}
+{% if use_environment == "false" %}
+    -envflag.enable=false
+{% else %}
+    -envflag.enable=true
+{% endif %}
+{% endif %}
+
+ExecStartPost={{ vminsert_exec_start_post | default(exec_start_post) }}
+ExecStop={{ vminsert_exec_stop | default(exec_stop) }}
+ExecStop=-/usr/bin/docker stop %N
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+KillMode=process
+[Install]
+WantedBy=multi-user.target

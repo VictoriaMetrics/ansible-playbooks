@@ -1,0 +1,8 @@
+---
+# group of servers with victoria select select role. Used to collect ip addresses for load-balancer
+vmselect_group: victoria_cluster
+# group of servers with victoria select insert role. Used to collect ip addresses for load-balancer
+vminsert_group: victoria_cluster
+
+# interface to gather ip address
+if_name: "{{ vars['ansible_default_ipv4'].interface }}"
