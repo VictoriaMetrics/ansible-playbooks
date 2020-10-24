@@ -1,0 +1,52 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: vagrant
+
+lint: |
+  set -ex
+  yamllint .
+  ansible-lint .
+
+platforms:
+  - name: victoria-cluster-bionic-1
+    box: ubuntu/bionic64
+    memory: 2048
+    cpus: 1
+    groups:
+    - victoria_cluster
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: dhcp
+
+  - name: victoria-cluster-bionic-2
+    box: ubuntu/bionic64
+    memory: 2048
+    cpus: 1
+    groups:
+    - victoria_cluster
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: dhcp
+
+  - name: victoria-cluster-bionic-3
+    box: ubuntu/bionic64
+    memory: 2048
+    cpus: 1
+    groups:
+    - victoria_cluster
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: dhcp
+
+provisioner:
+  name: ansible
+
+verifier:
+  name: ansible
+  enabled: True

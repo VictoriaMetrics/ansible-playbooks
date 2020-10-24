@@ -24,7 +24,7 @@
     src: vm_environment.j2
     dest: "{{ environment_file_path }}/{{ vm_role }}"
   notify: "restart service {{ vm_role }}"
-  when: use_environment != false
+  when: not (use_environment | bool)
 
 - name: Execute handlers
   meta: flush_handlers
