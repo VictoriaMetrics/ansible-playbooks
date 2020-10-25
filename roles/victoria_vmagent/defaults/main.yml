@@ -12,8 +12,6 @@ vmagent_service_args:
   "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
   "remoteWrite.tmpDataPath": /tmp/vmagent
 
-vmagent_max_open_files: 2097152
-
 vmagent_scrape_config:
   scrape_configs:
     - job_name: localhost
