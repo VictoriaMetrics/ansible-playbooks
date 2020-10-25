@@ -14,7 +14,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/local/bin/vmagent-prod
-DAEMON_ARGS="{% for flag, flag_value in vic_vmagent_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
+DAEMON_ARGS="{% for flag, flag_value in vmagent_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
 NAME=vic-vmagent
 DESC="VictoriaMetrics scrape agent"
 
@@ -26,7 +26,7 @@ set -e
 case "$1" in
   start)
 	    echo -n "Starting $DESC: "
-	    if start-stop-daemon --start --quiet --umask 007 --chuid {{ vic_vmagent_system_user }}:{{ vic_vmagent_system_group }} --background --exec $DAEMON -- $DAEMON_ARGS
+	    if start-stop-daemon --start --quiet --umask 007 --chuid {{ vmagent_system_user }}:{{ vmagent_system_group }} --background --exec $DAEMON -- $DAEMON_ARGS
 	      then
 		      echo "$NAME."
 	      else

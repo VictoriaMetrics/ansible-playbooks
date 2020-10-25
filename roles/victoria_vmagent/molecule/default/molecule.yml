@@ -8,20 +8,13 @@ lint: |
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: vagrant
+
 platforms:
   - name: vmagent-ubuntu
-    image: leandelivery/docker-systemd:ubuntu-18.04
-    privileged: True
-    security_opts:
-      - seccomp=unconfined
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    tmpfs:
-      - /tmp
-      - /run
-    capabilities:
-      - SYS_ADMIN
+    box: ubuntu/bionic64
+    memory: 512
+    cpus: 1
 provisioner:
   name: ansible
 verifier:

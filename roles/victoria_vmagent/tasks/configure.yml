@@ -21,7 +21,6 @@
     systemd:
       name: vic-vmagent
       enabled: true
-      state: restarted
     when: config_template is changed
   when:
     - ansible_service_mgr == "systemd"
@@ -50,24 +49,24 @@
 - name: Prepare configuration dir
   file:
     state: directory
-    path: "{{ vic_vmagent_config_dir }}"
+    path: "{{ vmagent_config_dir }}"
     mode: 0751
-    owner: "{{ vic_vmagent_system_user }}"
-    group: "{{ vic_vmagent_system_group }}"
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
 
 - name: Prepare sd configuration dir
   file:
     state: directory
-    path: "{{ vic_vmagent_sd_config_dir }}"
+    path: "{{ vmagent_sd_config_dir }}"
     mode: 0777
-    owner: "{{ vic_vmagent_system_user }}"
-    group: "{{ vic_vmagent_system_group }}"
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
 
 - name: Configure promscrape config
   template:
     src: prometheus_scrape.yml.j2
-    dest: "{{ vic_vmagent_config_dir }}/config.yml"
+    dest: "{{ vmagent_config_dir }}/config.yml"
     mode: 0751
-    owner: "{{ vic_vmagent_system_user }}"
-    group: "{{ vic_vmagent_system_group }}"
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
   notify: Restart VMagent service

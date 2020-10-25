@@ -1,6 +1,6 @@
 ---
 - debug:
-    var: vic_vmagent_scrape_config
+    var: vmagent_scrape_config
 
 # tasks file for VictoriaMetrics
 - import_tasks: preinstall.yml

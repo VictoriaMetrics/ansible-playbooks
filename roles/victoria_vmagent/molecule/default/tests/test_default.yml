@@ -1,0 +1,4 @@
+service:
+  "vic-vmagent":
+    enabled: true
+    running: true

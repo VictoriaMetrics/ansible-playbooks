@@ -1,27 +1,27 @@
 ---
-vic_vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
-vic_vmagent_download_url:  "{{ vic_vmagent_repo_url }}/releases/download/{{ vic_vmagent_version }}/vmutils-{{ vic_vmagent_version }}.tar.gz"
-vic_vmagent_version: "v1.37.1"
-vic_vmagent_system_user: "vic_vm_agent"
-vic_vmagent_system_group: "{{ vic_vmagent_system_user }}"
-vic_vmagent_config_dir: "/opt/vic-vmagent"
-vic_vmagent_sd_config_dir: "{{ vic_vmagent_config_dir }}/file_sd_configs"
-vic_vmagent_remote_write_host: "http://localhost:8428"
-vic_vmagent_graphite_addr: "127.0.0.1:8125"
-vic_vmagent_server_role: "app"
-vic_vmagent_service_args:
-  "remoteWrite.url": "{{ vic_vmagent_remote_write_host }}/api/v1/write"
-  "remoteWrite.tmpDataPath": "/tmp/vmagent"
-  "promscrape.config": "{{ vic_vmagent_config_dir }}/config.yml"
-  "graphiteListenAddr": "{{ vic_vmagent_graphite_addr }}"
-  "httpListenAddr": "127.0.0.1:8429"
-  "remoteWrite.label": "role={{vic_vmagent_server_role}}"
+vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vmagent_download_url:  "{{ vmagent_repo_url }}/releases/download/{{ vmagent_version }}/vmutils-{{ vmagent_version }}.tar.gz"
+vmagent_version: "v1.37.1"
+vmagent_system_user: "vic_vm_agent"
+vmagent_system_group: "{{ vmagent_system_user }}"
+vmagent_config_dir: "/opt/vic-vmagent"
+vmagent_sd_config_dir: "{{ vmagent_config_dir }}/file_sd_configs"
+vmagent_remote_write_host: "http://localhost:8428"
+vmagent_service_args:
+  "remoteWrite.url": "{{ vmagent_remote_write_host }}/api/v1/write"
+  "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
+  "remoteWrite.tmpDataPath": /tmp/vmagent
 
-vic_vmagent_max_open_files: 2097152
+vmagent_max_open_files: 2097152
 
-vic_vmagent_scrape_config:
+vmagent_scrape_config:
   scrape_configs:
     - job_name: localhost
       static_configs:
         - targets: []
 #          - "127.0.0.1:9100"
+
+vmagent_install_download_to_control: true
+
+vm_proxy_http: ""
+vm_proxy_https: ""

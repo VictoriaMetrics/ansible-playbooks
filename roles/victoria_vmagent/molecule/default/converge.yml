@@ -1,7 +1,8 @@
 ---
 - name: Converge
   hosts: all
+  become: yes
   tasks:
-    - name: "Include victoria-metrics-agent"
+    - name: "Include victoria_vmagent"
       include_role:
-        name: "victoria-metrics-agent"
+        name: "victoria_vmagent"
