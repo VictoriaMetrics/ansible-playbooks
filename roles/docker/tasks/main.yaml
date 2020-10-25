@@ -1,7 +1,7 @@
 - name: Install Docker into Debian like system
   block:
   - name: install packages
-    package:
+    apt:
       name:
         - apt-transport-https
         - ca-certificates
@@ -9,6 +9,8 @@
         - gnupg2
         - software-properties-common
       state: present
+      update_cache: yes
+      cache_valid_time: 3600
 
   - name: install repo key
     apt_key:
@@ -26,6 +28,7 @@
         - docker-ce-cli
         - containerd.io
       update_cache: yes
+      cache_valid_time: 3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install Docker into RedHat like system
@@ -43,9 +46,10 @@
         value: 0
 
     - name: Install Docker
-      package:
+      yum:
         name: docker-ce
         state: latest
+        update_cache: yes
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: put docker config
