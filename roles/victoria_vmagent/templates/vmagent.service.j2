@@ -25,5 +25,13 @@ ProtectKernelModules=true
 ProtectKernelTunables=yes
 {% endif %}
 
+{% if vmagent_exec_start_post != "" %}
+ExecStartPost={{ vmagent_exec_start_post }}
+{% endif %}
+
+{% if vmagent_exec_stop != "" %}
+ExecStop={{ vmagent_exec_stop }}
+{% endif %}
+
 [Install]
 WantedBy=multi-user.target

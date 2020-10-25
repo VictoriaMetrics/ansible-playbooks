@@ -23,3 +23,6 @@ vmagent_install_download_to_control: true
 
 vm_proxy_http: ""
 vm_proxy_https: ""
+
+vmagent_exec_start_post: ""
+vmagent_exec_stop: ""
