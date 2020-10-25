@@ -2,12 +2,6 @@
 - name: ensure docker
   become: true
   hosts: all
-  pre_tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-
   roles: [ docker ]
 
 - name: ensure victoria_storage
