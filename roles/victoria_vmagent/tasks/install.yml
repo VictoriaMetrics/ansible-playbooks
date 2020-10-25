@@ -1,0 +1,59 @@
+---
+- name: Create VMagent system group
+  group:
+    name: "{{ vic_vmagent_system_group }}"
+    state: present
+    system: true
+  when: vic_vmagent_system_group != "root"
+
+- name: Create VMagent system user
+  user:
+    name: "{{ vic_vmagent_system_user }}"
+    groups: "{{ vic_vmagent_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vic_vmagent_system_user != "root"
+
+- name: Ensure existense of /usr/local/bin
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Delete existing VMagent version if it's different.
+  file:
+    path: /usr/local/bin/vmagent-prod
+    state: absent
+  when:
+  - vic_vmagent_is_installed.stat.exists | bool
+  - vic_vmagent_version not in vic_vmagent_current_version.stdout
+
+- name: Download and unarchive VMagent release binary
+  environment:
+    http_proxy: ''
+    https_proxy: ''
+  unarchive:
+    src: "{{ vic_vmagent_download_url }}"
+    dest: /tmp
+    remote_src: yes
+  delegate_to: localhost
+  become: no
+  when:
+    - not ansible_check_mode
+    - not vic_vmagent_is_installed.stat.exists or
+      vic_vmagent_version not in vic_vmagent_current_version.stdout
+
+- name: Copy vmagent binary to target host
+  notify: Restart VMagent service
+  copy:
+    src: /tmp/vmagent-prod
+    dest: /usr/local/bin/vmagent-prod
+    mode: 0751
+    owner: "{{ vic_vmagent_system_user }}"
+    group: "{{ vic_vmagent_system_group }}"
+  when:
+    - not ansible_check_mode
+    - not vic_vmagent_is_installed.stat.exists or
+      vic_vmagent_version not in vic_vmagent_current_version.stdout

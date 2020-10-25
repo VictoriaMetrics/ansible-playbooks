@@ -1,0 +1,9 @@
+---
+- name: flush handlers
+  meta: flush_handlers
+
+- name: Ensure vic-vmagent service started
+  service:
+    name: vic-vmagent
+    state: started
+    enabled: yes

@@ -1,0 +1,28 @@
+---
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+
+
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: vmagent-ubuntu
+    image: leandelivery/docker-systemd:ubuntu-18.04
+    privileged: True
+    security_opts:
+      - seccomp=unconfined
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    tmpfs:
+      - /tmp
+      - /run
+    capabilities:
+      - SYS_ADMIN
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
