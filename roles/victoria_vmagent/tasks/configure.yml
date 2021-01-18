@@ -1,0 +1,72 @@
+---
+- block:
+  - name: "{{ ansible_service_mgr }} | Copy VMagent systemd unit file"
+    template:
+      src: vmagent.service.j2
+      dest: /etc/systemd/system/vic-vmagent.service
+      owner: root
+      group: root
+      mode: 0644
+    register: config_template
+    no_log: True
+
+  - name: "{{ ansible_service_mgr }} | daemon-reload VMagent service"
+    become: true
+    systemd:
+      daemon_reload: true
+    when: config_template is changed
+
+  - name: Ensure VMagent service is enabled on boot
+    become: true
+    systemd:
+      name: vic-vmagent
+      enabled: true
+    when: config_template is changed
+  when:
+    - ansible_service_mgr == "systemd"
+
+- block:
+    - name: "{{ ansible_service_mgr }} |  Install vic-vmagent service file"
+      template:
+        src: "upstart.j2"
+        dest: "/etc/init.d/vic-vmagent"
+        mode: "0755"
+        owner: root
+        group: root
+      notify: Restart VMagent service
+      register: config_template
+
+    - name: "{{ ansible_service_mgr }} |  Enable vic-vmagent service"
+      become: "true"
+      service:
+        name: "vic-vmagent"
+        enabled: "yes"
+      when:
+        - config_template is changed
+  when:
+    - ansible_service_mgr == "upstart"
+
+- name: Prepare configuration dir
+  file:
+    state: directory
+    path: "{{ vmagent_config_dir }}"
+    mode: 0751
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+
+- name: Prepare sd configuration dir
+  file:
+    state: directory
+    path: "{{ vmagent_sd_config_dir }}"
+    mode: 0777
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+
+- name: Configure promscrape config
+  template:
+    src: prometheus_scrape.yml.j2
+    dest: "{{ vmagent_config_dir }}/config.yml"
+    mode: 0751
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+  notify: Restart VMagent service

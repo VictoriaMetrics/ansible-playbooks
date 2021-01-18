@@ -1,0 +1,9 @@
+---
+- debug:
+    var: vmagent_scrape_config
+
+# tasks file for VictoriaMetrics
+- import_tasks: preinstall.yml
+- import_tasks: install.yml
+- import_tasks: configure.yml
+- import_tasks: check.yml

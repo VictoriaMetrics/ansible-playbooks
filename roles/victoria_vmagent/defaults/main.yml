@@ -1,0 +1,28 @@
+---
+vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vmagent_download_url:  "{{ vmagent_repo_url }}/releases/download/{{ vmagent_version }}/vmutils-{{ vmagent_version }}.tar.gz"
+vmagent_version: "v1.37.1"
+vmagent_system_user: "vic_vm_agent"
+vmagent_system_group: "{{ vmagent_system_user }}"
+vmagent_config_dir: "/opt/vic-vmagent"
+vmagent_sd_config_dir: "{{ vmagent_config_dir }}/file_sd_configs"
+vmagent_remote_write_host: "http://localhost:8428"
+vmagent_service_args:
+  "remoteWrite.url": "{{ vmagent_remote_write_host }}/api/v1/write"
+  "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
+  "remoteWrite.tmpDataPath": /tmp/vmagent
+
+vmagent_scrape_config:
+  scrape_configs:
+    - job_name: localhost
+      static_configs:
+        - targets: []
+#          - "127.0.0.1:9100"
+
+vmagent_install_download_to_control: true
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+vmagent_exec_start_post: ""
+vmagent_exec_stop: ""

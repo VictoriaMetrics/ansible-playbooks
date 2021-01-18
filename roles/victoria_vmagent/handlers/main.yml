@@ -1,0 +1,7 @@
+# handlers file for VictoriaMetrics
+---
+- name: Restart VMagent service
+  become: true
+  service:
+    name: vic-vmagent
+    state: restarted

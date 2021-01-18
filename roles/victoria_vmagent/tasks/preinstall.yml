@@ -1,0 +1,33 @@
+---
+- name: Assert usage of systemd or upstart as an init system
+  assert:
+    that: ansible_service_mgr == 'systemd' or ansible_service_mgr == "upstart"
+    msg: "This role only works with systemd and upstart"
+
+
+- name: Get systemd version
+  command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+  when: ansible_service_mgr == 'systemd'
+
+- name: Set systemd version fact
+  set_fact:
+    vmagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+  when: ansible_service_mgr == 'systemd'
+
+- name: Check if VMagent is installed
+  stat:
+    path: /usr/local/bin/vmagent-prod
+  changed_when: false
+  check_mode: false
+  register: vmagent_is_installed
+
+- name: Check current VMagent version
+  command: /usr/local/bin/vmagent-prod --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: vmagent_current_version
+  when: vmagent_is_installed.stat.exists | bool

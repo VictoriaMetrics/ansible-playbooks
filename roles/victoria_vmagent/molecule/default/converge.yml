@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Include victoria_vmagent"
+      include_role:
+        name: "victoria_vmagent"

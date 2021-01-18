@@ -1,0 +1,21 @@
+---
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+
+
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+
+platforms:
+  - name: vmagent-ubuntu
+    box: ubuntu/bionic64
+    memory: 512
+    cpus: 1
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
