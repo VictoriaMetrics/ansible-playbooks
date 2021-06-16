@@ -6,21 +6,21 @@
 
 - name: ensure victoria_storage
   become: true
-  hosts: victoria_cluster
+  hosts: victoria_storage
   roles: [ victoria_cluster ]
   vars: { vm_role: victoria-storage }
   tags: [ 'vm_storage', 'victoria_cluster' ]
 
 - name: ensure victoria_select
   become: true
-  hosts: victoria_cluster
+  hosts: victoria_select
   roles: [ victoria_cluster ]
   vars: { vm_role: victoria-select }
   tags: [ 'vm_select', 'victoria_cluster' ]
 
 - name: ensure victoria_insert
   become: true
-  hosts: victoria_cluster
+  hosts: victoria_insert
   roles: [ victoria_cluster ]
   vars: { vm_role: victoria-insert }
   tags: [ 'vm_insert', 'victoria_cluster' ]
