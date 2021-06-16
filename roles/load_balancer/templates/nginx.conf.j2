@@ -32,12 +32,12 @@ stream {
 
     upstream victoria-insert {
 {% for host in groups[vminsert_group] %}
-        server {{ hostvars[host]['ansible_'~if_name].ipv4.address }}:8480;
+        server {{ hostvars[host].internal_addr }}:8480;
 {% endfor %}
     }
     upstream victoria-select {
 {% for host in groups[vmselect_group] %}
-        server {{ hostvars[host]['ansible_'~if_name].ipv4.address }}:8481;
+        server {{ hostvars[host].internal_addr }}:8481;
 {% endfor %}
     }
 }
