@@ -1,0 +1,1 @@
+# VictoriaMetrics cluster role

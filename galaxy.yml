@@ -1,0 +1,20 @@
+---
+namespace: "victoriametrics"
+name: "cluster"
+version: "0.0.1"
+readme: "README.md"
+authors:
+    - "Zakhar Bessarab <zekker6@gmail.com>"
+    - "bykvaadm <info@bykvaadm.ru>"
+license:
+    - "Apache-2.0"
+tags:
+    - victoriametrics
+    - monitoring
+repository: "https://github.com/VictoriaMetrics/ansible-playbooks"
+build_ignore:
+    - .git
+    - .github
+    - inventory_example
+    - Vagrantfile
+    - '*.tar.gz'
