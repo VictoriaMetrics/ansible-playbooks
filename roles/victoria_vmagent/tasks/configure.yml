@@ -23,28 +23,28 @@
       enabled: true
     when: config_template is changed
   when:
-    - ansible_service_mgr == "systemd"
+  - ansible_service_mgr == "systemd"
 
 - block:
-    - name: "{{ ansible_service_mgr }} |  Install vic-vmagent service file"
-      template:
-        src: "upstart.j2"
-        dest: "/etc/init.d/vic-vmagent"
-        mode: "0755"
-        owner: root
-        group: root
-      notify: Restart VMagent service
-      register: config_template
+  - name: "{{ ansible_service_mgr }} |  Install vic-vmagent service file"
+    template:
+      src: "upstart.j2"
+      dest: "/etc/init.d/vic-vmagent"
+      mode: "0755"
+      owner: root
+      group: root
+    notify: Restart VMagent service
+    register: config_template
 
-    - name: "{{ ansible_service_mgr }} |  Enable vic-vmagent service"
-      become: "true"
-      service:
-        name: "vic-vmagent"
-        enabled: "yes"
-      when:
-        - config_template is changed
+  - name: "{{ ansible_service_mgr }} |  Enable vic-vmagent service"
+    become: "true"
+    service:
+      name: "vic-vmagent"
+      enabled: "yes"
+    when:
+    - config_template is changed
   when:
-    - ansible_service_mgr == "upstart"
+  - ansible_service_mgr == "upstart"
 
 - name: Prepare configuration dir
   file:

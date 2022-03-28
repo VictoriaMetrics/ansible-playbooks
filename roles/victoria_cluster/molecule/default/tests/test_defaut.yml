@@ -5,15 +5,15 @@ port:
 
   tcp:8481:
     title: Ensure vmselect is listening
-    listening: true  
+    listening: true
 
   tcp:8482:
     title: Ensure vmstorage is listening
     listening: true
-  
+
   tcp:8400:
     title: Ensure vmstorage is listening
-    listening: true  
+    listening: true
 
   tcp:8401:
     title: Ensure vmstorage is listening

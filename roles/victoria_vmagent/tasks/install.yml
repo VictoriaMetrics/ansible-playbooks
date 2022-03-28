@@ -42,9 +42,9 @@
     delegate_to: localhost
     become: no
     when:
-      - not ansible_check_mode
-      - not vmagent_is_installed.stat.exists or
-        vmagent_version not in vmagent_current_version.stdout
+    - not ansible_check_mode
+    - not vmagent_is_installed.stat.exists or
+      vmagent_version not in vmagent_current_version.stdout
 
   - name: Copy vmagent binary to target host
     notify: Restart VMagent service
@@ -55,18 +55,18 @@
       owner: "{{ vmagent_system_user }}"
       group: "{{ vmagent_system_group }}"
     when:
-      - not ansible_check_mode
-      - not vmagent_is_installed.stat.exists or
-        vmagent_version not in vmagent_current_version.stdout
-  
+    - not ansible_check_mode
+    - not vmagent_is_installed.stat.exists or
+      vmagent_version not in vmagent_current_version.stdout
+
   - name: Replace vmagent binary at target dir
     notify: Restart VMagent service
     shell: |
       mv /tmp/vmagent-prod /usr/local/bin/vmagent-prod
     when:
-      - not ansible_check_mode
-      - not vmagent_is_installed.stat.exists or
-        vmagent_version not in vmagent_current_version.stdout
+    - not ansible_check_mode
+    - not vmagent_is_installed.stat.exists or
+      vmagent_version not in vmagent_current_version.stdout
   when: vmagent_install_download_to_control
 
 - block:
@@ -79,9 +79,9 @@
       dest: /tmp
       remote_src: yes
     when:
-      - not ansible_check_mode
-      - not vmagent_is_installed.stat.exists or
-        vmagent_version not in vmagent_current_version.stdout
+    - not ansible_check_mode
+    - not vmagent_is_installed.stat.exists or
+      vmagent_version not in vmagent_current_version.stdout
 
   - name: Replace vmagent binary at target dir
     notify: Restart VMagent service
@@ -90,7 +90,7 @@
       chmod 0751 /usr/local/bin/vmagent-prod
       chown {{ vmagent_system_user }}:{{ vmagent_system_group }} /usr/local/bin/vmagent-prod
     when:
-      - not ansible_check_mode
-      - not vmagent_is_installed.stat.exists or
-        vmagent_version not in vmagent_current_version.stdout
+    - not ansible_check_mode
+    - not vmagent_is_installed.stat.exists or
+      vmagent_version not in vmagent_current_version.stdout
   when: not vmagent_install_download_to_control
