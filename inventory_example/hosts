@@ -13,6 +13,15 @@ victoria-01
 victoria-02
 victoria-03
 
+[victoria_storage:vars]
+vm_role=victoria-storage
+
+[victoria_insert:vars]
+vm_role=victoria-insert
+
+[victoria_select:vars]
+vm_role=victoria-select
+
 [load-balancer]
 load-balancer-01
 
