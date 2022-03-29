@@ -1,6 +1,6 @@
 ---
 # Docker images defaults
-vm_docker_image_tag: latest
+vm_docker_image_tag: v1.75.1-cluster
 vminsert_docker_repository: victoriametrics/vminsert
 vmselect_docker_repository: victoriametrics/vmselect
 vmstorage_docker_repository: victoriametrics/vmstorage
