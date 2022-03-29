@@ -1,13 +1,16 @@
 ---
 name: Publish to galaxy
 
+permissions:
+  contents: write
+
 on:
   create:
     tags:
       - v*
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     container:
       image: python:3.9-alpine
@@ -15,7 +18,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Publish collection
+      - name: Publish collection to ansible galaxy
         env:
           GALAXY_API_KEY: "${{ secrets.galaxy_api_key }}"
         run: |
@@ -24,3 +27,9 @@ jobs:
           pip install --no-cache-dir ansible-core
           ansible-galaxy collection build --output-path ./build
           ansible-galaxy collection publish --token ${GALAXY_API_KEY} $(find ./build/ -type f)
+
+      - name: Release to github
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./build
