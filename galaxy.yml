@@ -1,7 +1,7 @@
 ---
 namespace: "victoriametrics"
 name: "cluster"
-version: "0.3.0"
+version: "0.3.1"
 readme: "README.md"
 authors:
     - "Zakhar Bessarab <zekker6@gmail.com>"
