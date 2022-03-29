@@ -15,6 +15,7 @@ repository: "https://github.com/VictoriaMetrics/ansible-playbooks"
 build_ignore:
     - .git
     - .github
+    - ./build
     - inventory_example
     - Vagrantfile
     - '*.tar.gz'
