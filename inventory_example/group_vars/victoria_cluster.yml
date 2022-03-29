@@ -1,3 +1,2 @@
 ---
-vm_docker_image_tag: v1.44.0-cluster
 vminsert_replication_factor: 2
