@@ -1,5 +1,5 @@
 ---
-name: Publish to galaxy
+name: Publish releases
 
 permissions:
   contents: write
