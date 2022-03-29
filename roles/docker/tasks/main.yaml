@@ -3,11 +3,11 @@
   - name: install packages
     apt:
       name:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg2
-        - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
       state: present
       update_cache: yes
       cache_valid_time: 3600
@@ -24,32 +24,32 @@
   - name: install docker
     apt:
       name:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
       update_cache: yes
       cache_valid_time: 3600
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install Docker into RedHat like system
   block:
-    - name: Add Docker repo
-      copy:
-        src: docker-ce.repo
-        dest: /etc/yum.repos.d/docker-ce.repo
+  - name: Add Docker repo
+    copy:
+      src: docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
 
-    - name: Enable Docker Edge repo
-      ini_file:
-        dest: /etc/yum.repos.d/docker-ce.repo
-        section: 'docker-ce-edge'
-        option: enabled
-        value: 0
+  - name: Enable Docker Edge repo
+    ini_file:
+      dest: /etc/yum.repos.d/docker-ce.repo
+      section: 'docker-ce-edge'
+      option: enabled
+      value: 0
 
-    - name: Install Docker
-      yum:
-        name: docker-ce
-        state: latest
-        update_cache: yes
+  - name: Install Docker
+    yum:
+      name: docker-ce
+      state: latest
+      update_cache: yes
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: put docker config

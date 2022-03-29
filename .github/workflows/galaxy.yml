@@ -1,0 +1,26 @@
+---
+name: Publish to galaxy
+
+on:
+  create:
+    tags:
+      - v*
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.9-alpine
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Publish collection
+        env:
+          GALAXY_API_KEY: "${{ secrets.galaxy_api_key }}"
+        run: |
+          set -ex
+          apk add --update --no-cache --virtual build_dependencies gcc musl-dev libffi-dev openssl-dev rust cargo
+          pip install --no-cache-dir ansible-core
+          ansible-galaxy collection build --output-path ./build
+          ansible-galaxy collection publish --token ${GALAXY_API_KEY} $(find ./build/ -type f)

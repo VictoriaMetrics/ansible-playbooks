@@ -6,8 +6,8 @@
   assert:
     fail_msg: "Make sure to set 'vm_role', allowed values are: 'victoria-insert', 'victoria-select', 'victoria-storage"
     that:
-      - vm_role is defined
-      - vm_role in ['victoria-insert', 'victoria-select', 'victoria-storage']
+    - vm_role is defined
+    - vm_role in ['victoria-insert', 'victoria-select', 'victoria-storage']
 
 - name: Create data directory
   file:
