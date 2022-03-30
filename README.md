@@ -1,6 +1,9 @@
 # ansible-playbooks
 Ansible Playbooks for Victoria Metrics monorepo
 
+# Requirements
+ - Docker
+
 # Parameters
 
 The following table lists the configurable parameters of the playbook and their default values.
