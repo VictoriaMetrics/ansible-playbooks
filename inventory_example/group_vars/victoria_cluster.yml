@@ -1,2 +1,3 @@
 ---
 vminsert_replication_factor: 2
+vmstorage_group: victoria_cluster
