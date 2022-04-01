@@ -1,0 +1,67 @@
+---
+- block:
+  - name: "{{ ansible_service_mgr }} | Copy VMalert systemd unit file"
+    template:
+      src: systemd-service.j2
+      dest: /etc/systemd/system/vic-vmalert.service
+      owner: root
+      group: root
+      mode: 0644
+    register: config_template
+    no_log: True
+
+  - name: "{{ ansible_service_mgr }} | daemon-reload VMalert service"
+    become: true
+    systemd:
+      daemon_reload: true
+    when: config_template is changed
+
+  - name: Ensure VMalert service is enabled on boot
+    become: true
+    systemd:
+      name: vic-vmalert
+      enabled: true
+      state: restarted
+    when: config_template is changed
+  when:
+  - ansible_service_mgr == "systemd"
+
+- block:
+  - name: "{{ ansible_service_mgr }} |  Install vic-vmalert service file"
+    template:
+      src: "upstart.j2"
+      dest: "/etc/init.d/vic-vmalert"
+      mode: "0755"
+      owner: root
+      group: root
+    notify: Restart VMalert service
+    register: config_template
+
+  - name: "{{ ansible_service_mgr }} |  Enable vic-vmalert service"
+    become: "true"
+    service:
+      name: "vic-vmalert"
+      enabled: "yes"
+    when:
+    - config_template is changed
+  when:
+  - ansible_service_mgr == "upstart"
+
+- name: Prepare configuration dir
+  file:
+    state: directory
+    path: "{{ vic_vm_alert_config_dir }}"
+    mode: 0751
+    owner: "{{ vic_vm_alert_system_user }}"
+    group: "{{ vic_vm_alert_system_group }}"
+
+- name: Configure alerts config
+  copy:
+    src: alerts.yml
+    dest: "{{ vic_vm_alert_rules_config_path }}"
+    mode: 0751
+    owner: "{{ vic_vm_alert_system_user }}"
+    group: "{{ vic_vm_alert_system_group }}"
+    validate: "/usr/local/bin/vmalert-prod -dryRun -rule %s"
+    backup: yes
+  notify: Restart VMalert service
