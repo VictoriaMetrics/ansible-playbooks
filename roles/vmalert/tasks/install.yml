@@ -1,0 +1,51 @@
+---
+- name: Create VMalert system group
+  group:
+    name: "{{ vic_vm_alert_system_group }}"
+    state: present
+    system: true
+  when: vic_vm_alert_system_group != "root"
+
+- name: Create VMalert system user
+  user:
+    name: "{{ vic_vm_alert_system_user }}"
+    groups: "{{ vic_vm_alert_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vic_vm_alert_system_user != "root"
+
+- name: Ensure existense of /usr/local/bin
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Download and unarchive VMalert release binary
+  environment:
+    http_proxy: ''
+    https_proxy: ''
+  unarchive:
+    src: "{{ vic_vm_alert_download_url }}"
+    dest: /tmp
+    remote_src: yes
+  delegate_to: localhost
+  become: no
+  when:
+    - not ansible_check_mode
+    - not vic_vm_alert_is_installed.stat.exists or
+      vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+- name: Copy VMalert binary to target host
+  notify: Restart VMalert service
+  copy:
+    src: /tmp/vmalert-prod
+    dest: /usr/local/bin/vmalert-prod
+    mode: 0751
+    owner: "{{ vic_vm_alert_system_user }}"
+    group: "{{ vic_vm_alert_system_group }}"
+  when:
+    - not ansible_check_mode
+    - not vic_vm_alert_is_installed.stat.exists or
+      vic_vm_alert_version not in vic_vm_alert_current_version.stdout
