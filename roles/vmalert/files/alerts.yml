@@ -1,3 +1,12 @@
 # Great examples of alerts - https://awesome-prometheus-alerts.grep.to/rules.html
 
-groups: []
+groups:
+  - name: Watcher
+    rules:
+      - alert: Watchdog
+        expr: 1 == 1
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          title: Alerting watchdog
