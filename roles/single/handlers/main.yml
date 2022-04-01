@@ -1,0 +1,7 @@
+# handlers file for VictoriaMetrics
+---
+- name: Restart VictoriaMetrics service
+  become: true
+  systemd:
+    name: victoriametrics
+    state: restarted

@@ -1,0 +1,109 @@
+---
+- name: Create VictoriaMetrics system group
+  group:
+    name: "{{ victoriametrics_system_group }}"
+    state: present
+    system: true
+  when: victoriametrics_system_group != "root"
+
+- name: Create VictoriaMetrics system user
+  user:
+    name: "{{ victoriametrics_system_user }}"
+    groups: "{{ victoriametrics_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: victoriametrics_system_user != "root"
+
+- name: Ensure existense of /usr/local/bin
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Ensure existense of VictoriaMetrics storage directory
+  file:
+    path: "{{ victoriametrics_data_dir }}"
+    state: directory
+    mode: 0755
+    owner: "{{ victoriametrics_system_user }}"
+    group: "{{ victoriametrics_system_group }}"
+
+- name: Delete existing VictoriaMetrics version if it's different.
+  file:
+    path: /usr/local/bin/victoria-metrics-prod
+    state: absent
+  when:
+    - victoriametrics_is_installed.stat.exists | bool
+    - victoriametrics_version not in victoriametrics_current_version.stdout
+
+- name: Prepare local download paths
+  delegate_to: localhost
+  become: no
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /tmp/vic-single/
+    - /tmp/vic-utils/
+  when:
+    - not ansible_check_mode
+    - not victoriametrics_is_installed.stat.exists or
+      victoriametrics_version not in victoriametrics_current_version.stdout
+
+- name: Download and unarchive VictoriaMetrics release binary
+  environment:
+    http_proxy: ''
+    https_proxy: ''
+  unarchive:
+    src: "{{ victoriametrics_download_url }}"
+    dest: /tmp/vic-single/
+    remote_src: yes
+  notify: Restart VictoriaMetrics service
+  register: archive_downloaded
+  become: no
+  delegate_to: localhost
+  when:
+    - not ansible_check_mode
+    - not victoriametrics_is_installed.stat.exists or
+      victoriametrics_version not in victoriametrics_current_version.stdout
+
+- name: Upload VictoriaMetrics release binary
+  copy:
+    src: /tmp/vic-single/victoria-metrics-prod
+    dest: /usr/local/bin
+    mode: 0751
+    owner: "{{ victoriametrics_system_user }}"
+    group: "{{ victoriametrics_system_group }}"
+  when:
+    - archive_downloaded is changed
+
+- name: Download VictoriaMetrics utils
+  become: no
+  environment:
+    http_proxy: ''
+    https_proxy: ''
+  unarchive:
+    src: "{{ victoriametrics_utils_download_url }}"
+    dest: /tmp/vic-utils/
+    remote_src: yes
+  delegate_to: localhost
+  when:
+    - archive_downloaded is changed
+
+- name: Upload VictoriaMetrics release binaries
+  copy:
+    src: "/tmp/vic-utils/{{ item }}"
+    dest: /usr/local/bin
+    mode: 0751
+    owner: "{{ victoriametrics_system_user }}"
+    group: "{{ victoriametrics_system_group }}"
+  when:
+    - archive_downloaded is changed
+  loop:
+    - vmagent-prod
+    - vmalert-prod
+    - vmauth-prod
+    - vmbackup-prod
+    - vmrestore-prod

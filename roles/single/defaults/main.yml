@@ -1,0 +1,28 @@
+---
+victoriametrics_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+victoriametrics_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/victoria-metrics-{{ go_arch }}-{{ victoriametrics_version }}.tar.gz"
+victoriametrics_utils_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/vmutils-{{ go_arch }}-{{ victoriametrics_version }}.tar.gz"
+
+victoriametrics_version: "v1.75.0"
+victoriametrics_system_user: "victoriametrics"
+victoriametrics_system_group: "{{ victoriametrics_system_user }}"
+victoriametrics_data_dir: "/var/lib/victoria-metrics/"
+victoriametrics_self_scrape_interval: "30s"
+victoriametrics_retention_period_months: "12"
+victoriametrics_search_max_unique_timeseries: "900000"
+victoriametrics_service_args:
+  storageDataPath: "{{ victoriametrics_data_dir }}"
+  selfScrapeInterval: "{{ victoriametrics_self_scrape_interval }}"
+  retentionPeriod: "{{ victoriametrics_retention_period_months }}"
+  maxConcurrentInserts: 32
+  "search.maxUniqueTimeseries": "{{ victoriametrics_search_max_unique_timeseries }}"
+
+victoriametrics_max_open_files: 2097152
+victoriametrics_backup_proxy_enable: false
+
+victoriametrics_backup_enabled: false
+victoriametrics_backup_destination: "s3://"
+victoriametrics_backup_cron_hour: "*/2"
+victoriametrics_backup_access_key: ""
+victoriametrics_backup_secret_key: ""
+victoriametrics_backup_custom_s3_endpoint: ""

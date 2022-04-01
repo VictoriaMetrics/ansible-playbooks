@@ -1,0 +1,5 @@
+---
+# tasks file for VictoriaMetrics
+- import_tasks: preinstall.yml
+- import_tasks: install.yml
+- import_tasks: configure.yml

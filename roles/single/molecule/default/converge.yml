@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    victoriametrics_data_dir: "/tmp/victoria-metrics/"
+    victoriametrics_backup_enabled: false
+    victoriametrics_service_args:
+      graphiteListenAddr: "127.0.0.1:12345"
+      storageDataPath: "{{ victoriametrics_data_dir }}"
+  tasks:
+    - name: Install cron
+      apt:
+        name: cron
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: "Include single"
+      include_role:
+        name: "single"
