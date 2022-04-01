@@ -19,3 +19,6 @@ build_ignore:
     - inventory_example
     - Vagrantfile
     - '*.tar.gz'
+homepage: "https://github.com/VictoriaMetrics/ansible-playbooks"
+documentation: "https://github.com/VictoriaMetrics/ansible-playbooks"
+issues: "https://github.com/VictoriaMetrics/ansible-playbooks/issues"
