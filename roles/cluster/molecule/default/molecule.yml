@@ -16,7 +16,7 @@ platforms:
     memory: 2048
     cpus: 1
     groups:
-      - victoria_cluster
+      - cluster
     interfaces:
       - auto_config: true
         network_name: private_network
@@ -27,7 +27,7 @@ platforms:
     memory: 2048
     cpus: 1
     groups:
-      - victoria_cluster
+      - cluster
     interfaces:
       - auto_config: true
         network_name: private_network
@@ -38,7 +38,7 @@ platforms:
     memory: 2048
     cpus: 1
     groups:
-      - victoria_cluster
+      - cluster
     interfaces:
       - auto_config: true
         network_name: private_network

@@ -24,7 +24,7 @@ exec_start_post: ""
 # vmselect_exec_start_post: ""
 
 # Group of servers with victoria metrics storage role. Used to collect ip addresses for vmselect and vminsert
-vmstorage_group: victoria_cluster
+vmstorage_group: cluster
 
 # host defaults
 vmstorage_host_path: /var/lib/victoriametrics

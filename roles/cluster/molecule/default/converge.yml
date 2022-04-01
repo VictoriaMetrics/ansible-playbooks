@@ -7,26 +7,26 @@
 - name: ensure victoria_storage
   become: true
   hosts: all
-  roles: [ victoria_cluster ]
+  roles: [ cluster ]
   vars:
     vm_role: victoria-storage
     if_name: enp0s8
-  tags: [ 'vm_storage', 'victoria_cluster' ]
+  tags: [ 'vm_storage', 'cluster' ]
 
 - name: ensure victoria_select
   become: true
   hosts: all
-  roles: [ victoria_cluster ]
+  roles: [ cluster ]
   vars:
     vm_role: victoria-select
     if_name: enp0s8
-  tags: [ 'vm_select', 'victoria_cluster' ]
+  tags: [ 'vm_select', 'cluster' ]
 
 - name: ensure victoria_insert
   become: true
   hosts: all
-  roles: [ victoria_cluster ]
+  roles: [ cluster ]
   vars:
     vm_role: victoria-insert
     if_name: enp0s8
-  tags: [ 'vm_insert', 'victoria_cluster' ]
+  tags: [ 'vm_insert', 'cluster' ]

@@ -11,8 +11,8 @@ driver:
   name: vagrant
 
 platforms:
-  - name: vmagent-ubuntu
-    box: ubuntu/bionic64
+  - name: vmagent-debian
+    box: debian/buster64
     memory: 512
     cpus: 1
 provisioner:

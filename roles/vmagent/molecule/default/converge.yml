@@ -3,6 +3,6 @@
   hosts: all
   become: yes
   tasks:
-    - name: "Include victoria_vmagent"
+    - name: "Include vmagent"
       include_role:
-        name: "victoria_vmagent"
+        name: "vmagent"
