@@ -11,6 +11,10 @@ Containers are managed as systemd units.
 
 The following table lists the configurable parameters of the playbook and their default values.
 
+> Important - `vmstorage_group` parameter should refer name of group in ansible inventory. 
+> If this parameter is not set correctly you'll see error like the following
+> `AnsibleUndefinedVariable: 'dict object' has no attribute 'victoria_cluster'`
+
 | Parameter                                                 | Description                                                                                                                                       | Default                                                      |
 |-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
 | `vmstorage_group`                                         | Group of servers with victoria metrics storage role.                                                                                              | `victoria_storage`                                           |
