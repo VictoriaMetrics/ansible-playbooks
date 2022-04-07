@@ -1,7 +1,7 @@
 ---
 vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmagent_download_url: "{{ vmagent_repo_url }}/releases/download/{{ vmagent_version }}/vmutils-{{ go_arch }}-{{ vmagent_version }}.tar.gz"
-vmagent_version: "v1.75.0"
+vmagent_version: "v1.76.0"
 vmagent_system_user: "vic_vm_agent"
 vmagent_system_group: "{{ vmagent_system_user }}"
 vmagent_config_dir: "/opt/vic-vmagent"
