@@ -7,6 +7,18 @@ Containers are managed as systemd units.
 ## Requirements
 - Docker
 
+## Example Playbook
+```
+---
+- hosts: victoria_cluster
+  collections:
+    - victoriametrics.cluster
+  become: true
+  roles:
+    - role for install docker
+    - victoriametrics.cluster.cluster
+```
+
 ## Parameters
 
 The following table lists the configurable parameters of the playbook and their default values.
