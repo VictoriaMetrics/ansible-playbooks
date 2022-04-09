@@ -39,7 +39,6 @@
     - victoriametrics_version not in victoriametrics_current_version.stdout
 
 - name: Prepare local download paths
-  delegate_to: localhost
   become: no
   file:
     path: "{{ item }}"
@@ -63,7 +62,6 @@
   notify: Restart VictoriaMetrics service
   register: archive_downloaded
   become: no
-  delegate_to: localhost
   when:
     - not ansible_check_mode
     - not victoriametrics_is_installed.stat.exists or
