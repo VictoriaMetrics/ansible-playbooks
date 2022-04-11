@@ -30,7 +30,7 @@
     owner: "{{ victoriametrics_system_user }}"
     group: "{{ victoriametrics_system_group }}"
 
-- name: Delete existing VictoriaMetrics version if it's different.
+- name: Delete existing VictoriaMetrics version if it is different.
   file:
     path: /usr/local/bin/victoria-metrics-prod
     state: absent
