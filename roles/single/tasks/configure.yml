@@ -1,4 +1,15 @@
 ---
+- name: Setup envfile
+  file:
+    state: file
+    path: "{{ victoriametrics_service_envflag_file }}"
+    owner: root
+    group: root
+    mode: 0644
+    access_time: preserve
+  notify: Restart VictoriaMetrics service
+  when: victoriametrics_service_envflag_enabled | bool
+
 - name: Copy VictoriaMetrics systemd unit file
   template:
     src: victoriametrics.service.j2
