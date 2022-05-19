@@ -1,0 +1,6 @@
+ ---
+- name: setup VM single
+  become: true
+  hosts: all
+  roles:
+    - single
