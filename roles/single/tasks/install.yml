@@ -40,7 +40,7 @@
 
 - name: Download and setup binaries
   block:
-     - name: Prepare local download paths
+    - name: Prepare local download paths
       delegate_to: localhost
       become: no
       file:
