@@ -1,13 +1,20 @@
 ---
-- name: Setup envfile
-  file:
-    state: file
-    path: "{{ victoriametrics_service_envflag_file }}"
-    owner: root
-    group: root
-    mode: 0644
-    access_time: preserve
-  notify: Restart VictoriaMetrics service
+- block:
+    - name: Check envfile presence
+      stat:
+        path: "{{ victoriametrics_service_envflag_file }}"
+      register: envfile_state
+
+    - name: Setup envfile
+      file:
+        state: touch
+        path: "{{ victoriametrics_service_envflag_file }}"
+        owner: root
+        group: root
+        mode: 0644
+        access_time: preserve
+      notify: Restart VictoriaMetrics service
+      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
   when: victoriametrics_service_envflag_enabled | bool
 
 - name: Copy VictoriaMetrics systemd unit file
