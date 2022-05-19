@@ -40,85 +40,85 @@
 
 - name: Download and setup binaries
   block:
-  - name: Prepare local download paths
-    delegate_to: localhost
-    become: no
-    file:
-      path: "{{ item }}"
-      state: directory
-    loop:
-      - /tmp/vic-single/
-      - /tmp/vic-utils/
-    when:
-      - not ansible_check_mode
-      - not victoriametrics_is_installed.stat.exists or
-        victoriametrics_version not in victoriametrics_current_version.stdout
+     - name: Prepare local download paths
+      delegate_to: localhost
+      become: no
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /tmp/vic-single/
+        - /tmp/vic-utils/
+      when:
+        - not ansible_check_mode
+        - not victoriametrics_is_installed.stat.exists or
+          victoriametrics_version not in victoriametrics_current_version.stdout
 
-  - name: Download and unarchive VictoriaMetrics release binary
-    environment:
-      http_proxy: ''
-      https_proxy: ''
-    unarchive:
-      src: "{{ victoriametrics_download_url }}"
-      dest: /tmp/vic-single/
-      remote_src: yes
-    notify: Restart VictoriaMetrics service
-    register: archive_downloaded
-    become: no
-    delegate_to: localhost
-    when:
-      - not ansible_check_mode
-      - not victoriametrics_is_installed.stat.exists or
-        victoriametrics_version not in victoriametrics_current_version.stdout
+    - name: Download and unarchive VictoriaMetrics release binary
+      environment:
+        http_proxy: ''
+        https_proxy: ''
+      unarchive:
+        src: "{{ victoriametrics_download_url }}"
+        dest: /tmp/vic-single/
+        remote_src: yes
+      notify: Restart VictoriaMetrics service
+      register: archive_downloaded
+      become: no
+      delegate_to: localhost
+      when:
+        - not ansible_check_mode
+        - not victoriametrics_is_installed.stat.exists or
+          victoriametrics_version not in victoriametrics_current_version.stdout
 
-  - name: Upload VictoriaMetrics release binary
-    copy:
-      src: /tmp/vic-single/victoria-metrics-prod
-      dest: /usr/local/bin
-      mode: 0751
-      owner: "{{ victoriametrics_system_user }}"
-      group: "{{ victoriametrics_system_group }}"
-    when:
-      - archive_downloaded is changed
+    - name: Upload VictoriaMetrics release binary
+      copy:
+        src: /tmp/vic-single/victoria-metrics-prod
+        dest: /usr/local/bin
+        mode: 0751
+        owner: "{{ victoriametrics_system_user }}"
+        group: "{{ victoriametrics_system_group }}"
+      when:
+        - archive_downloaded is changed
 
-  - name: Download VictoriaMetrics utils
-    become: no
-    environment:
-      http_proxy: ''
-      https_proxy: ''
-    unarchive:
-      src: "{{ victoriametrics_utils_download_url }}"
-      dest: /tmp/vic-utils/
-      remote_src: yes
-    delegate_to: localhost
-    when:
-      - archive_downloaded is changed
+    - name: Download VictoriaMetrics utils
+      become: no
+      environment:
+        http_proxy: ''
+        https_proxy: ''
+      unarchive:
+        src: "{{ victoriametrics_utils_download_url }}"
+        dest: /tmp/vic-utils/
+        remote_src: yes
+      delegate_to: localhost
+      when:
+        - archive_downloaded is changed
 
-  - name: Upload VictoriaMetrics release binaries
-    copy:
-      src: "/tmp/vic-utils/{{ item }}"
-      dest: /usr/local/bin
-      mode: 0751
-      owner: "{{ victoriametrics_system_user }}"
-      group: "{{ victoriametrics_system_group }}"
-    when:
-      - archive_downloaded is changed
-    loop:
-      - vmagent-prod
-      - vmalert-prod
-      - vmauth-prod
-      - vmbackup-prod
-      - vmrestore-prod
+    - name: Upload VictoriaMetrics release binaries
+      copy:
+        src: "/tmp/vic-utils/{{ item }}"
+        dest: /usr/local/bin
+        mode: 0751
+        owner: "{{ victoriametrics_system_user }}"
+        group: "{{ victoriametrics_system_group }}"
+      when:
+        - archive_downloaded is changed
+      loop:
+        - vmagent-prod
+        - vmalert-prod
+        - vmauth-prod
+        - vmbackup-prod
+        - vmrestore-prod
 
   always:
-  - name: Clear download paths
-    delegate_to: localhost
-    become: no
-    file:
-      path: "{{ item }}"
-      state: absent
-    loop:
-      - /tmp/vic-single/
-      - /tmp/vic-utils/
-    when:
-      - not ansible_check_mode
+    - name: Clear download paths
+      delegate_to: localhost
+      become: no
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/vic-single/
+        - /tmp/vic-utils/
+      when:
+        - not ansible_check_mode
