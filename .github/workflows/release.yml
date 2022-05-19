@@ -25,7 +25,7 @@ jobs:
           set -ex
           apk add --update --no-cache --virtual build_dependencies gcc musl-dev libffi-dev openssl-dev rust cargo
           pip install --no-cache-dir ansible-core
-          sed -i "s/{{ref}}/${GITHUB_REF_NAME/v/}/" galaxy.yml
+          sed -i "s/0.0.0/${GITHUB_REF_NAME/v/}/" galaxy.yml
           ansible-galaxy collection build --output-path ./build
           ansible-galaxy collection publish --token ${GALAXY_API_KEY} $(find ./build/ -type f)
 
