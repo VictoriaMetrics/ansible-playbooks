@@ -3,7 +3,7 @@ victoriametrics_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 victoriametrics_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/victoria-metrics-{{ go_arch }}-{{ victoriametrics_version }}.tar.gz"
 victoriametrics_utils_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/vmutils-{{ go_arch }}-{{ victoriametrics_version }}.tar.gz"
 
-victoriametrics_version: "v1.77.1"
+victoriametrics_version: "v1.77.2"
 victoriametrics_system_user: "victoriametrics"
 victoriametrics_system_group: "{{ victoriametrics_system_user }}"
 victoriametrics_data_dir: "/var/lib/victoria-metrics/"
