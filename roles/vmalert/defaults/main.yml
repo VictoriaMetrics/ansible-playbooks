@@ -1,7 +1,7 @@
 ---
 vic_vm_alert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vic_vm_alert_download_url: "{{ vic_vm_alert_repo_url }}/releases/download/{{ vic_vm_alert_version }}/vmutils-{{ go_arch }}-{{ vic_vm_alert_version }}.tar.gz"
-vic_vm_alert_version: "v1.78.0"
+vic_vm_alert_version: "v1.78.1"
 vic_vm_alert_system_user: "vic_vm_alert"
 vic_vm_alert_system_group: "{{ vic_vm_alert_system_user }}"
 vic_vm_alert_config_dir: "/opt/vic-vmalert"
