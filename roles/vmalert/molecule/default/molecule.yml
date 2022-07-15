@@ -12,7 +12,7 @@ driver:
 
 platforms:
   - name: vmagent-debian
-    box: debian/buster64
+    box: generic/debian11
     memory: 512
     cpus: 1
 provisioner:
