@@ -7,3 +7,10 @@ go_arch_map:
   armv6l: 'arm6vl'
 
 go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+_vm_os_family_map:
+  "FreeBSD": "freebsd"
+  "Windows": "windows"
+  "Darwin": "darwin"
+
+vm_os_family: "{{ _vm_os_family_map[ansible_os_family] | default('linux') }}"
