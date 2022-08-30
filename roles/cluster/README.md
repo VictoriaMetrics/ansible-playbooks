@@ -15,7 +15,7 @@ Containers are managed as systemd units.
     - victoriametrics.cluster
   become: true
   roles:
-    - role for install docker
+    - victoriametrics.cluster.docker  # replace this with a role that installs Docker in your environment
     - victoriametrics.cluster.cluster
 ```
 
