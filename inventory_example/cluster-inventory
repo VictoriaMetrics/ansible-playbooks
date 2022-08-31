@@ -1,17 +1,16 @@
 [victoria_storage]
-victoria-01
-victoria-02
-victoria-03
+victoria-storage-01
+victoria-storage-02
+victoria-storage-03
 
 [victoria_insert]
-victoria-01
-victoria-02
-victoria-03
+victoria-insert-01
+victoria-insert-02
+victoria-insert-03
 
 [victoria_select]
-victoria-01
-victoria-02
-victoria-03
+victoria-select-01
+victoria-select-02
 
 [victoria_storage:vars]
 vm_role=victoria-storage
