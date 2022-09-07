@@ -1,6 +1,6 @@
 ---
-http_proxy: ""
-https_proxy: ""
+vm_proxy_http: ""
+vm_proxy_https: ""
 
 vic_vm_auth_version: "v1.81.1"
 vic_vm_auth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"

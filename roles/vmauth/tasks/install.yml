@@ -24,8 +24,8 @@
 
 - name: Download and unarchive VMauth release binary
   environment:
-    http_proxy: ""
-    https_proxy: ""
+    http_proxy: "{{ vm_proxy_http }}"
+    https_proxy: "{{ vm_proxy_https }}"
   unarchive:
     src: "{{ vic_vm_auth_download_url }}"
     dest: /tmp
