@@ -22,6 +22,7 @@ Collection includes the following roles:
 - [single](./roles/single) - installs and configures VictoriaMetrics single node
 - [vmagent](./roles/vmagent) - installs and configures `vmagent`
 - [vmalert](./roles/vmalert) - installs and configures `vmalert`
+- [vmauth](./roles/vmauth) - installs and configures `vmauth`
 
 # TODO
 - add non-docker environment

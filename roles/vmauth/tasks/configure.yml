@@ -1,0 +1,65 @@
+---
+- block:
+  - name: "{{ ansible_service_mgr }} | Copy VMauth systemd unit file"
+    template:
+      src: systemd-service.j2
+      dest: /etc/systemd/system/vic-vmauth.service
+      owner: root
+      group: root
+      mode: 0644
+    register: config_template
+    no_log: true
+
+  - name: "{{ ansible_service_mgr }} | daemon-reload VMauth service"
+    become: true
+    systemd:
+      daemon_reload: true
+    when: config_template is changed
+
+  - name: Ensure VMauth service is enabled on boot
+    become: true
+    systemd:
+      name: vic-vmauth
+      enabled: true
+      state: restarted
+    when: config_template is changed
+  when:
+  - ansible_service_mgr == "systemd"
+
+- block:
+  - name: "{{ ansible_service_mgr }} |  Install vic-vmauth service file"
+    template:
+      src: "upstart.j2"
+      dest: "/etc/init.d/vic-vmauth"
+      mode: "0755"
+      owner: root
+      group: root
+    notify: Restart VMauth service
+    register: config_template
+
+  - name: "{{ ansible_service_mgr }} |  Enable vic-vmauth service"
+    become: "true"
+    service:
+      name: "vic-vmauth"
+      enabled: "yes"
+    when:
+    - config_template is changed
+  when:
+  - ansible_service_mgr == "upstart"
+
+- name: Prepare configuration dir
+  file:
+    state: directory
+    path: "{{ vic_vm_auth_config_dir }}"
+    mode: 0751
+    owner: "{{ vic_vm_auth_system_user }}"
+    group: "{{ vic_vm_auth_system_group }}"
+
+- name: Configure vmauth config
+  template:
+    src: vmauth_config.yml.j2
+    dest: "{{ vic_vm_auth_config_dir }}/vmauth_config.yml"
+    mode: 0751
+    owner: "{{ vic_vm_auth_system_user }}"
+    group: "{{ vic_vm_auth_system_group }}"
+  notify: Restart VMauth service

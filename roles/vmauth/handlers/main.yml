@@ -1,0 +1,6 @@
+---
+- name: Restart VMauth service
+  become: true
+  service:
+    name: vic-vmauth
+    state: restarted

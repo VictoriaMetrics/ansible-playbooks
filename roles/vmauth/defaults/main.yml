@@ -1,0 +1,39 @@
+---
+http_proxy: ""
+https_proxy: ""
+
+vic_vm_auth_version: "v1.81.1"
+vic_vm_auth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vic_vm_auth_platform: "{% if vic_vm_auth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vic_vm_auth_download_url: "{{ vic_vm_auth_repo_url }}/releases/download/{{ vic_vm_auth_version }}/vmutils{{ vic_vm_auth_platform }}-{{ go_arch }}-{{ vic_vm_auth_version }}.tar.gz"
+vic_vm_auth_system_user: "vic_vm_vmauth"
+vic_vm_auth_system_group: "{{ vic_vm_auth_system_user }}"
+vic_vm_auth_config_dir: "/opt/vic-vmauth"
+vic_vm_auth_service_args:
+  "auth.config": "{{ vic_vm_auth_config_dir }}/vmauth_config.yml"
+
+vic_vm_auth_configs:
+  users: [""]
+  #
+  # EXAMPLE
+  #
+  # vic_vm_auth_configs:
+  #   users:
+  #   - bearer_token: "XXXX"
+  #     url_prefix: "http://localhost:8428"
+  #
+  #   - bearer_token: "YYY"
+  #     url_prefix: "http://localhost:8428"
+  #     headers:
+  #     - "X-Scope-OrgID: foobar"
+  #
+  #   - username: "local-single-node"
+  #     password: "***"
+  #     url_prefix: "http://localhost:8428"
+  #
+  #   - username: "cluster-insert-account-42"
+  #     password: "***"
+  #     url_prefix:
+  #     - "http://vminsert1:8480/insert/42/prometheus"
+  #     - "http://vminsert2:8480/insert/42/prometheus"
+  #
