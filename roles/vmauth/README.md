@@ -1,6 +1,6 @@
 # VMauth
 
-Role to install and configure vmauth. Installs by using binary from Github releases.
+Role to install and configure `vmauth`. Installs by using binary from Github releases.
 
 ## Parameters
 
