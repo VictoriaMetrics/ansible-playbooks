@@ -1,0 +1,32 @@
+---
+- name: Assert usage of systemd or upstart as an init system
+  assert:
+    that: ansible_service_mgr == 'systemd' or ansible_service_mgr == "upstart"
+    msg: "This role only works with systemd and upstart"
+
+- name: Get systemd version
+  command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+  when: ansible_service_mgr == 'systemd'
+
+- name: Set systemd version fact
+  set_fact:
+    vic_vm_auth_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+  when: ansible_service_mgr == 'systemd'
+
+- name: Check if VMauth is installed
+  stat:
+    path: /usr/local/bin/vmauth-prod
+  changed_when: false
+  check_mode: false
+  register: vic_vm_auth_is_installed
+
+- name: Check current VMauth version
+  command: /usr/local/bin/vmauth-prod --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: vic_vm_auth_current_version
+  when: vic_vm_auth_is_installed.stat.exists | bool

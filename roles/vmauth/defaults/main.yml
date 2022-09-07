@@ -1,0 +1,66 @@
+---
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+vic_vm_auth_version: "v1.81.1"
+vic_vm_auth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vic_vm_auth_platform: "{% if vic_vm_auth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vic_vm_auth_download_url: "{{ vic_vm_auth_repo_url }}/releases/download/{{ vic_vm_auth_version }}/vmutils{{ vic_vm_auth_platform }}-{{ go_arch }}-{{ vic_vm_auth_version }}.tar.gz"
+vic_vm_auth_system_user: "vic_vm_vmauth"
+vic_vm_auth_system_group: "{{ vic_vm_auth_system_user }}"
+vic_vm_auth_config_dir: "/opt/vic-vmauth"
+vic_vm_auth_service_args:
+  "auth.config": "{{ vic_vm_auth_config_dir }}/vmauth_config.yml"
+
+vic_vm_auth_configs:
+  users: [""]
+  #
+  # EXAMPLE
+  #
+  # vic_vm_auth_configs:
+  #   users:
+  #   - bearer_token: "XXXX"
+  #     url_prefix: "http://localhost:8428"
+  #
+  #   - bearer_token: "YYY"
+  #     url_prefix: "http://localhost:8428"
+  #     headers:
+  #     - "X-Scope-OrgID: foobar"
+  #
+  #   - username: "local-single-node"
+  #     password: "***"
+  #     url_prefix: "http://localhost:8428"
+  #
+  #   - username: "cluster-select-account-42"
+  #     password: "admin"
+  #     url_prefix:
+  #       - "http://vmselect1:8481/select/42:0/prometheus"
+  #       - "http://vmselect2:8481/select/42:0/prometheus"
+  #
+  #   - username: "cluster-insert-account-42"
+  #     password: "***"
+  #     url_prefix:
+  #       - "http://vminsert1:8480/insert/42:0/prometheus"
+  #       - "http://vminsert2:8480/insert/42:0/prometheus"
+  #
+  #   - username: "cluster-rw-account-42"
+  #     password: "***"
+  #     url_map:
+  #       - src_paths:
+  #           - "/api/v1/query"
+  #           - "/api/v1/query_range"
+  #           - "/api/v1/label/[^/]+/values"
+  #         url_prefix:
+  #           - "http://vmselect1:8481/select/42:0/prometheus"
+  #           - "http://vmselect2:8481/select/42:0/prometheus"
+  #       - src_paths:
+  #           - "/api/v1/write"
+  #         url_prefix:
+  #           - "http://vminsert1:8480/insert/42:0/prometheus"
+  #           - "http://vminsert2:8480/insert/42:0/prometheus"
+  #       - src_paths:
+  #           - "/write"
+  #         url_prefix:
+  #           - "http://vminsert1:8480/insert/42:0/influx"
+  #           - "http://vminsert2:8480/insert/42:0/influx"
+  #
