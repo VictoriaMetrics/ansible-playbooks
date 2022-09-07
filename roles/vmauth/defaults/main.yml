@@ -31,9 +31,36 @@ vic_vm_auth_configs:
   #     password: "***"
   #     url_prefix: "http://localhost:8428"
   #
+  #   - username: "cluster-select-account-42"
+  #     password: "admin"
+  #     url_prefix:
+  #       - "http://vmselect1:8481/select/42:0/prometheus"
+  #       - "http://vmselect2:8481/select/42:0/prometheus"
+  #
   #   - username: "cluster-insert-account-42"
   #     password: "***"
   #     url_prefix:
-  #     - "http://vminsert1:8480/insert/42/prometheus"
-  #     - "http://vminsert2:8480/insert/42/prometheus"
+  #       - "http://vminsert1:8480/insert/42:0/prometheus"
+  #       - "http://vminsert2:8480/insert/42:0/prometheus"
+  #
+  #   - username: "cluster-rw-account-42"
+  #     password: "***"
+  #     url_map:
+  #       - src_paths:
+  #           - "/api/v1/query"
+  #           - "/api/v1/query_range"
+  #           - "/api/v1/label/[^/]+/values"
+  #         url_prefix:
+  #           - "http://vmselect1:8481/select/42:0/prometheus"
+  #           - "http://vmselect2:8481/select/42:0/prometheus"
+  #       - src_paths:
+  #           - "/api/v1/write"
+  #         url_prefix:
+  #           - "http://vminsert1:8480/insert/42:0/prometheus"
+  #           - "http://vminsert2:8480/insert/42:0/prometheus"
+  #       - src_paths:
+  #           - "/write"
+  #         url_prefix:
+  #           - "http://vminsert1:8480/insert/42:0/influx"
+  #           - "http://vminsert2:8480/insert/42:0/influx"
   #
