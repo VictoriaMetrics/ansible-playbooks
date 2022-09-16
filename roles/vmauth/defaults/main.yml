@@ -9,9 +9,12 @@ vic_vm_auth_download_url: "{{ vic_vm_auth_repo_url }}/releases/download/{{ vic_v
 vic_vm_auth_system_user: "vic_vm_vmauth"
 vic_vm_auth_system_group: "{{ vic_vm_auth_system_user }}"
 vic_vm_auth_config_dir: "/opt/vic-vmauth"
+vic_vm_auth_configs_file_name: "vmauth_config.yml"
 vic_vm_auth_service_args:
-  "auth.config": "{{ vic_vm_auth_config_dir }}/vmauth_config.yml"
+  "auth.config": "{{ vic_vm_auth_config_dir }}/{{ vic_vm_auth_configs_file_name }}"
 
+vic_vm_auth_configs_file_provider: false
+vic_vm_auth_configs_file_source: ""
 vic_vm_auth_configs:
   users: [""]
   #
