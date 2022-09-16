@@ -63,7 +63,7 @@
     owner: "{{ vic_vm_auth_system_user }}"
     group: "{{ vic_vm_auth_system_group }}"
   notify: Restart VMauth service
-  when: "not vic_vm_auth_configs_file_provider"
+  when: "not vic_vm_auth_configs_file_provider | boolean"
 
 - name: Configure vmauth config with file
   ansible.builtin.copy:

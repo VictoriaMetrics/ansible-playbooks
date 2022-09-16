@@ -19,5 +19,7 @@ The following table lists the configurable parameters of the roles and their def
 | vic_vm_auth_configs_file_provider   | Use vmauth yaml configs file instead of 'vic_vm_auth_configs' variable                                          | `false`
 | vic_vm_auth_configs                 | List of users auth rules (variable provider)                        | See [defaults](defaults/main.yml)                                                                     |
 | vic_vm_auth_configs_file_source     | Path with name and extension of vmauth yaml config file (file provider)                          | `""`
+| vic_vm_auth_service_args            | Dict representing set of arguments for vmagent                      | See [defaults](defaults/main.yml)                                                                     |
+| vic_vm_auth_configs                 | List of users auth rules                                            | See [defaults](defaults/main.yml)                                                                     |
 | vm_proxy_http                       | Sets environment for downloading archive                            | `""`                                                                                                  |
 | vm_proxy_https                      | Sets environment for downloading archive                            | `""`                                                                                                  |
