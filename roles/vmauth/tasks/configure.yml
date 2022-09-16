@@ -55,11 +55,22 @@
     owner: "{{ vic_vm_auth_system_user }}"
     group: "{{ vic_vm_auth_system_group }}"
 
-- name: Configure vmauth config
+- name: Configure vmauth config with variable
   template:
     src: vmauth_config.yml.j2
-    dest: "{{ vic_vm_auth_config_dir }}/vmauth_config.yml"
+    dest: "{{ vic_vm_auth_config_dir }}/{{ vic_vm_auth_configs_file_name }}"
     mode: 0751
     owner: "{{ vic_vm_auth_system_user }}"
     group: "{{ vic_vm_auth_system_group }}"
   notify: Restart VMauth service
+  when: "not vic_vm_auth_configs_file_provider | boolean"
+
+- name: Configure vmauth config with file
+  ansible.builtin.copy:
+    src: "{{ vic_vm_auth_configs_file_source }}"
+    dest: "{{ vic_vm_auth_config_dir }}/{{ vic_vm_auth_configs_file_name }}"
+    mode: 0751
+    owner: "{{ vic_vm_auth_system_user }}"
+    group: "{{ vic_vm_auth_system_group }}"
+  notify: Restart VMauth service
+  when: "vic_vm_auth_configs_file_provider | boolean"
