@@ -2,7 +2,7 @@
 vm_proxy_http: ""
 vm_proxy_https: ""
 
-vic_vm_auth_version: "v1.81.1"
+vic_vm_auth_version: "v1.81.2"
 vic_vm_auth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vic_vm_auth_platform: "{% if vic_vm_auth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
 vic_vm_auth_download_url: "{{ vic_vm_auth_repo_url }}/releases/download/{{ vic_vm_auth_version }}/vmutils{{ vic_vm_auth_platform }}-{{ go_arch }}-{{ vic_vm_auth_version }}.tar.gz"
