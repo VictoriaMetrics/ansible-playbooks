@@ -4,10 +4,12 @@ Installs `vmalert` as binary running with systemd
 
 ## Parameters
 
+> Note that default `vic_vm_alert_datasource_url` is using port for VMSingle installation. For cluster mode installed by [role](../cluster) with [loadbalancer](../load_balancer) from this repository it is needed to point at VMSelect component which will be `load_balancer:8481`.
+
 | Parameter                        | Description                                                 | Default                                                                                                                              |
 |----------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | vic_vm_alert_repo_url            | Repository to get binaries                                  | `https://github.com/VictoriaMetrics/VictoriaMetrics`                                                                                 |
-| vic_vm_alert_version             | Version to install                                          | `v1.78.1`                                                                                                                            |
+| vic_vm_alert_version             | Version to install                                          | `v1.81.2`                                                                                                                            |
 | vic_vm_alert_download_url        | Resulting download url.                                     | `"{{ vic_vm_alert_repo_url }}/releases/download/{{ vic_vm_alert_version }}/vmutils-{{ go_arch }}-{{ vic_vm_alert_version }}.tar.gz"` |
 | vic_vm_alert_system_user         | User to run `vmalert`.                                      | `vic_vm_alert`                                                                                                                       |
 | vic_vm_alert_system_group        | Group to run `vmalert`.                                     | `{{ vic_vm_alert_system_user }}`                                                                                                     |
