@@ -28,3 +28,7 @@ vm_proxy_https: ""
 
 vmagent_exec_start_post: ""
 vmagent_exec_stop: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vmagent_systemd_protect_home: "yes"
