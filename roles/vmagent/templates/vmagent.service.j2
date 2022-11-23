@@ -14,7 +14,7 @@ SyslogIdentifier=vic-vmagent
 Restart=always
 
 PrivateTmp=yes
-ProtectHome=yes
+ProtectHome={{ vmagent_systemd_protect_home }}
 NoNewPrivileges=yes
 
 ProtectSystem=full
