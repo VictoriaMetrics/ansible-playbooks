@@ -34,7 +34,13 @@ victoriametrics_backup_proxy_enable: false
 
 victoriametrics_backup_enabled: false
 victoriametrics_backup_destination: "s3://"
+
+victoriametrics_backup_cron_minute: "0"
 victoriametrics_backup_cron_hour: "*/2"
+victoriametrics_backup_cron_day: "*"
+victoriametrics_backup_cron_weekday: "*"
+victoriametrics_backup_cron_month: "*"
+
 victoriametrics_backup_access_key: ""
 victoriametrics_backup_secret_key: ""
 victoriametrics_backup_custom_s3_endpoint: ""
