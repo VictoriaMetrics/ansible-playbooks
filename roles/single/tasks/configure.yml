@@ -40,7 +40,7 @@
   systemd:
     name: victoriametrics
     enabled: true
-    state: started
+    state: restarted
   when: config_template is changed
 
 - block:
