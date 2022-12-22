@@ -21,6 +21,7 @@
     systemd:
       name: vic-vmagent
       enabled: true
+      state: restarted
     when: config_template is changed
   when:
   - ansible_service_mgr == "systemd"
