@@ -71,3 +71,12 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
   notify: Restart VMagent service
+
+- name: Configure stream aggregation config
+  template:
+    src: stream_aggregation.yml.j2
+    dest: "{{ vmagent_config_dir }}/aggregation.yml"
+    mode: 0751
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+  notify: Restart VMagent service
