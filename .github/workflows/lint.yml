@@ -28,4 +28,4 @@ jobs:
       - name: "Ansible lint"
         uses: ansible/ansible-lint-action@v6.10.2
         with:
-          args: "playbooks/*"
+          path: "playbooks/"
