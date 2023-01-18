@@ -13,6 +13,7 @@ vmagent_service_args:
   "remoteWrite.url": "{{ vmagent_remote_write_host }}/api/v1/write"
   "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
   "remoteWrite.tmpDataPath": /tmp/vmagent
+  "remoteWrite.streamAggr.config": "{{ vmagent_config_dir }}/aggregation.yml"
 
 vmagent_scrape_config:
   scrape_configs:
@@ -20,6 +21,8 @@ vmagent_scrape_config:
       static_configs:
         - targets: []
 #          - "127.0.0.1:9100"
+
+vmagent_aggregation_config: []
 
 vmagent_install_download_to_control: true
 
