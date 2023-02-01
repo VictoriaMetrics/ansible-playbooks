@@ -1,5 +1,5 @@
 ---
-vmagent_version: "v1.86.2"
+vmagent_version: "v1.87.0"
 
 vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmagent_platform: "{% if vmagent_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
