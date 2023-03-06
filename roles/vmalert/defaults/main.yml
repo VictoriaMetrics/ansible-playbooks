@@ -22,11 +22,13 @@ vic_vm_alert_max_open_files: 2097152
 
 # Great examples of alerts - https://awesome-prometheus-alerts.grep.to/rules.html
 vic_vm_alert_rules:
-  - alert: HostOutOfMemory
-    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: '{% raw %}Host out of memory (instance {{ $labels.instance }}){% endraw %}'
-      description: '{% raw %}"Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"{% endraw %}'
+  - name: ansible managed alert rules
+    rules:
+      - alert: HostOutOfMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: '{% raw %}Host out of memory (instance {{ $labels.instance }}){% endraw %}'
+          description: '{% raw %}"Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"{% endraw %}'
