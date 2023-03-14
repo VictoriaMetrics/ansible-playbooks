@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  name: Test vmalert role
   become: true
   roles:
     - "vmalert"

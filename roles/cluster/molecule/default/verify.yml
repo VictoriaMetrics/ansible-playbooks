@@ -14,7 +14,7 @@
     goss_format: documentation
   tasks:
     - name: Download and install Goss
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ goss_url }}"
         dest: "{{ goss_bin }}"
         sha256sum: "{{ goss_sha256sum }}"
@@ -24,12 +24,13 @@
       retries: 3
 
     - name: Create Molecule directory for test files
-      file:
+      ansible.builtin.file:
         path: "{{ goss_test_directory }}"
         state: directory
+        mode: "0755"
 
     - name: Find Goss tests on localhost
-      find:
+      ansible.builtin.find:
         paths: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}"
         patterns:
           - "test[-.\\w]*.yml"
@@ -42,31 +43,34 @@
       changed_when: false
       become: false
 
-    - name: debug
-      debug:
+    - name: Debug
+      ansible.builtin.debug:
         msg: "{{ test_files.files }}"
         verbosity: 3
 
     - name: Copy Goss tests to remote
-      copy:
+      ansible.builtin.copy:
         src: "{{ item.path }}"
         dest: "{{ goss_test_directory }}/{{ item.path | basename }}"
+        mode: "0644"
       with_items:
         - "{{ test_files.files }}"
       loop_control:
         label: "{{ item.path | basename }}"
 
     - name: Register test files
-      find:
+      ansible.builtin.find:
         paths:
           - "{{ goss_test_directory }}"
         patterns:
           - "test_*.yml"
       register: test_files
 
-    - block:
-        - name: Execute Goss tests
-          command: "{{ goss_bin }} -g {{ item }} validate --format {{ goss_format }}"
+    - name: Run verify.
+      when: test_files is succeeded
+      block:
+        - name: Execute Goss tests # noqa: no-changed-when
+          ansible.builtin.command: "{{ goss_bin }} -g {{ item }} validate --format {{ goss_format }}"
           register: test_results
           with_items: "{{ test_files.files | map(attribute='path') | list }}"
           loop_control:
@@ -74,17 +78,16 @@
           failed_when: false
 
         - name: Display details about the Goss results
-          debug:
+          ansible.builtin.debug:
             msg: "{{ item.stdout_lines }}"
           with_items: "{{ test_results.results }}"
           loop_control:
             label: "{{ item[item.ansible_loop_var] | basename }}"
 
         - name: Fail when tests fail
-          fail:
+          ansible.builtin.fail:
             msg: "Goss failed to validate"
           when: item.rc != 0
           with_items: "{{ test_results.results }}"
           loop_control:
             label: "{{ item[item.ansible_loop_var] | basename }}"
-      when: test_files is succeeded

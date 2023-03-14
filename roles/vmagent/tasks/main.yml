@@ -1,9 +1,10 @@
 ---
-- debug:
-    var: vmagent_scrape_config
 
-# tasks file for VictoriaMetrics
-- import_tasks: preinstall.yml
-- import_tasks: install.yml
-- import_tasks: configure.yml
-- import_tasks: check.yml
+- name: Preinstall checks
+  ansible.builtin.import_tasks: preinstall.yml
+- name: Install
+  ansible.builtin.import_tasks: install.yml
+- name: Configure
+  ansible.builtin.import_tasks: configure.yml
+- name: Check
+  ansible.builtin.import_tasks: check.yml

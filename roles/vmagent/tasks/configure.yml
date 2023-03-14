@@ -1,7 +1,9 @@
 ---
-- block:
-  - name: "{{ ansible_service_mgr }} | Copy VMagent systemd unit file"
-    template:
+- name: Configure systemd
+  when: ansible_service_mgr == "systemd"
+  block:
+  - name: "Systemd | Copy VMagent systemd unit file"
+    ansible.builtin.template:
       src: vmagent.service.j2
       dest: /etc/systemd/system/vic-vmagent.service
       owner: root
@@ -9,26 +11,25 @@
       mode: 0644
     register: config_template
     no_log: True
+    notify: Restart VMagent service
 
-  - name: "{{ ansible_service_mgr }} | daemon-reload VMagent service"
+  - name: "Systemd | daemon-reload VMagent service"
     become: true
-    systemd:
+    ansible.builtin.systemd:
       daemon_reload: true
     when: config_template is changed
 
   - name: Ensure VMagent service is enabled on boot
     become: true
-    systemd:
+    ansible.builtin.systemd:
       name: vic-vmagent
       enabled: true
-      state: restarted
-    when: config_template is changed
-  when:
-  - ansible_service_mgr == "systemd"
 
-- block:
-  - name: "{{ ansible_service_mgr }} |  Install vic-vmagent service file"
-    template:
+- name: Configure upstart
+  when: ansible_service_mgr == "upstart"
+  block:
+  - name: "Upstart |  Install vic-vmagent service file"
+    ansible.builtin.template:
       src: "upstart.j2"
       dest: "/etc/init.d/vic-vmagent"
       mode: "0755"
@@ -37,18 +38,16 @@
     notify: Restart VMagent service
     register: config_template
 
-  - name: "{{ ansible_service_mgr }} |  Enable vic-vmagent service"
-    become: "true"
-    service:
+  - name: "Upstart |  Enable vic-vmagent service"
+    ansible.builtin.service:
       name: "vic-vmagent"
       enabled: "yes"
     when:
     - config_template is changed
-  when:
-  - ansible_service_mgr == "upstart"
+
 
 - name: Prepare configuration dir
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ vmagent_config_dir }}"
     mode: 0751
@@ -56,7 +55,7 @@
     group: "{{ vmagent_system_group }}"
 
 - name: Prepare sd configuration dir
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ vmagent_sd_config_dir }}"
     mode: 0777
@@ -64,7 +63,7 @@
     group: "{{ vmagent_system_group }}"
 
 - name: Configure promscrape config
-  template:
+  ansible.builtin.template:
     src: prometheus_scrape.yml.j2
     dest: "{{ vmagent_config_dir }}/config.yml"
     mode: 0751
@@ -73,7 +72,7 @@
   notify: Restart VMagent service
 
 - name: Configure stream aggregation config
-  template:
+  ansible.builtin.template:
     src: stream_aggregation.yml.j2
     dest: "{{ vmagent_config_dir }}/aggregation.yml"
     mode: 0751

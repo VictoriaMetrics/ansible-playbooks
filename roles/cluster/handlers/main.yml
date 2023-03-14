@@ -1,20 +1,20 @@
 ---
-- name: restart service victoria-storage
-  systemd:
+- name: Restart service victoria-storage
+  ansible.builtin.systemd:
     name: victoria-storage
     daemon_reload: yes
     enabled: yes
     state: restarted
 
-- name: restart service victoria-insert
-  systemd:
+- name: Restart service victoria-insert
+  ansible.builtin.systemd:
     name: victoria-insert
     daemon_reload: yes
     enabled: yes
     state: restarted
 
-- name: restart service victoria-select
-  systemd:
+- name: Restart service victoria-select
+  ansible.builtin.systemd:
     name: victoria-select
     daemon_reload: yes
     enabled: yes

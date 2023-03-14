@@ -1,7 +1,8 @@
 - name: Install Docker into Debian like system
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   block:
-  - name: install packages
-    apt:
+  - name: Install packages
+    ansible.builtin.apt:
       name:
       - apt-transport-https
       - ca-certificates
@@ -12,48 +13,49 @@
       update_cache: yes
       cache_valid_time: 3600
 
-  - name: install repo key
-    apt_key:
+  - name: Install repo key
+    ansible.builtin.apt_key:
       url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
       state: present
 
-  - apt_repository:
+  - name: Add docker repo
+    ansible.builtin.apt_repository:
       repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
       state: present
 
-  - name: install docker
-    apt:
+  - name: Install docker
+    ansible.builtin.apt:
       name:
       - docker-ce
       - docker-ce-cli
       - containerd.io
       update_cache: yes
       cache_valid_time: 3600
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Install Docker into RedHat like system
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   block:
   - name: Add Docker repo
-    copy:
+    ansible.builtin.copy:
       src: docker-ce.repo
       dest: /etc/yum.repos.d/docker-ce.repo
+      mode: 0644
 
   - name: Enable Docker Edge repo
-    ini_file:
+    community.general.files.ini_file:
       dest: /etc/yum.repos.d/docker-ce.repo
       section: 'docker-ce-edge'
       option: enabled
       value: 0
 
   - name: Install Docker
-    yum:
+    ansible.builtin.yum:
       name: docker-ce
-      state: latest
       update_cache: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: put docker config
-  copy:
+- name: Put docker config
+  ansible.builtin.copy:
     src: daemon.json
     dest: /etc/docker/daemon.json
-  notify: restart docker daemon
+    mode: 0644
+  notify: Restart docker daemon

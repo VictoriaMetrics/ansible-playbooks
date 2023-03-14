@@ -1,10 +1,10 @@
 ---
-- name: ensure docker
+- name: Ensure docker
   become: true
   hosts: all
   roles: [ docker ]
 
-- name: ensure victoria_storage
+- name: Ensure victoria_storage
   become: true
   hosts: all
   roles: [ cluster ]
@@ -13,7 +13,7 @@
     if_name: enp0s8
   tags: [ 'vm_storage', 'cluster' ]
 
-- name: ensure victoria_select
+- name: Ensure victoria_select
   become: true
   hosts: all
   roles: [ cluster ]
@@ -22,7 +22,7 @@
     if_name: enp0s8
   tags: [ 'vm_select', 'cluster' ]
 
-- name: ensure victoria_insert
+- name: Ensure victoria_insert
   become: true
   hosts: all
   roles: [ cluster ]
