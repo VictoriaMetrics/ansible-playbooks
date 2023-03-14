@@ -2,6 +2,6 @@
 ---
 - name: Restart VMalert service
   become: true
-  service:
+  ansible.builtin.service:
     name: vic-vmalert
     state: restarted

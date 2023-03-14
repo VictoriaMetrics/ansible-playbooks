@@ -4,5 +4,5 @@
   become: yes
   tasks:
     - name: "Include vmalert"
-      include_role:
+      ansible.builtin.include_role:
         name: "vmalert"

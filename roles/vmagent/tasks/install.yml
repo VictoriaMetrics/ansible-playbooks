@@ -1,13 +1,13 @@
 ---
 - name: Create VMagent system group
-  group:
+  ansible.builtin.group:
     name: "{{ vmagent_system_group }}"
     state: present
     system: true
   when: vmagent_system_group != "root"
 
 - name: Create VMagent system user
-  user:
+  ansible.builtin.user:
     name: "{{ vmagent_system_user }}"
     groups: "{{ vmagent_system_group }}"
     append: true
@@ -17,25 +17,27 @@
   when: vmagent_system_user != "root"
 
 - name: Ensure existense of /usr/local/bin
-  file:
+  ansible.builtin.file:
     path: /usr/local/bin
     state: directory
     mode: 0755
 
 - name: Delete existing VMagent version if it's different.
-  file:
+  ansible.builtin.file:
     path: /usr/local/bin/vmagent-prod
     state: absent
   when:
   - vmagent_is_installed.stat.exists | bool
   - vmagent_version not in vmagent_current_version.stdout
 
-- block:
+- name: Install via control host
+  when: vmagent_install_download_to_control
+  block:
   - name: Download and unarchive VMagent release binary
     environment:
       http_proxy: "{{ vm_proxy_http }}"
       https_proxy: "{{ vm_proxy_https }}"
-    unarchive:
+    ansible.builtin.unarchive:
       src: "{{ vmagent_download_url }}"
       dest: /tmp
       remote_src: yes
@@ -48,7 +50,7 @@
 
   - name: Copy vmagent binary to target host
     notify: Restart VMagent service
-    copy:
+    ansible.builtin.copy:
       src: /tmp/vmagent-prod
       dest: /tmp/vmagent-prod
       mode: 0751
@@ -59,22 +61,23 @@
     - not vmagent_is_installed.stat.exists or
       vmagent_version not in vmagent_current_version.stdout
 
-  - name: Replace vmagent binary at target dir
+  - name: Replace vmagent binary at target dir # noqa: no-changed-when
     notify: Restart VMagent service
-    shell: |
+    ansible.builtin.shell: |
       mv /tmp/vmagent-prod /usr/local/bin/vmagent-prod
     when:
     - not ansible_check_mode
     - not vmagent_is_installed.stat.exists or
       vmagent_version not in vmagent_current_version.stdout
-  when: vmagent_install_download_to_control
 
-- block:
+- name: Install directly to target host
+  when: not vmagent_install_download_to_control
+  block:
   - name: Download and unarchive VMagent release binary
     environment:
       http_proxy: "{{ vm_proxy_http }}"
       https_proxy: "{{ vm_proxy_https }}"
-    unarchive:
+    ansible.builtin.unarchive:
       src: "{{ vmagent_download_url }}"
       dest: /tmp
       remote_src: yes
@@ -83,9 +86,9 @@
     - not vmagent_is_installed.stat.exists or
       vmagent_version not in vmagent_current_version.stdout
 
-  - name: Replace vmagent binary at target dir
+  - name: Replace vmagent binary at target dir # noqa: no-changed-when
     notify: Restart VMagent service
-    shell: |
+    ansible.builtin.shell: |
       mv /tmp/vmagent-prod /usr/local/bin/vmagent-prod
       chmod 0751 /usr/local/bin/vmagent-prod
       chown {{ vmagent_system_user }}:{{ vmagent_system_group }} /usr/local/bin/vmagent-prod
@@ -93,4 +96,3 @@
     - not ansible_check_mode
     - not vmagent_is_installed.stat.exists or
       vmagent_version not in vmagent_current_version.stdout
-  when: not vmagent_install_download_to_control

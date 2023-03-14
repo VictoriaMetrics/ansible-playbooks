@@ -1,34 +1,35 @@
 ---
-- block:
-  - name: "{{ ansible_service_mgr }} | Copy VMalert systemd unit file"
-    template:
+- name: Configure unit
+  when: ansible_service_mgr == "systemd"
+  block:
+  - name: "Systemd | Copy VMalert systemd unit file"
+    ansible.builtin.template:
       src: systemd-service.j2
       dest: /etc/systemd/system/vic-vmalert.service
       owner: root
       group: root
       mode: 0644
     register: config_template
+    notify: Restart VMalert service
     no_log: True
 
-  - name: "{{ ansible_service_mgr }} | daemon-reload VMalert service"
+  - name: "Systemd | daemon-reload VMalert service"
     become: true
-    systemd:
+    ansible.builtin.systemd:
       daemon_reload: true
     when: config_template is changed
 
   - name: Ensure VMalert service is enabled on boot
     become: true
-    systemd:
+    ansible.builtin.systemd:
       name: vic-vmalert
       enabled: true
-      state: restarted
-    when: config_template is changed
-  when:
-  - ansible_service_mgr == "systemd"
 
-- block:
-  - name: "{{ ansible_service_mgr }} |  Install vic-vmalert service file"
-    template:
+- name: Configure upstart
+  when: ansible_service_mgr == "upstart"
+  block:
+  - name: "Upstart | Install vic-vmalert service file"
+    ansible.builtin.template:
       src: "upstart.j2"
       dest: "/etc/init.d/vic-vmalert"
       mode: "0755"
@@ -37,18 +38,13 @@
     notify: Restart VMalert service
     register: config_template
 
-  - name: "{{ ansible_service_mgr }} |  Enable vic-vmalert service"
-    become: "true"
-    service:
+  - name: "Upstart | Enable vic-vmalert service"
+    ansible.builtin.service:
       name: "vic-vmalert"
       enabled: "yes"
-    when:
-    - config_template is changed
-  when:
-  - ansible_service_mgr == "upstart"
 
 - name: Prepare configuration dir
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ vic_vm_alert_config_dir }}"
     mode: 0751
@@ -56,7 +52,7 @@
     group: "{{ vic_vm_alert_system_group }}"
 
 - name: Configure alerts config
-  template:
+  ansible.builtin.template:
     src: alerts.yml.j2
     dest: "{{ vic_vm_alert_rules_config_path }}"
     mode: 0751

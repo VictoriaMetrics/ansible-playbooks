@@ -12,12 +12,12 @@
       storageDataPath: "{{ victoriametrics_data_dir }}"
   tasks:
     - name: Install cron
-      apt:
+      ansible.builtin.apt:
         name: cron
         state: present
         update_cache: yes
         cache_valid_time: 3600
 
     - name: "Include single"
-      include_role:
+      ansible.builtin.include_role:
         name: "single"

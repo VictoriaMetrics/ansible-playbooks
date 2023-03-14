@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  name: Test role
   become: true
   roles:
     - "single"

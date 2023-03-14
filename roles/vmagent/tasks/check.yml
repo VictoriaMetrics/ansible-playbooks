@@ -1,9 +1,6 @@
 ---
-- name: flush handlers
-  meta: flush_handlers
-
 - name: Ensure vic-vmagent service started
-  service:
+  ansible.builtin.service:
     name: vic-vmagent
     state: started
     enabled: yes
