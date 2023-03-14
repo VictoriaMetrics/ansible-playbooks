@@ -1,16 +1,16 @@
 ---
-- name: gather facts
-  setup:
+- name: Gather facts
+  ansible.builtin.setup:
 
 - name: Ensure vm_role for node is set
-  assert:
+  ansible.builtin.assert:
     fail_msg: "Make sure to set 'vm_role', allowed values are: 'victoria-insert', 'victoria-select', 'victoria-storage"
     that:
     - vm_role is defined
     - vm_role in ['victoria-insert', 'victoria-select', 'victoria-storage']
 
 - name: Create data directory
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ item }}"
     owner: root
@@ -20,24 +20,26 @@
   - "{{ vmstorage_host_path }}"
   - "{{ vm_conf_host_path }}"
 
-- name: "ensure {{ vm_role }} unit file"
+- name: "Ensure unit file for {{ vm_role }} "
   notify: "restart service {{ vm_role }}"
-  template:
+  ansible.builtin.template:
     src: "{{ vm_role }}.service.j2"
     dest: "/etc/systemd/system/{{ vm_role }}.service"
+    mode: 0644
 
-- name: "ensure {{ vm_role }} environment_file"
-  template:
+- name: "Ensure environment_file for {{ vm_role }}"
+  ansible.builtin.template:
     src: vm_environment.j2
     dest: "{{ environment_file_path }}/{{ vm_role }}"
+    mode: 0644
   notify: "restart service {{ vm_role }}"
-  when: use_environment != false
+  when: use_environment | bool
 
 - name: Execute handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
-- name: start services
-  systemd:
+- name: Start services
+  ansible.builtin.systemd:
     name: "{{ vm_role }}"
     daemon_reload: yes
     enabled: yes
