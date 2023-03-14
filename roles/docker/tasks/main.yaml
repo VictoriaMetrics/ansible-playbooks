@@ -58,4 +58,4 @@
     src: daemon.json
     dest: /etc/docker/daemon.json
     mode: 0644
-  notify: restart docker daemon
+  notify: Restart docker daemon
