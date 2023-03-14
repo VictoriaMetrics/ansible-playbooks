@@ -44,45 +44,44 @@
   when: config_template is changed
 
 - block:
-  - name: Create aws credentials dir
-    become: true
-    file:
-      path: ~/.aws
-      state: directory
+    - name: Create aws credentials dir
+      become: true
+      file:
+        path: ~/.aws
+        state: directory
 
-  - name: Create aws config file
-    become: true
-    copy:
-      dest: ~/.aws/config
-      content: |
-        [default]
-        region = eu-west-1
-        output = json
+    - name: Create aws config file
+      become: true
+      copy:
+        dest: ~/.aws/config
+        content: |
+          [default]
+          region = eu-west-1
+          output = json
 
-  - name: Template credentials file
-    template:
-      src: creds.j2
-      dest: ~/.aws/credentials
+    - name: Template credentials file
+      template:
+        src: creds.j2
+        dest: ~/.aws/credentials
 
-  - name: Set proxy config
-    set_fact:
-      _victoria_backup_proxy: "http_proxy={{ http_proxy }} https_proxy={{ http_proxy }} "
-    when:
-    - victoriametrics_backup_proxy_enable
-    - http_proxy is defined
+    - name: Set proxy config
+      set_fact:
+        _victoria_backup_proxy: "http_proxy={{ http_proxy }} https_proxy={{ http_proxy }} "
+      when:
+        - victoriametrics_backup_proxy_enable
+        - http_proxy is defined
 
-  - name: Configure cron
-    cron:
-      name: "backup victoriametrics data"
-      user: root
-      state: present
-      minute: "{{ victoriametrics_backup_cron_minute }}"
-      hour: "{{ victoriametrics_backup_cron_hour }}"
-      day: "{{ victoriametrics_backup_cron_day }}"
-      weekday: "{{ victoriametrics_backup_cron_weekday }}"
-      month: "{{ victoriametrics_backup_cron_month }}"
-      job: "{{ _victoria_backup_proxy | default('') }} /usr/local/bin/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if victoriametrics_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ victoriametrics_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ victoriametrics_data_dir }} -dst {{ victoriametrics_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
-
+    - name: Configure cron
+      cron:
+        name: "backup victoriametrics data"
+        user: root
+        state: present
+        minute: "{{ victoriametrics_backup_cron_minute }}"
+        hour: "{{ victoriametrics_backup_cron_hour }}"
+        day: "{{ victoriametrics_backup_cron_day }}"
+        weekday: "{{ victoriametrics_backup_cron_weekday }}"
+        month: "{{ victoriametrics_backup_cron_month }}"
+        job: "{{ _victoria_backup_proxy | default('') }} /usr/local/bin/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if victoriametrics_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ victoriametrics_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ victoriametrics_data_dir }} -dst {{ victoriametrics_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
   when: victoriametrics_backup_enabled | bool
 
 - name: Delete cron if backup disabled

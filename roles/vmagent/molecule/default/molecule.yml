@@ -15,6 +15,10 @@ platforms:
     box: generic/debian11
     memory: 512
     cpus: 1
+#  - name: vmagent-centos
+#    box: generic/centos7
+#    memory: 512
+#    cpus: 1
 provisioner:
   name: ansible
 verifier:
