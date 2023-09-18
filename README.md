@@ -32,4 +32,4 @@ Collection includes the following roles:
 I'm using vagrant and libvirt for testing purpose. visit vendors' web-site for instructions of installing program.
 vagrant: https://www.vagrantup.com/downloads
 
-Also, most roles are tested with `molecule`. Please, check out installation docs: https://molecule.readthedocs.io/en/latest/installation.html
+Also, most roles are tested with `molecule`. Please, check out installation docs: https://ansible.readthedocs.io/projects/molecule/installation/
