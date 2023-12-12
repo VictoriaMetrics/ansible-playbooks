@@ -1,5 +1,5 @@
 ---
-vic_vm_alert_version: "v1.95.0"
+vic_vm_alert_version: "v1.96.0"
 
 vic_vm_alert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vic_vm_alert_platform: "{% if vic_vm_alert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
