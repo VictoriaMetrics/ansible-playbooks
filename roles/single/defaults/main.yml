@@ -1,5 +1,5 @@
 ---
-victoriametrics_version: "v1.97.0"
+victoriametrics_version: "v1.97.1"
 
 victoriametrics_platform: "{% if victoriametrics_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
 victoriametrics_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
