@@ -4,7 +4,7 @@ Ansible roles and playbooks for Victoria Metrics.
 
 ## How to install
 
-Roles are published in ansible galaxy: https://galaxy.ansible.com/victoriametrics
+Roles are published in ansible galaxy: https://galaxy.ansible.com/ui/namespaces/victoriametrics/
 
 Install collection:
 
