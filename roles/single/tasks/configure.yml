@@ -42,8 +42,14 @@
     name: victoriametrics
     enabled: true
 
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
 - name: Configure credentials
-  when: victoriametrics_backup_enabled | bool
+  when:
+    - victoriametrics_backup_enabled | bool
+    - "'cron' in ansible_facts.packages"
   block:
     - name: Create aws credentials dir
       become: true
@@ -97,4 +103,6 @@
     weekday: "{{ victoriametrics_backup_cron_weekday }}"
     month: "{{ victoriametrics_backup_cron_month }}"
     state: absent
-  when: not victoriametrics_backup_enabled | bool
+  when:
+    - not victoriametrics_backup_enabled | bool
+    - "'cron' in ansible_facts.packages"
