@@ -13,7 +13,7 @@
     no_log: True
     notify: Restart VMagent service
 
-  - name: "Systemd | daemon-reload VMagent service"
+  - name: "Systemd | daemon-reload VMagent service" # noqa: no-handler
     become: true
     ansible.builtin.systemd:
       daemon_reload: true
@@ -38,7 +38,7 @@
     notify: Restart VMagent service
     register: config_template
 
-  - name: "Upstart |  Enable vic-vmagent service"
+  - name: "Upstart |  Enable vic-vmagent service" # noqa: no-handler
     ansible.builtin.service:
       name: "vic-vmagent"
       enabled: "yes"

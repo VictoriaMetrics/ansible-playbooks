@@ -72,7 +72,7 @@
         - not victoriametrics_is_installed.stat.exists or
           victoriametrics_version not in victoriametrics_current_version.stdout
 
-    - name: Upload VictoriaMetrics release binary
+    - name: Upload VictoriaMetrics release binary # noqa: no-handler
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
         dest: /usr/local/bin
@@ -82,7 +82,7 @@
       when:
         - archive_downloaded is changed
 
-    - name: Download VictoriaMetrics utils
+    - name: Download VictoriaMetrics utils # noqa: no-handler
       become: no
       environment:
         http_proxy: ''
@@ -95,7 +95,7 @@
       when:
         - archive_downloaded is changed
 
-    - name: Upload VictoriaMetrics release binaries
+    - name: Upload VictoriaMetrics release binaries # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
         dest: /usr/local/bin

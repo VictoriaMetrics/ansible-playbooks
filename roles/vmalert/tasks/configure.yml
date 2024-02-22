@@ -13,7 +13,7 @@
     notify: Restart VMalert service
     no_log: True
 
-  - name: "Systemd | daemon-reload VMalert service"
+  - name: "Systemd | daemon-reload VMalert service" # noqa: no-handler
     become: true
     ansible.builtin.systemd:
       daemon_reload: true
