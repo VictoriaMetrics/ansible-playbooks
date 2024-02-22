@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    victoriametrics_data_dir: "/tmp/victoria-metrics/"
+    victoriametrics_backup_enabled: false
+    victoriametrics_service_envflag_enabled: true
+    victoriametrics_service_envflag_data:
+      - "graphiteListenAddr=127.0.0.1:12345"
+    victoriametrics_service_args:
+      storageDataPath: "{{ victoriametrics_data_dir }}"
+  tasks:
+    - name: "Include single"
+      ansible.builtin.include_role:
+        name: "single"

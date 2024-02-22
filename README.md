@@ -27,9 +27,11 @@ Collection includes the following roles:
 - add non-docker environment
 - fix hardcoded ports
 
-# Testing
+# Development
 
-I'm using vagrant and libvirt for testing purpose. visit vendors' web-site for instructions of installing program.
-vagrant: https://www.vagrantup.com/downloads
+In order to set up development environment, you need to have `docker`, `python` and `make` installed.
+Run `make init-venv` to create virtual environment and install required packages for linting and testing with [molecule](https://ansible.readthedocs.io/projects/molecule).
 
-Also, most roles are tested with `molecule`. Please, check out installation docs: https://ansible.readthedocs.io/projects/molecule/installation/
+Please, note that [cluster](./roles/cluster) role is tested with `vagrant` and `libvirt` provider and requires `vagrant` [to be installed](https://www.vagrantup.com/downloads).
+
+Refer to [Makefile](./Makefile) for available commands for linting and molecule testing.

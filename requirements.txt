@@ -1,0 +1,7 @@
+ansible-compat==4.1.11
+ansible-core==2.16.3
+ansible-lint==24.2.0
+docker==7.0.0
+molecule==24.2.0
+molecule-plugins==23.5.3
+yamllint==1.35.1
