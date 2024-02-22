@@ -7,23 +7,18 @@ jobs:
   lint:
     name: 'Lint'
     runs-on: ubuntu-latest
-    container:
-      image: python:3.11-alpine
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache .venv directory
         uses: actions/cache@v3
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
 
       - name: Lint
         run: |
-          apk add --update --no-cache --virtual build_dependencies gcc musl-dev libffi-dev openssl-dev rust cargo make
           make init-venv
           
           make lint

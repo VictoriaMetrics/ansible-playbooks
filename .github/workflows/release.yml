@@ -13,10 +13,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     container:
-      image: python:3.9-alpine
+      image: python:3.11-alpine
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Publish collection to ansible galaxy
         env:
