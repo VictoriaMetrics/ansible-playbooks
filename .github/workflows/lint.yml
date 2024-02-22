@@ -1,41 +1,29 @@
 name: 'Lint'
 on:
-  pull_request: {}
-  push: {}
+  pull_request: { }
+  push: { }
 
 jobs:
   lint:
     name: 'Lint'
     runs-on: ubuntu-latest
     container:
-      image: python:3.9-alpine
+      image: python:3.11-alpine
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v3
 
-      - name: Setup ansible
+      - name: Cache .venv directory
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+
+      - name: Lint
         run: |
-          apk add --update --no-cache --virtual build_dependencies gcc musl-dev libffi-dev openssl-dev rust cargo
-          pip install --no-cache-dir ansible-core
+          apk add --update --no-cache --virtual build_dependencies gcc musl-dev libffi-dev openssl-dev rust cargo make
+          make init-venv
           
-          ansible-galaxy collection install community.general
-
-      - name: 'Yamllint'
-        uses: karancode/yamllint-github-action@master
-        with:
-          yamllint_file_or_dir: 'roles'
-          yamllint_strict: false
-          yamllint_comment: false
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: "Ansible lint playbooks"
-        uses: ansible/ansible-lint-action@v6.11.0
-        with:
-          path: "playbooks/*"
-
-      - name: "Ansible lint roles"
-        uses: ansible/ansible-lint-action@v6.11.0
-        with:
-          path: "roles/*"
+          make lint
