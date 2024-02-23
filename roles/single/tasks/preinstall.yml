@@ -28,3 +28,10 @@
   check_mode: false
   register: victoriametrics_current_version
   when: victoriametrics_is_installed.stat.exists | bool
+
+- name: Check if crontab is present
+  ansible.builtin.raw: which crontab
+  check_mode: false
+  changed_when: false
+  failed_when: false
+  register: crontab_which
