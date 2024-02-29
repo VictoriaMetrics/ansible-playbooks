@@ -13,7 +13,7 @@ victoriametrics_self_scrape_interval: "30s"
 victoriametrics_retention_period_months: "12"
 victoriametrics_search_max_unique_timeseries: "900000"
 
-# ore on envflags usage
+# more on envflags usage
 # https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#environment-variables
 victoriametrics_service_envflag_enabled: "false"
 # Array of strings to pass
