@@ -1,0 +1,98 @@
+---
+- name: Create vmselect system group
+  ansible.builtin.group:
+    name: "{{ vmselect_system_group }}"
+    state: present
+    system: true
+  when: vmselect_system_group != "root"
+
+- name: Create vmselect system user
+  ansible.builtin.user:
+    name: "{{ vmselect_system_user }}"
+    groups: "{{ vmselect_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vmselect_system_user != "root"
+
+- name: Ensure existence of /usr/local/bin
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Delete existing vmselect version if it's different.
+  ansible.builtin.file:
+    path: /usr/local/bin/vmselect-prod
+    state: absent
+  when:
+  - vmselect_is_installed.stat.exists | bool
+  - vmselect_version not in vmselect_current_version.stdout
+
+- name: Install via control host
+  when: vmselect_install_download_to_control
+  block:
+  - name: Download and unarchive vmselect release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmselect_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vmselect_is_installed.stat.exists or
+      vmselect_version not in vmselect_current_version.stdout
+
+  - name: Copy vmselect binary to target host
+    notify: Restart vmselect service
+    ansible.builtin.copy:
+      src: /tmp/vmselect-prod
+      dest: /tmp/vmselect-prod
+      mode: 0751
+      owner: "{{ vmselect_system_user }}"
+      group: "{{ vmselect_system_group }}"
+    when:
+    - not ansible_check_mode
+    - not vmselect_is_installed.stat.exists or
+      vmselect_version not in vmselect_current_version.stdout
+
+  - name: Replace vmselect binary at target dir # noqa: no-changed-when
+    notify: Restart vmselect service
+    ansible.builtin.shell: |
+      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
+    when:
+    - not ansible_check_mode
+    - not vmselect_is_installed.stat.exists or
+      vmselect_version not in vmselect_current_version.stdout
+
+- name: Install directly to target host
+  when: not vmselect_install_download_to_control
+  block:
+  - name: Download and unarchive vmselect release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmselect_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    when:
+    - not ansible_check_mode
+    - not vmselect_is_installed.stat.exists or
+      vmselect_version not in vmselect_current_version.stdout
+
+  - name: Replace vmselect binary at target dir # noqa: no-changed-when
+    notify: Restart vmselect service
+    ansible.builtin.shell: |
+      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
+      chmod 0751 /usr/local/bin/vmselect-prod
+      chown {{ vmselect_system_user }}:{{ vmselect_system_group }} /usr/local/bin/vmselect-prod
+    when:
+    - not ansible_check_mode
+    - not vmselect_is_installed.stat.exists or
+      vmselect_version not in vmselect_current_version.stdout

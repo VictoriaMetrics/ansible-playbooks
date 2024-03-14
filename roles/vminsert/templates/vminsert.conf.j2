@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+{% for key, value in vminsert_config.items() | default({}) %}
+{{- key }}={{ value }}
+{% endfor %}
+
+{% if vminsert_relabel_config != "" %}
+relabelConfig={{ vminsert_config_dir }}/relabel.yaml
+{% endif %}

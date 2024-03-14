@@ -1,0 +1,39 @@
+---
+vminsert_version: "v1.99.0"
+
+vminsert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vminsert_platform: "{% if vminsert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vminsert_download_url: "{{ vminsert_repo_url }}/releases/download/{{ vminsert_version }}/victoria-metrics{{ vminsert_platform }}-{{ go_arch }}-{{ vminsert_version }}-cluster.tar.gz"
+
+vminsert_system_user: "victoriametrics"
+vminsert_system_group: "{{ vminsert_system_user }}"
+
+vminsert_service_state: started
+vminsert_service_enabled: true
+vminsert_exec_start_post: ""
+vminsert_exec_stop: ""
+
+vminsert_config_dir: "/opt/victoriametrics-vminsert"
+vminsert_bin_dir: /usr/local/bin
+
+vminsert_config:
+  replicationFactor: 1
+  storageNode: vmstorage1,vmstorage2,vmstorage3
+
+vminsert_relabel_config: ""
+
+#vminsert_relabel_config: |
+#  - source_labels: [__name__]
+#    regex: '(.*)'
+#    target_label: __name__
+#    replacement: '${1}'
+#    action: replace
+
+vminsert_install_download_to_control: false
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vminsert_systemd_protect_home: "yes"

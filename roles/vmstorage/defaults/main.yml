@@ -1,0 +1,31 @@
+---
+vmstorage_version: "v1.99.0"
+
+vmstorage_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vmstorage_platform: "{% if vmstorage_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vmstorage_download_url: "{{ vmstorage_repo_url }}/releases/download/{{ vmstorage_version }}/victoria-metrics{{ vmstorage_platform }}-{{ go_arch }}-{{ vmstorage_version }}-cluster.tar.gz"
+
+vmstorage_system_user: "victoriametrics"
+vmstorage_system_group: "{{ vmstorage_system_user }}"
+
+vmstorage_service_state: started
+vmstorage_service_enabled: true
+vmstorage_exec_start_post: ""
+vmstorage_exec_stop: ""
+
+vmstorage_config_dir: "/opt/victoriametrics-vmstorage"
+vmstorage_data_dir: "/var/lib/vmstorage"
+vmstorage_bin_dir: /usr/local/bin
+
+vmstorage_config:
+  retentionPeriod: "1"
+  storageDataPath: "{{ vmstorage_data_dir }}"
+
+vmstorage_install_download_to_control: false
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vmstorage_systemd_protect_home: "yes"

@@ -1,0 +1,35 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=VictoriaMetrics vmselect service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vmselect_system_user }}
+Group={{ vmselect_system_group }}
+Restart=always
+EnvironmentFile={{ vmselect_config_dir }}/vmselect.conf
+ExecStart={{ vmselect_bin_dir }}/vmselect-prod -envflag.enable
+
+PrivateTmp=yes
+ProtectHome={{ vmselect_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vmselect_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vmselect_exec_start_post != "" %}
+ExecStartPost={{ vmselect_exec_start_post }}
+{% endif %}
+
+{% if vmselect_exec_stop != "" %}
+ExecStop={{ vmselect_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

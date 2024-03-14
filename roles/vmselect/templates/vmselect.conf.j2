@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+
+{% for key, value in vmselect_config.items() | default({}) %}
+{{- key }}={{ value }}
+{% endfor %}

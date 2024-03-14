@@ -1,0 +1,6 @@
+---
+- name: Restart vmselect service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: vmselect
+    state: restarted

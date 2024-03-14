@@ -1,0 +1,35 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=VictoriaMetrics vmstorage service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vmstorage_system_user }}
+Group={{ vmstorage_system_group }}
+Restart=always
+EnvironmentFile={{ vmstorage_config_dir }}/vmstorage.conf
+ExecStart={{ vmstorage_bin_dir }}/vmstorage-prod -envflag.enable
+
+PrivateTmp=yes
+ProtectHome={{ vmstorage_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vmstorage_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vmstorage_exec_start_post != "" %}
+ExecStartPost={{ vmstorage_exec_start_post }}
+{% endif %}
+
+{% if vmstorage_exec_stop != "" %}
+ExecStop={{ vmstorage_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

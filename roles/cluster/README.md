@@ -4,6 +4,8 @@ Installs and configures VictoriaMetrics cluster running in docker.
 
 Containers are managed as systemd units.
 
+*Deprecation notice*: this role is deprecated in favor of roles for each component. It is still available in the collection, but will be removed in future releases.
+
 ## Requirements
 - Docker
 

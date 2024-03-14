@@ -1,0 +1,4 @@
+service:
+  "vmauth":
+    enabled: true
+    running: true

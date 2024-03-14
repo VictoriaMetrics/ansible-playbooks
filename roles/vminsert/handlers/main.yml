@@ -1,0 +1,6 @@
+---
+- name: Restart vminsert service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: vminsert
+    state: restarted

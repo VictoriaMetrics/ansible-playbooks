@@ -4,6 +4,8 @@ Configures load balancing between `vmselect` and `vminsert` instances.
 
 Hosts are discovered from ansible inventory groups, naming configured by the following vars `vminsert_group` and `vmselect_group`
 
+*Deprecation notice*: this role is deprecated in favor vmauth. It is still available in the collection, but will be removed in future releases.
+
 ## Parameters
 
 The following table lists the configurable parameters of the playbook and their default values.

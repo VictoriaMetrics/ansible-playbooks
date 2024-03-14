@@ -1,0 +1,40 @@
+---
+- name: "Systemd | Copy vmstorage systemd unit file"
+  ansible.builtin.template:
+    src: vmstorage.service.j2
+    dest: /etc/systemd/system/vmstorage.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart vmstorage service
+
+- name: "Systemd | ensure vmstorage service is enabled" # noqa: no-handler
+  become: true
+  ansible.builtin.systemd:
+    name: vmstorage
+    enabled: true
+
+- name: Prepare configuration dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vmstorage_config_dir }}"
+    mode: 0751
+    owner: "{{ vmstorage_system_user }}"
+    group: "{{ vmstorage_system_group }}"
+
+- name: Setup environment file
+  ansible.builtin.template:
+    dest: "{{ vmstorage_config_dir }}/vmstorage.conf"
+    src: "vmstorage.conf.j2"
+    owner: "{{ vmstorage_system_user }}"
+    group: "{{ vmstorage_system_group }}"
+    mode: 0644
+  notify: Restart vmstorage service
+
+- name: Prepare data dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vmstorage_data_dir }}"
+    mode: 0751
+    owner: "{{ vmstorage_system_user }}"
+    group: "{{ vmstorage_system_group }}"

@@ -1,0 +1,7 @@
+---
+- name: Preinstall checks
+  ansible.builtin.import_tasks: preinstall.yml
+- name: Install
+  ansible.builtin.import_tasks: install.yml
+- name: Configure
+  ansible.builtin.import_tasks: configure.yml

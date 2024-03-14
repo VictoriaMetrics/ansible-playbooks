@@ -1,0 +1,98 @@
+---
+- name: Create vmauth system group
+  ansible.builtin.group:
+    name: "{{ vmauth_system_group }}"
+    state: present
+    system: true
+  when: vmauth_system_group != "root"
+
+- name: Create vmauth system user
+  ansible.builtin.user:
+    name: "{{ vmauth_system_user }}"
+    groups: "{{ vmauth_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vmauth_system_user != "root"
+
+- name: Ensure existence of /usr/local/bin
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Delete existing vmauth version if it's different.
+  ansible.builtin.file:
+    path: /usr/local/bin/vmauth-prod
+    state: absent
+  when:
+  - vmauth_is_installed.stat.exists | bool
+  - vmauth_version not in vmauth_current_version.stdout
+
+- name: Install via control host
+  when: vmauth_install_download_to_control
+  block:
+  - name: Download and unarchive vmauth release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmauth_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vmauth_is_installed.stat.exists or
+      vmauth_version not in vmauth_current_version.stdout
+
+  - name: Copy vmauth binary to target host
+    notify: Restart vmauth service
+    ansible.builtin.copy:
+      src: /tmp/vmauth-prod
+      dest: /tmp/vmauth-prod
+      mode: 0751
+      owner: "{{ vmauth_system_user }}"
+      group: "{{ vmauth_system_group }}"
+    when:
+    - not ansible_check_mode
+    - not vmauth_is_installed.stat.exists or
+      vmauth_version not in vmauth_current_version.stdout
+
+  - name: Replace vmauth binary at target dir # noqa: no-changed-when
+    notify: Restart vmauth service
+    ansible.builtin.shell: |
+      mv /tmp/vmauth-prod /usr/local/bin/vmauth-prod
+    when:
+    - not ansible_check_mode
+    - not vmauth_is_installed.stat.exists or
+      vmauth_version not in vmauth_current_version.stdout
+
+- name: Install directly to target host
+  when: not vmauth_install_download_to_control
+  block:
+  - name: Download and unarchive vmauth release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmauth_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    when:
+    - not ansible_check_mode
+    - not vmauth_is_installed.stat.exists or
+      vmauth_version not in vmauth_current_version.stdout
+
+  - name: Replace vmauth binary at target dir # noqa: no-changed-when
+    notify: Restart vmauth service
+    ansible.builtin.shell: |
+      mv /tmp/vmauth-prod /usr/local/bin/vmauth-prod
+      chmod 0751 /usr/local/bin/vmauth-prod
+      chown {{ vmauth_system_user }}:{{ vmauth_system_group }} /usr/local/bin/vmauth-prod
+    when:
+    - not ansible_check_mode
+    - not vmauth_is_installed.stat.exists or
+      vmauth_version not in vmauth_current_version.stdout

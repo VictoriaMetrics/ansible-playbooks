@@ -16,7 +16,7 @@
     createhome: false
   when: vmagent_system_user != "root"
 
-- name: Ensure existense of /usr/local/bin
+- name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
