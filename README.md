@@ -17,12 +17,12 @@ ansible-galaxy collection install victoriametrics.cluster
 Collection includes the following roles:
 
 - [single](./roles/single) - installs and configures VictoriaMetrics single node
-- [vmagent](./roles/vmagent) - installs and configures `vmagent`
-- [vmalert](./roles/vmalert) - installs and configures `vmalert`
-- [vmselect](./roles/vmselect) - installs and configures `vmselect`
-- [vmstorage](./roles/vmstorage) - installs and configures `vmstorage`
-- [vminsert](./roles/vminsert) - installs and configures `vminsert`
-- [vmauth](./roles/vmauth) - installs and configures `vmauth`
+- [vmagent](./roles/vmagent) - installs and configures [`vmagent`](https://docs.victoriametrics.com/vmagent/)
+- [vmalert](./roles/vmalert) - installs and configures [`vmalert`](https://docs.victoriametrics.com/vmalert/)
+- [vmselect](./roles/vmselect) - installs and configures [`vmselect`](https://docs.victoriametrics.com/cluster-victoriametrics/)
+- [vmstorage](./roles/vmstorage) - installs and configures [`vmstorage`](https://docs.victoriametrics.com/cluster-victoriametrics/)
+- [vminsert](./roles/vminsert) - installs and configures [`vminsert`](https://docs.victoriametrics.com/cluster-victoriametrics/)
+- [vmauth](./roles/vmauth) - installs and configures [`vmauth`](https://docs.victoriametrics.com/vmauth/)
 
 See [cluster](playbooks/cluster.yml) and [single](playbooks/single.yml) playbooks for examples of how to use these
 roles.
@@ -40,7 +40,7 @@ Note that per-component roles are using binary releases of VictoriaMetrics, whil
 ## Cluster deployment
 
 Cluster deployment example is available in [playbooks/cluster.yml](./playbooks/cluster.yml).
-The playbook deploys VictoriaMetrics cluster and vmauth to act as a load balancer and authentication proxy.
+The playbook deploys [VictoriaMetrics cluster](https://docs.victoriametrics.com/cluster-victoriametrics/) and [vmauth](https://docs.victoriametrics.com/vmauth/) to [act as a load balancer](https://docs.victoriametrics.com/vmauth/#load-balancer-for-victoriametrics-cluster) and authentication proxy.
 See [inventory](./inventory_example/cluster-inventory) for example of inventory file.
 
 Here is a diagram of the cluster deployment:
