@@ -1,0 +1,4 @@
+service:
+  "vminsert":
+    enabled: true
+    running: true

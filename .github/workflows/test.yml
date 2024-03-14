@@ -24,3 +24,4 @@ jobs:
           make init-venv
           
           make molecule-converge
+          make molecule-converge-integration

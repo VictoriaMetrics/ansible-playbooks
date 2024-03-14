@@ -1,0 +1,3 @@
+{{ ansible_managed | comment }}
+
+{{ vmauth_auth_config | default('') | indent(2) }}

@@ -1,0 +1,27 @@
+# vminsert
+
+Role to install and configure vminsert. Installs by using binary from Github releases.
+
+## Parameters
+
+The following table lists the configurable parameters of the roles and their default values.
+
+| Parameter                            | Description                                                                                                                | Default                                                                                                  |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| vminsert_repo_url                    | Repository to use for download.                                                                                            | `https://github.com/VictoriaMetrics/VictoriaMetrics`                                                     |
+| vminsert_version                     | vminsert version                                                                                                           | `v1.99.0`                                                                                                |
+| vminsert_download_url                | URL to download archive                                                                                                    | `{{ vminsert_repo_url }}/releases/download/{{ vminsert_version }}/vmutils-{{ vminsert_version }}.tar.gz` |
+| vminsert_system_user                 | User to run vminsert                                                                                                       | `victoriametrics`                                                                                        |
+| vminsert_system_group                | Group for user of vminsert                                                                                                 | `{{ vminsert_system_user }}`                                                                             |
+| vminsert_service_state               | Default state of systemd service                                                                                           | `started`                                                                                                |
+| vminsert_service_enabled             | Whether to enable systemd service                                                                                          | `true`                                                                                                   |    
+| vminsert_config_dir                  | Location for config files                                                                                                  | `/opt/victoriametrics-vminsert`                                                                          |
+| vminsert_bin_dir                     | Location for binary file                                                                                                   | `/usr/local/bin`                                                                                         |
+| vminsert_config                      | Config parameters to be passed via environment variables                                                                   | See [defaults.yml](./defaults/main.yml)                                                                  |
+| vminsert_relabel_config              | Relabeling configuration for vminsert                                                                                      | `""`                                                                                                     |
+| vminsert_exec_start_post             | Post start hook for systemd unit                                                                                           | `""`                                                                                                     |
+| vminsert_exec_stop                   | Stop command for systemd unit                                                                                              | `""`                                                                                                     |
+| vminsert_install_download_to_control | Whether use control or remote host to download installation archive                                                        | `true`                                                                                                   |
+| vminsert_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                                  |
+| vm_proxy_http                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |
+| vm_proxy_https                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |

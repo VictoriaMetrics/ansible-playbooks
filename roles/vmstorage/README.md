@@ -1,0 +1,27 @@
+# vmstorage
+
+Role to install and configure vmstorage. Installs by using binary from Github releases.
+
+## Parameters
+
+The following table lists the configurable parameters of the roles and their default values.
+
+| Parameter                             | Description                                                                                                                | Default                                                                                                     |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| vmstorage_version                     | vmstorage version                                                                                                          | `v1.99.0`                                                                                                   |
+| vmstorage_repo_url                    | Repository to use for download.                                                                                            | `https://github.com/VictoriaMetrics/VictoriaMetrics`                                                        |
+| vmstorage_download_url                | URL to download archive                                                                                                    | `{{ vmstorage_repo_url }}/releases/download/{{ vmstorage_version }}/vmutils-{{ vmstorage_version }}.tar.gz` |
+| vmstorage_system_user                 | User to run vmstorage                                                                                                      | `victoriametrics`                                                                                           |
+| vmstorage_system_group                | Group for user of vmstorage                                                                                                | `{{ vmstorage_system_user }}`                                                                               |
+| vmstorage_service_state               | Default state of systemd service                                                                                           | `started`                                                                                                   |
+| vmstorage_service_enabled             | Whether to enable systemd service                                                                                          | `true`                                                                                                      |    
+| vmstorage_config_dir                  | Location for config files                                                                                                  | `/opt/victoriametrics-vmstorage`                                                                            |
+| vmstorage_bin_dir                     | Location for binary file                                                                                                   | `/usr/local/bin`                                                                                            |
+| vmstorage_config                      | Config parameters to be passed via environment variables                                                                   | See [defaults.yml](./defaults/main.yml)                                                                     |
+| vmstorage_data_dir                    | Data directory to use for vmstorage                                                                                        | `"/var/lib/vmstorage"`                                                                                      |
+| vmstorage_exec_start_post             | Post start hook for systemd unit                                                                                           | `""`                                                                                                        |
+| vmstorage_exec_stop                   | Stop command for systemd unit                                                                                              | `""`                                                                                                        |
+| vmstorage_install_download_to_control | Whether use control or remote host to download installation archive                                                        | `true`                                                                                                      |
+| vmstorage_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                                     |
+| vm_proxy_http                         | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |
+| vm_proxy_https                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |

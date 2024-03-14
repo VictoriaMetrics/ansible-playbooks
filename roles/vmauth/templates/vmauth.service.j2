@@ -1,0 +1,35 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=VictoriaMetrics vmauth service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vmauth_system_user }}
+Group={{ vmauth_system_group }}
+Restart=always
+EnvironmentFile={{ vmauth_config_dir }}/vmauth.conf
+ExecStart={{ vmauth_bin_dir }}/vmauth-prod -envflag.enable -auth.config={{ vmauth_config_dir }}/auth.yaml
+
+PrivateTmp=yes
+ProtectHome={{ vmauth_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vmauth_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vmauth_exec_start_post != "" %}
+ExecStartPost={{ vmauth_exec_start_post }}
+{% endif %}
+
+{% if vmauth_exec_stop != "" %}
+ExecStop={{ vmauth_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

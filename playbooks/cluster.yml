@@ -1,0 +1,50 @@
+---
+- name: Setup storage
+  become: true
+  hosts: vmstorage
+  roles:
+    - vmstorage
+
+- name: Setup vmselect
+  become: true
+  hosts: vmselect
+  vars:
+    vmselect_cache_dir: "/var/lib/vmselect"
+    vmselect_config:
+      cacheDataPath: "/var/lib/vmselect"
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+  roles:
+    - vmselect
+
+- name: Setup vminsert
+  become: true
+  hosts: vminsert
+  vars:
+    vminsert_config:
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+  roles:
+    - vminsert
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    # See: https://docs.victoriametrics.com/vmauth/#load-balancer-for-victoriametrics-cluster
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+            {% for insert in groups['vminsert'] %}
+            - "http://{{ insert }}:8480/"
+            {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+           {% for select in groups['vmselect'] %}
+           - "http://{{ select }}:8481/"
+           {% endfor %}
+
+  roles:
+    - vmauth

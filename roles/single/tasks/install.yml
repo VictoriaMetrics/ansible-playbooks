@@ -16,13 +16,13 @@
     createhome: false
   when: victoriametrics_system_user != "root"
 
-- name: Ensure existense of /usr/local/bin
+- name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
     mode: 0755
 
-- name: Ensure existense of VictoriaMetrics storage directory
+- name: Ensure existence of VictoriaMetrics storage directory
   ansible.builtin.file:
     path: "{{ victoriametrics_data_dir }}"
     state: directory

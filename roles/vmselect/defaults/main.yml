@@ -1,0 +1,31 @@
+---
+vmselect_version: "v1.99.0"
+
+vmselect_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vmselect_platform: "{% if vmselect_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vmselect_download_url: "{{ vmselect_repo_url }}/releases/download/{{ vmselect_version }}/victoria-metrics{{ vmselect_platform }}-{{ go_arch }}-{{ vmselect_version }}-cluster.tar.gz"
+
+vmselect_system_user: "victoriametrics"
+vmselect_system_group: "{{ vmselect_system_user }}"
+
+vmselect_service_state: started
+vmselect_service_enabled: true
+vmselect_exec_start_post: ""
+vmselect_exec_stop: ""
+
+vmselect_config_dir: "/opt/victoriametrics-vmselect"
+vmselect_cache_dir: "/var/lib/vmselect"
+vmselect_bin_dir: /usr/local/bin
+
+vmselect_config:
+  storageNode: vmstorage1,vmstorage2
+  cacheDataPath: "{{ vmselect_cache_dir }}"
+
+vmselect_install_download_to_control: false
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vmselect_systemd_protect_home: "yes"

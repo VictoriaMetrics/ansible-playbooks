@@ -16,7 +16,7 @@
     createhome: false
   when: vic_vm_alert_system_user != "root"
 
-- name: Ensure existense of /usr/local/bin
+- name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory

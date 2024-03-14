@@ -1,0 +1,27 @@
+# vmselect
+
+Role to install and configure vmselect. Installs by using binary from Github releases.
+
+## Parameters
+
+The following table lists the configurable parameters of the roles and their default values.
+
+| Parameter                            | Description                                                                                                                | Default                                                                                                  |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| vmselect_repo_url                    | Repository to use for download.                                                                                            | `https://github.com/VictoriaMetrics/VictoriaMetrics`                                                     |
+| vmselect_version                     | vmselect version                                                                                                           | `v1.99.0`                                                                                                |
+| vmselect_download_url                | URL to download archive                                                                                                    | `{{ vmselect_repo_url }}/releases/download/{{ vmselect_version }}/vmutils-{{ vmselect_version }}.tar.gz` |
+| vmselect_system_user                 | User to run vmselect                                                                                                       | `victoriametrics`                                                                                        |
+| vmselect_system_group                | Group for user of vmselect                                                                                                 | `{{ vmselect_system_user }}`                                                                             |
+| vmselect_service_state               | Default state of systemd service                                                                                           | `started`                                                                                                |
+| vmselect_service_enabled             | Whether to enable systemd service                                                                                          | `true`                                                                                                   |    
+| vmselect_config_dir                  | Location for config files                                                                                                  | `/opt/victoriametrics-vmselect`                                                                          |
+| vmselect_bin_dir                     | Location for binary file                                                                                                   | `/usr/local/bin`                                                                                         |
+| vmselect_config                      | Config parameters to be passed via environment variables                                                                   | See [defaults.yml](./defaults/main.yml)                                                                  |
+| vmselect_cache_dir                   | Cache directory to use for vmselect's cache                                                                                | `"/var/lib/vmselect"`                                                                                    |
+| vmselect_exec_start_post             | Post start hook for systemd unit                                                                                           | `""`                                                                                                     |
+| vmselect_exec_stop                   | Stop command for systemd unit                                                                                              | `""`                                                                                                     |
+| vmselect_install_download_to_control | Whether use control or remote host to download installation archive                                                        | `true`                                                                                                   |
+| vmselect_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                                  |
+| vm_proxy_http                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |
+| vm_proxy_https                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |

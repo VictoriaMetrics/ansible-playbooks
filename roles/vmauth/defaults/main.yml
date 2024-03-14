@@ -1,0 +1,33 @@
+---
+vmauth_version: "v1.99.0"
+
+vmauth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
+vmauth_platform: "{% if vmauth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
+vmauth_download_url: "{{ vmauth_repo_url }}/releases/download/{{ vmauth_version }}/vmutils{{ vmauth_platform }}-{{ go_arch }}-{{ vmauth_version }}.tar.gz"
+
+vmauth_system_user: "victoriametrics"
+vmauth_system_group: "{{ vmauth_system_user }}"
+
+vmauth_service_state: started
+vmauth_service_enabled: true
+vmauth_exec_start_post: ""
+vmauth_exec_stop: ""
+
+vmauth_config_dir: "/opt/victoriametrics-vmauth"
+vmauth_bin_dir: /usr/local/bin
+
+vmauth_config: {}
+
+# See: https://docs.victoriametrics.com/vmauth/#use-cases
+vmauth_auth_config: |-
+  unauthorized_user:
+    url_prefix: "http://vmselect/"
+
+vmauth_install_download_to_control: false
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vmauth_systemd_protect_home: "yes"

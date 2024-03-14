@@ -1,0 +1,35 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=VictoriaMetrics vminsert service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vminsert_system_user }}
+Group={{ vminsert_system_group }}
+Restart=always
+EnvironmentFile={{ vminsert_config_dir }}/vminsert.conf
+ExecStart={{ vminsert_bin_dir }}/vminsert-prod -envflag.enable
+
+PrivateTmp=yes
+ProtectHome={{ vminsert_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vminsert_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vminsert_exec_start_post != "" %}
+ExecStartPost={{ vminsert_exec_start_post }}
+{% endif %}
+
+{% if vminsert_exec_stop != "" %}
+ExecStop={{ vminsert_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

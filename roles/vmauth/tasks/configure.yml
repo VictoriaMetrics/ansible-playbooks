@@ -1,0 +1,43 @@
+---
+- name: "Systemd | Copy vmauth systemd unit file"
+  ansible.builtin.template:
+    src: vmauth.service.j2
+    dest: /etc/systemd/system/vmauth.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart vmauth service
+
+- name: "Systemd | ensure vmauth service is enabled" # noqa: no-handler
+  become: true
+  ansible.builtin.systemd:
+    name: vmauth
+    enabled: true
+
+- name: Prepare configuration dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vmauth_config_dir }}"
+    mode: 0751
+    owner: "{{ vmauth_system_user }}"
+    group: "{{ vmauth_system_group }}"
+
+- name: Template auth config
+  ansible.builtin.template:
+    src: auth.yaml.j2
+    dest: "{{ vmauth_config_dir }}/auth.yaml"
+    owner: "{{ vmauth_system_user }}"
+    group: "{{ vmauth_system_group }}"
+    mode: 0644
+  when:
+    - vmauth_auth_config != ""
+  notify: Restart vmauth service
+
+- name: Setup environment file
+  ansible.builtin.template:
+    dest: "{{ vmauth_config_dir }}/vmauth.conf"
+    src: "vmauth.conf.j2"
+    owner: "{{ vmauth_system_user }}"
+    group: "{{ vmauth_system_group }}"
+    mode: 0644
+  notify: Restart vmauth service

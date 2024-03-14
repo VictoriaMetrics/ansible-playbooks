@@ -1,0 +1,43 @@
+---
+- name: "Systemd | Copy vminsert systemd unit file"
+  ansible.builtin.template:
+    src: vminsert.service.j2
+    dest: /etc/systemd/system/vminsert.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart vminsert service
+
+- name: "Systemd | ensure vminsert service is enabled" # noqa: no-handler
+  become: true
+  ansible.builtin.systemd:
+    name: vminsert
+    enabled: true
+
+- name: Prepare configuration dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vminsert_config_dir }}"
+    mode: 0751
+    owner: "{{ vminsert_system_user }}"
+    group: "{{ vminsert_system_group }}"
+
+- name: Template relabel config
+  ansible.builtin.template:
+    src: relabeling.yaml.j2
+    dest: "{{ vminsert_config_dir }}/relabel.yaml"
+    owner: "{{ vminsert_system_user }}"
+    group: "{{ vminsert_system_group }}"
+    mode: 0644
+  when:
+    - vminsert_relabel_config != ""
+  notify: Restart vminsert service
+
+- name: Setup environment file
+  ansible.builtin.template:
+    dest: "{{ vminsert_config_dir }}/vminsert.conf"
+    src: "vminsert.conf.j2"
+    owner: "{{ vminsert_system_user }}"
+    group: "{{ vminsert_system_group }}"
+    mode: 0644
+  notify: Restart vminsert service

@@ -1,0 +1,98 @@
+---
+- name: Create vmstorage system group
+  ansible.builtin.group:
+    name: "{{ vmstorage_system_group }}"
+    state: present
+    system: true
+  when: vmstorage_system_group != "root"
+
+- name: Create vmstorage system user
+  ansible.builtin.user:
+    name: "{{ vmstorage_system_user }}"
+    groups: "{{ vmstorage_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vmstorage_system_user != "root"
+
+- name: Ensure existence of /usr/local/bin
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Delete existing vmstorage version if it's different.
+  ansible.builtin.file:
+    path: /usr/local/bin/vmstorage-prod
+    state: absent
+  when:
+  - vmstorage_is_installed.stat.exists | bool
+  - vmstorage_version not in vmstorage_current_version.stdout
+
+- name: Install via control host
+  when: vmstorage_install_download_to_control
+  block:
+  - name: Download and unarchive vmstorage release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmstorage_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
+
+  - name: Copy vmstorage binary to target host
+    notify: Restart vmstorage service
+    ansible.builtin.copy:
+      src: /tmp/vmstorage-prod
+      dest: /tmp/vmstorage-prod
+      mode: 0751
+      owner: "{{ vmstorage_system_user }}"
+      group: "{{ vmstorage_system_group }}"
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
+
+  - name: Replace vmstorage binary at target dir # noqa: no-changed-when
+    notify: Restart vmstorage service
+    ansible.builtin.shell: |
+      mv /tmp/vmstorage-prod /usr/local/bin/vmstorage-prod
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
+
+- name: Install directly to target host
+  when: not vmstorage_install_download_to_control
+  block:
+  - name: Download and unarchive vmstorage release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vmstorage_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
+
+  - name: Replace vmstorage binary at target dir # noqa: no-changed-when
+    notify: Restart vmstorage service
+    ansible.builtin.shell: |
+      mv /tmp/vmstorage-prod /usr/local/bin/vmstorage-prod
+      chmod 0751 /usr/local/bin/vmstorage-prod
+      chown {{ vmstorage_system_user }}:{{ vmstorage_system_group }} /usr/local/bin/vmstorage-prod
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
