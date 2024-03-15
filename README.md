@@ -44,26 +44,7 @@ The playbook deploys [VictoriaMetrics cluster](https://docs.victoriametrics.com/
 See [inventory](./inventory_example/cluster-inventory) for example of inventory file.
 
 Here is a diagram of the cluster deployment:
-
-```mermaid
-graph TD
-    A[vmauth] -- /select/* --> B[vmselect-1]
-    A[vmauth] -- /select/* --> B2[vmselect-2]
-    A -- /insert/* --> C[vminsert-1]
-    A -- /insert/* --> C2[vminsert-2]
-    C --> D[vmstorage-1]
-    C --> D2[vmstorage-2]
-    C --> D3[vmstorage-3]
-    C2 --> D[vmstorage-1]
-    C2 --> D2[vmstorage-2]
-    C2 --> D3[vmstorage-3]
-    B --> D[vmstorage-1]
-    B --> D2[vmstorage-1]
-    B --> D3[vmstorage-1]
-    B2 --> D[vmstorage-1]
-    B2 --> D2[vmstorage-1]
-    B2 --> D3[vmstorage-1]
-```
+![vm-cluster.png](vm-cluster.png)
 
 It's also possible to use molecule scenario to create a local cluster for testing.
 See [molecule](./playbooks/molecule/cluster) directory for details. The scenario uses docker as a driver and
