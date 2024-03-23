@@ -11,6 +11,9 @@ vmagent_sd_config_dir: "{{ vmagent_config_dir }}/file_sd_configs"
 vmagent_remote_write_host: "http://localhost:8428"
 vmagent_service_args:
   "remoteWrite.url": "{{ vmagent_remote_write_host }}/api/v1/write"
+  # "remoteWrite.url":
+  # - "{{ vmagent_remote_write_host_0 }}/api/v1/write"
+  # - "{{ vmagent_remote_write_host_1 }}/api/v1/write"
   "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
   "remoteWrite.tmpDataPath": /tmp/vmagent
   "remoteWrite.streamAggr.config": "{{ vmagent_config_dir }}/aggregation.yml"

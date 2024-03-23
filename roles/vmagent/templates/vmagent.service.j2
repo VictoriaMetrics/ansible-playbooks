@@ -8,7 +8,11 @@ After=network.target
 Type=simple
 User={{ vmagent_system_user }}
 Group={{ vmagent_system_group }}
-ExecStart=/usr/local/bin/vmagent-prod {% for flag, flag_value in vmagent_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}
+ExecStart=/usr/local/bin/vmagent-prod {%- for flag, flag_values in vmagent_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values }} {% endif %}
+{% endfor %}
 
 SyslogIdentifier=vic-vmagent
 Restart=always
