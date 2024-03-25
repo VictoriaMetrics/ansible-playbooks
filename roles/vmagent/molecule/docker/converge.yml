@@ -4,5 +4,11 @@
   become: yes
   tasks:
     - name: "Include vmagent"
+      vars:
+        vmagent_service_args:
+          "remoteWrite.url":
+            - "url1/api/v1/write"
+            - "url2/api/v1/write"
+          "remoteWrite.tmpDataPath": /tmp/vmagent
       ansible.builtin.include_role:
         name: "vmagent"
