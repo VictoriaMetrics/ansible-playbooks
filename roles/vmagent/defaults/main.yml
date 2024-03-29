@@ -4,10 +4,14 @@ vmagent_version: "v1.99.0"
 vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmagent_platform: "{% if vmagent_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
 vmagent_download_url: "{{ vmagent_repo_url }}/releases/download/{{ vmagent_version }}/vmutils{{ vmagent_platform }}-{{ go_arch }}-{{ vmagent_version }}.tar.gz"
+
 vmagent_system_user: "vic_vm_agent"
 vmagent_system_group: "{{ vmagent_system_user }}"
+
 vmagent_config_dir: "/opt/vic-vmagent"
 vmagent_sd_config_dir: "{{ vmagent_config_dir }}/file_sd_configs"
+vmagent_tmp_data_path: "/tmp/vmagent"
+
 vmagent_remote_write_host: "http://localhost:8428"
 vmagent_service_args:
   "remoteWrite.url": "{{ vmagent_remote_write_host }}/api/v1/write"
@@ -15,7 +19,7 @@ vmagent_service_args:
   # - "{{ vmagent_remote_write_host_0 }}/api/v1/write"
   # - "{{ vmagent_remote_write_host_1 }}/api/v1/write"
   "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
-  "remoteWrite.tmpDataPath": /tmp/vmagent
+  "remoteWrite.tmpDataPath": "{{ vmagent_tmp_data_path }}"
   "remoteWrite.streamAggr.config": "{{ vmagent_config_dir }}/aggregation.yml"
 
 vmagent_scrape_config:
