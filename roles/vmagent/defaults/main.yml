@@ -27,7 +27,7 @@ vmagent_scrape_config:
 
 vmagent_aggregation_config: []
 
-vmagent_install_download_to_control: true
+vmagent_install_download_to_control: false
 
 vm_proxy_http: ""
 vm_proxy_https: ""
