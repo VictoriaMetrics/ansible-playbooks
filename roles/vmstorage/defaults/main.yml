@@ -1,5 +1,5 @@
 ---
-vmstorage_version: "v1.99.0"
+vmstorage_version: "v1.100.1"
 
 vmstorage_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmstorage_platform: "{% if vmstorage_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

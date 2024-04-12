@@ -1,5 +1,5 @@
 ---
-vminsert_version: "v1.99.0"
+vminsert_version: "v1.100.1"
 
 vminsert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vminsert_platform: "{% if vminsert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
