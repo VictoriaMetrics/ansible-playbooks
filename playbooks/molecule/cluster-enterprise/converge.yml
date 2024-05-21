@@ -1,0 +1,117 @@
+---
+- name: Setup storage
+  become: true
+  hosts: vmstorage
+  vars:
+    vmstorage_enterprise: "true"
+    vmstorage_license_key: "fake"
+    vmstorage_config:
+      retentionPeriod: "12"
+      storageDataPath: "/var/lib/vmstorage"
+      dedup.minScrapeInterval: "1ms"
+  roles:
+    - vmstorage
+
+- name: Setup vmselect
+  become: true
+  hosts: vmselect
+  vars:
+    vmselect_enterprise: "true"
+    vmselect_license_key: "fake"
+    vmselect_cache_dir: "/var/lib/vmselect"
+    vmselect_config:
+      cacheDataPath: "/var/lib/vmselect"
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+      dedup.minScrapeInterval: 1ms
+  roles:
+    - vmselect
+
+- name: Setup vminsert
+  become: true
+  hosts: vminsert
+  vars:
+    vminsert_enterprise: "true"
+    vminsert_license_key: "fake"
+    vminsert_config:
+      replicationFactor: 1
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+  roles:
+    - vminsert
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    # See: https://docs.victoriametrics.com/vmauth/#load-balancer-for-victoriametrics-cluster
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for insert in groups['vminsert'] %}
+              - "http://{{ insert }}:8480/"
+      {% endfor %}
+
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vmselect'] %}
+            - "http://{{ select }}:8481/"
+      {% endfor %}
+  roles:
+    - vmauth
+
+- name: Setup vmagent MoM
+  become: true
+  hosts: vmagent-mom
+  vars:
+    vmstorage_targets: [ ]
+    vminsert_targets: [ ]
+    vmselect_targets: [ ]
+
+    vmagent_mom_targets: [ ]
+    vmagent_enterprise: true
+    vmagent_license_key: "fake"
+    vmagent_service_args:
+      "remoteWrite.url": "http://{{ groups['vmauth'] | first }}:8427/insert/10/prometheus/api/v1/write"
+      "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
+      "remoteWrite.tmpDataPath": "{{ vmagent_tmp_data_path }}"
+    vmagent_scrape_config:
+      scrape_configs:
+        - job_name: vmagent
+          static_configs:
+            - targets: "{{ vmagent_mom_targets }}"
+        - job_name: vmstorage
+          static_configs:
+            - targets: "{{ vmstorage_targets }}"
+
+        - job_name: vmselect
+          static_configs:
+            - targets: "{{ vmselect_targets }}"
+
+        - job_name: vminsert
+          static_configs:
+            - targets: "{{ vminsert_targets }}"
+  pre_tasks:
+    - name: Prepare vmstorage list
+      ansible.builtin.set_fact:
+        vmstorage_targets: "{{ vmstorage_targets + [item + ':8482'] }}"
+      loop: "{{ groups['vmstorage'] }}"
+
+    - name: Prepare vminsert list
+      ansible.builtin.set_fact:
+        vminsert_targets: "{{ vminsert_targets + [item + ':8480'] }}"
+      loop: "{{ groups['vminsert'] }}"
+
+    - name: Prepare vmselect list
+      ansible.builtin.set_fact:
+        vmselect_targets: "{{ vmselect_targets + [item + ':8481'] }}"
+      loop: "{{ groups['vmselect'] }}"
+
+    - name: Prepare vmagent-mom list
+      ansible.builtin.set_fact:
+        vmagent_mom_targets: "{{ vmagent_mom_targets + [item + ':8429'] }}"
+      loop: "{{ groups['vmagent-mom'] }}"
+  roles:
+    - vmagent

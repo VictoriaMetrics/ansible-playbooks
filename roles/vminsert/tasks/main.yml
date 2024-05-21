@@ -1,4 +1,6 @@
 ---
+- name: License preinstall checks
+  ansible.builtin.import_tasks: preinstall_license.yml
 - name: Preinstall checks
   ansible.builtin.import_tasks: preinstall.yml
 - name: Install

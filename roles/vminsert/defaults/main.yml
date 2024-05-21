@@ -1,9 +1,12 @@
 ---
 vminsert_version: "v1.101.0"
+vminsert_enterprise: false
+vminsert_license_key: ""
+vminsert_license_key_file: ""
 
 vminsert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vminsert_platform: "{% if vminsert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
-vminsert_download_url: "{{ vminsert_repo_url }}/releases/download/{{ vminsert_version }}/victoria-metrics{{ vminsert_platform }}-{{ go_arch }}-{{ vminsert_version }}-cluster.tar.gz"
+vminsert_download_url: "{{ vminsert_repo_url }}/releases/download/{{ vminsert_version }}/victoria-metrics{{ vminsert_platform }}-{{ go_arch }}-{{ vminsert_version }}{%if vminsert_enterprise %}-enterprise{% endif %}-cluster.tar.gz"
 
 vminsert_system_user: "victoriametrics"
 vminsert_system_group: "{{ vminsert_system_user }}"

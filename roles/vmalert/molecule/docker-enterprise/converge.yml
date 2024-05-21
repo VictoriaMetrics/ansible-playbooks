@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Include vmalert"
+      vars:
+        vic_vm_alert_enterprise: true
+        vic_vm_alert_license_key_file: "/tmp/vm-license"
+      ansible.builtin.include_role:
+        name: "vmalert"

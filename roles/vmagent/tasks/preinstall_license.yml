@@ -1,0 +1,37 @@
+- name: Ensure license key is provided
+  ansible.builtin.assert:
+    that: vmagent_license_key != "" or vmagent_license_key_file != ""
+    msg: Either license key or license key file location must be provided.
+  when: vmagent_enterprise | bool
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: vmagent_license_key_file == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - vmagent_enterprise | bool
+    - vmagent_license_key != ""
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: vmagent_license_key == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - vmagent_enterprise | bool
+    - vmagent_license_key_file != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    vmagent_service_args: "{{ vmagent_service_args | combine({'license': vmagent_license_key}) }}"
+  when:
+    - vmagent_enterprise | bool
+    - vmagent_license_key != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    vmagent_service_args: "{{ vmagent_service_args | combine({'licenseFile': vmagent_license_key_file}) }}"
+  when:
+    - vmagent_enterprise | bool
+    - vmagent_license_key_file != ""
