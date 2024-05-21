@@ -48,3 +48,57 @@
 
   roles:
     - vmauth
+
+- name: Setup vmagent MoM
+  become: true
+  hosts: vmagent-mom
+  vars:
+    vmstorage_targets: [ ]
+    vminsert_targets: [ ]
+    vmselect_targets: [ ]
+
+    vmagent_mom_targets: [ ]
+    vmagent_enterprise: true
+    vmagent_license_key: "fake"
+    vmagent_service_args:
+      "remoteWrite.url": "http://{{ groups['vmauth'] | first }}:8427/insert/10/prometheus/api/v1/write"
+      "promscrape.config": "{{ vmagent_config_dir }}/config.yml"
+      "remoteWrite.tmpDataPath": "{{ vmagent_tmp_data_path }}"
+    vmagent_scrape_config:
+      scrape_configs:
+        - job_name: vmagent
+          static_configs:
+            - targets: "{{ vmagent_mom_targets }}"
+        - job_name: vmstorage
+          static_configs:
+            - targets: "{{ vmstorage_targets }}"
+
+        - job_name: vmselect
+          static_configs:
+            - targets: "{{ vmselect_targets }}"
+
+        - job_name: vminsert
+          static_configs:
+            - targets: "{{ vminsert_targets }}"
+  pre_tasks:
+    - name: Prepare vmstorage list
+      ansible.builtin.set_fact:
+        vmstorage_targets: "{{ vmstorage_targets + [item + ':8482'] }}"
+      loop: "{{ groups['vmstorage'] }}"
+
+    - name: Prepare vminsert list
+      ansible.builtin.set_fact:
+        vminsert_targets: "{{ vminsert_targets + [item + ':8480'] }}"
+      loop: "{{ groups['vminsert'] }}"
+
+    - name: Prepare vmselect list
+      ansible.builtin.set_fact:
+        vmselect_targets: "{{ vmselect_targets + [item + ':8481'] }}"
+      loop: "{{ groups['vmselect'] }}"
+
+    - name: Prepare vmagent-mom list
+      ansible.builtin.set_fact:
+        vmagent_mom_targets: "{{ vmagent_mom_targets + [item + ':8429'] }}"
+      loop: "{{ groups['vmagent-mom'] }}"
+  roles:
+    - vmagent

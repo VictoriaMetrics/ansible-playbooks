@@ -1,0 +1,4 @@
+service:
+  "vmselect":
+    enabled: true
+    running: true

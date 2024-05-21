@@ -1,9 +1,12 @@
 ---
 vmstorage_version: "v1.101.0"
+vmstorage_enterprise: false
+vmstorage_license_key: ""
+vmstorage_license_key_file: ""
 
 vmstorage_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmstorage_platform: "{% if vmstorage_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
-vmstorage_download_url: "{{ vmstorage_repo_url }}/releases/download/{{ vmstorage_version }}/victoria-metrics{{ vmstorage_platform }}-{{ go_arch }}-{{ vmstorage_version }}-cluster.tar.gz"
+vmstorage_download_url: "{{ vmstorage_repo_url }}/releases/download/{{ vmstorage_version }}/victoria-metrics{{ vmstorage_platform }}-{{ go_arch }}-{{ vmstorage_version }}{%if vmstorage_enterprise %}-enterprise{% endif %}-cluster.tar.gz"
 
 vmstorage_system_user: "victoriametrics"
 vmstorage_system_group: "{{ vmstorage_system_user }}"

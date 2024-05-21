@@ -9,7 +9,7 @@ User={{ vmauth_system_user }}
 Group={{ vmauth_system_group }}
 Restart=always
 EnvironmentFile={{ vmauth_config_dir }}/vmauth.conf
-ExecStart={{ vmauth_bin_dir }}/vmauth-prod -envflag.enable -auth.config={{ vmauth_config_dir }}/auth.yaml
+ExecStart={{ vmauth_bin_dir }}/vmauth-prod -envflag.enable -auth.config={{ vmauth_config_dir }}/auth.yaml {% for flag, flag_value in vmauth_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}
 
 PrivateTmp=yes
 ProtectHome={{ vmauth_systemd_protect_home }}

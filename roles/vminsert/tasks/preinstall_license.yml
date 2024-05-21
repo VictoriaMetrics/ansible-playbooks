@@ -1,0 +1,37 @@
+- name: Ensure license key is provided
+  ansible.builtin.assert:
+    that: vminsert_license_key != "" or vminsert_license_key_file != ""
+    msg: Either license key or license key file location must be provided.
+  when: vminsert_enterprise | bool
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: vminsert_license_key_file == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key != ""
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: vminsert_license_key == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key_file != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    vminsert_config: "{{ vminsert_config | combine({'license': vminsert_license_key}) }}"
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    vminsert_config: "{{ vminsert_config | combine({'licenseFile': vminsert_license_key_file}) }}"
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key_file != ""

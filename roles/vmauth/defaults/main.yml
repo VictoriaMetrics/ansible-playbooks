@@ -1,15 +1,20 @@
 ---
 vmauth_version: "v1.101.0"
+vmauth_enterprise: false
+vmauth_license_key: ""
+vmauth_license_key_file: ""
 
 vmauth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmauth_platform: "{% if vmauth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
-vmauth_download_url: "{{ vmauth_repo_url }}/releases/download/{{ vmauth_version }}/vmutils{{ vmauth_platform }}-{{ go_arch }}-{{ vmauth_version }}.tar.gz"
+vmauth_download_url: "{{ vmauth_repo_url }}/releases/download/{{ vmauth_version }}/vmutils{{ vmauth_platform }}-{{ go_arch }}-{{ vmauth_version }}{%if vmauth_enterprise %}-enterprise{% endif %}.tar.gz"
 
 vmauth_system_user: "victoriametrics"
 vmauth_system_group: "{{ vmauth_system_user }}"
 
 vmauth_service_state: started
 vmauth_service_enabled: true
+vmauth_service_args: {}
+
 vmauth_exec_start_post: ""
 vmauth_exec_stop: ""
 

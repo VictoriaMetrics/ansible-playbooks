@@ -1,0 +1,38 @@
+- name: Ensure license key is provided
+  ansible.builtin.assert:
+    that: victoriametrics_license_key != "" or victoriametrics_license_key_file != ""
+    msg: Either license key or license key file location must be provided.
+  when: victoriametrics_enterprise | bool
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: victoriametrics_license_key_file == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - victoriametrics_enterprise | bool
+    - victoriametrics_license_key != ""
+
+
+- name: Ensure only one of key or file is provided
+  ansible.builtin.assert:
+    that: victoriametrics_license_key == ""
+    msg: Only one of license key or license key file must be provided.
+  when:
+    - victoriametrics_enterprise | bool
+    - victoriametrics_license_key_file != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    victoriametrics_service_args: "{{ victoriametrics_service_args | combine({'license': victoriametrics_license_key}) }}"
+  when:
+    - victoriametrics_enterprise | bool
+    - victoriametrics_license_key != ""
+
+
+- name: Add license key parameter to service config
+  ansible.builtin.set_fact:
+    victoriametrics_service_args: "{{ victoriametrics_service_args | combine({'licenseFile': victoriametrics_license_key_file}) }}"
+  when:
+    - victoriametrics_enterprise | bool
+    - victoriametrics_license_key_file != ""
