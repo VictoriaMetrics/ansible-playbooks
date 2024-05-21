@@ -27,16 +27,6 @@ Collection includes the following roles:
 See [cluster](playbooks/cluster.yml) and [single](playbooks/single.yml) playbooks for examples of how to use these
 roles.
 
-Deprecated roles:
-
-- [docker](./roles/docker) - role for docker installation
-- [load_balancer](./roles/load_balancer) - nginx setup for load balancing between select and insert nodes
-- [cluster](./roles/cluster) - installs and configures VictoriaMetrics cluster running in docker
-
-These roles are deprecated in favor of roles for each component. They are still available in the collection, but will be
-removed in future releases.
-Note that per-component roles are using binary releases of VictoriaMetrics, while cluster role is using docker images.
-
 ## Cluster deployment
 
 Cluster deployment example is available in [playbooks/cluster.yml](./playbooks/cluster.yml).

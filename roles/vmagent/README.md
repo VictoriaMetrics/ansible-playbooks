@@ -7,8 +7,8 @@ Role to install and configure vmagent. Installs by using binary from Github rele
 The following table lists the configurable parameters of the roles and their default values.
 
 > Note that default `vmagent_remote_write_host` is using port for VMSingle installation. For cluster mode installed
-> by [role](../cluster) with [loadbalancer](../load_balancer) from this repository it is needed to point at VMInsert
-> component which will be `load_balancer:8480`.
+> by using roles from this repository it is needed to point at VMSelect component which will be placed behind a load balancer.
+> See [playbooks/cluster.yaml](../../playbooks/cluster.yml) for cluster deployment example.
 
 | Parameter                           | Description                                                                                                                | Default                                                                                               |
 |-------------------------------------|----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
