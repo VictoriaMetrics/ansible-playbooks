@@ -4,7 +4,9 @@ Installs `vmalert` as binary running with systemd
 
 ## Parameters
 
-> Note that default `vic_vm_alert_datasource_url` is using port for VMSingle installation. For cluster mode installed by [role](../cluster) with [loadbalancer](../load_balancer) from this repository it is needed to point at VMSelect component which will be `load_balancer:8481`.
+> Note that default `vic_vm_alert_datasource_url` is using port for VMSingle installation. For cluster mode installed
+> by using roles from this repository it is needed to point at VMSelect component which will be placed behind a load balancer.
+> See [playbooks/cluster.yaml](../../playbooks/cluster.yml) for cluster deployment example.
 
 | Parameter                        | Description                                                 | Default                                                                                                                              |
 |----------------------------------|-------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
