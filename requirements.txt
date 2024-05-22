@@ -5,3 +5,4 @@ docker==7.0.0
 molecule==24.2.0
 molecule-plugins==23.5.3
 yamllint==1.35.1
+requests==2.31.0 # until https://github.com/docker/docker-py/issues/3256 is fixed
