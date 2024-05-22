@@ -29,6 +29,7 @@
     owner: "{{ vmauth_system_user }}"
     group: "{{ vmauth_system_group }}"
     mode: 0644
+  no_log: true
   when:
     - vmauth_auth_config != ""
   notify: Restart vmauth service
