@@ -11,7 +11,7 @@
       mode: 0644
     register: config_template
     notify: Restart VMalert service
- #   no_log: True
+    no_log: True
 
   - name: "Systemd | daemon-reload VMalert service" # noqa: no-handler
     become: true
