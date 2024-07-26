@@ -3,6 +3,7 @@ vic_vm_alert_version: "v1.102.0"
 vic_vm_alert_enterprise: false
 vic_vm_alert_license_key: ""
 vic_vm_alert_license_key_file: ""
+vic_vm_alert_service_name: vic-vmalert
 
 vic_vm_alert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vic_vm_alert_platform: "{% if vic_vm_alert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

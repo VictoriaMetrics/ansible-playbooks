@@ -5,7 +5,7 @@
   - name: "Systemd | Copy VMalert systemd unit file"
     ansible.builtin.template:
       src: systemd-service.j2
-      dest: /etc/systemd/system/vic-vmalert.service
+      dest: "/etc/systemd/system/{{ vic_vm_alert_service_name }}.service"
       owner: root
       group: root
       mode: 0644
@@ -22,25 +22,26 @@
   - name: Ensure VMalert service is enabled on boot
     become: true
     ansible.builtin.systemd:
-      name: vic-vmalert
+      name: "{{ vic_vm_alert_service_name }}"
       enabled: true
+    ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Configure upstart
   when: ansible_service_mgr == "upstart"
   block:
-  - name: "Upstart | Install vic-vmalert service file"
+  - name: "Upstart | Install service file {{ vic_vm_alert_service_name }}"
     ansible.builtin.template:
       src: "upstart.j2"
-      dest: "/etc/init.d/vic-vmalert"
+      dest: "/etc/init.d/{{ vic_vm_alert_service_name }}"
       mode: "0755"
       owner: root
       group: root
     notify: Restart VMalert service
     register: config_template
 
-  - name: "Upstart | Enable vic-vmalert service"
+  - name: "Upstart | Enable service {{ vic_vm_alert_service_name }}"
     ansible.builtin.service:
-      name: "vic-vmalert"
+      name: "{{ vic_vm_alert_service_name }}"
       enabled: "yes"
 
 - name: Prepare configuration dir

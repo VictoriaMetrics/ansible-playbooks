@@ -1,7 +1,9 @@
 # handlers file for VictoriaMetrics
 ---
-- name: Restart VMalert service
+- name: "Restart VMalert service {{ vic_vm_alert_service_name }}"
   become: true
   ansible.builtin.service:
-    name: vic-vmalert
+    name: "{{ vic_vm_alert_service_name }}"
     state: restarted
+  ignore_errors: '{{ ansible_check_mode }}'
+  listen: "Restart VMalert service"
