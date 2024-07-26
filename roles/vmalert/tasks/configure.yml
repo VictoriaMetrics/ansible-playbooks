@@ -29,7 +29,7 @@
 - name: Configure upstart
   when: ansible_service_mgr == "upstart"
   block:
-  - name: "Upstart | Install {{ vic_vm_alert_service_name }} service file"
+  - name: "Upstart | Install service file {{ vic_vm_alert_service_name }}"
     ansible.builtin.template:
       src: "upstart.j2"
       dest: "/etc/init.d/{{ vic_vm_alert_service_name }}"
@@ -39,7 +39,7 @@
     notify: Restart VMalert service
     register: config_template
 
-  - name: "Upstart | Enable {{ vic_vm_alert_service_name }} service"
+  - name: "Upstart | Enable service {{ vic_vm_alert_service_name }}"
     ansible.builtin.service:
       name: "{{ vic_vm_alert_service_name }}"
       enabled: "yes"
