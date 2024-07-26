@@ -1,21 +1,21 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:		vic-vmalert
+# Provides:		{{ vic_vm_alert_service_name }}
 # Required-Start:	$syslog
 # Required-Stop:	$syslog
 # Should-Start:		$local_fs
 # Should-Stop:		$local_fs
 # Default-Start:	2 3 4 5
 # Default-Stop:		0 1 6
-# Short-Description: vic-vmalert - VictoriaMetrics scrape agent
-# Description:		vic-vmalert - VictoriaMetrics scrape agent
+# Short-Description: {{ vic_vm_alert_service_name }} - VictoriaMetrics scrape agent
+# Description:		{{ vic_vm_alert_service_name }} - VictoriaMetrics scrape agent
 ### END INIT INFO
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/local/bin/VMalert-prod
 DAEMON_ARGS="{% for flag, flag_value in vic_vm_alert_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
-NAME=vic-vmalert
+NAME={{ vic_vm_alert_service_name }}
 DESC="VictoriaMetrics scrape agent"
 
 test -x $DAEMON || exit 0
