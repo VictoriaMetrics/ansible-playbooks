@@ -30,6 +30,8 @@
     src: "{{ vic_vm_alert_download_url }}"
     dest: /tmp
     remote_src: yes
+    extra_opts:
+      - --no-same-owner
   delegate_to: localhost
   become: no
   when:

@@ -81,6 +81,8 @@
       src: "{{ vmagent_download_url }}"
       dest: /tmp
       remote_src: yes
+      extra_opts:
+      - --no-same-owner
     when:
     - not ansible_check_mode
     - not vmagent_is_installed.stat.exists or

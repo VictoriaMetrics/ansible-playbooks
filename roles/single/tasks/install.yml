@@ -63,6 +63,8 @@
         src: "{{ victoriametrics_download_url }}"
         dest: /tmp/vic-single/
         remote_src: yes
+        extra_opts:
+          - --no-same-owner
       notify: Restart VictoriaMetrics service
       register: archive_downloaded
       become: no
