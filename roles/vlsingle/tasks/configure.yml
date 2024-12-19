@@ -1,0 +1,44 @@
+---
+- name: Configure env
+  when: victorialogs_service_envflag_enabled | bool
+  block:
+    - name: Check envfile presence
+      ansible.builtin.stat:
+        path: "{{ victorialogs_service_envflag_file }}"
+      register: envfile_state
+
+    - name: Setup envfile
+      ansible.builtin.file:
+        state: touch
+        path: "{{ victorialogs_service_envflag_file }}"
+        owner: root
+        group: root
+        mode: 0644
+        access_time: preserve
+      notify: Restart VictoriaLogs service
+      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
+
+- name: Copy VictoriaMetrics systemd unit file
+  ansible.builtin.template:
+    src: victorialogs.service.j2
+    dest: /etc/systemd/system/victorialogs.service
+    owner: root
+    group: root
+    mode: 0644
+  register: config_template
+  no_log: True
+
+- name: Daemon-reload VictoriaMetrics service
+  become: true
+  notify: Restart VictoriaLogs service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: victorialogs
+  when: config_template is changed  # noqa: no-handler
+
+- name: Ensure VictoriaLogs service is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    name: victorialogs
+    enabled: true
+    state: started

@@ -1,0 +1,6 @@
+---
+- name: Test role
+  hosts: all
+  become: true
+  roles:
+    - "vlsingle"

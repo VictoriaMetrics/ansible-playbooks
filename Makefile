@@ -37,6 +37,10 @@ molecule-converge-vmauth:
 	. .venv/bin/activate; \
 	cd roles/vmauth && molecule converge
 
+molecule-converge-vlsingle:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule converge -s docker && molecule verify -s docker
+
 molecule-converge-vmsingle-enterprise:
 	. .venv/bin/activate; \
 	cd roles/vmsingle && molecule converge -s docker-enterprise
@@ -73,7 +77,7 @@ molecule-converge-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule converge -s cluster-enterprise
 
-molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule-converge-vmalert molecule-converge-vminsert molecule-converge-vmstorage molecule-converge-vmselect molecule-converge-vmauth
+molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule-converge-vmalert molecule-converge-vminsert molecule-converge-vmstorage molecule-converge-vmselect molecule-converge-vmauth molecule-converge-vlsingle
 
 molecule-converge-enterprise: molecule-converge-vmsingle-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
 
@@ -82,6 +86,10 @@ molecule-converge-integration: molecule-converge-cluster-integration molecule-co
 molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
 	cd roles/vmsingle && molecule destroy -s docker
+
+molecule-destroy-vlsingle:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule destroy -s docker
 
 molecule-destroy-vmagent:
 	. .venv/bin/activate; \
@@ -143,7 +151,7 @@ molecule-destroy-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s cluster-enterprise
 
-molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration
+molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration molecule-destroy-vlsingle
 
 molecule-destroy-enterprise: molecule-destroy-vmsingle-enterprise molecule-destroy-vmagent-enterprise molecule-destroy-vmalert-enterprise molecule-destroy-vminsert-enterprise molecule-destroy-vmstorage-enterprise molecule-destroy-vmselect-enterprise molecule-destroy-vmauth-enterprise molecule-destroy-cluster-integration
 
