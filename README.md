@@ -16,7 +16,7 @@ ansible-galaxy collection install victoriametrics.cluster
 
 Collection includes the following roles:
 
-- [single](./roles/single) - installs and configures VictoriaMetrics single node
+- [vmsingle](./roles/vmsingle) - installs and configures VictoriaMetrics single node
 - [vmagent](./roles/vmagent) - installs and configures [`vmagent`](https://docs.victoriametrics.com/vmagent/)
 - [vmalert](./roles/vmalert) - installs and configures [`vmalert`](https://docs.victoriametrics.com/vmalert/)
 - [vmselect](./roles/vmselect) - installs and configures [`vmselect`](https://docs.victoriametrics.com/cluster-victoriametrics/)
@@ -24,7 +24,7 @@ Collection includes the following roles:
 - [vminsert](./roles/vminsert) - installs and configures [`vminsert`](https://docs.victoriametrics.com/cluster-victoriametrics/)
 - [vmauth](./roles/vmauth) - installs and configures [`vmauth`](https://docs.victoriametrics.com/vmauth/)
 
-See [cluster](playbooks/cluster.yml) and [single](playbooks/single.yml) playbooks for examples of how to use these
+See [cluster](playbooks/cluster.yml) and [vmsingle](playbooks/vmsingle.yml) playbooks for examples of how to use these
 roles.
 
 ## Cluster deployment

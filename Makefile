@@ -9,9 +9,9 @@ lint:
 	yamllint roles playbooks; \
 	ansible-lint roles/ playbooks/
 
-molecule-converge-single:
+molecule-converge-vmsingle:
 	. .venv/bin/activate; \
-	cd roles/single && molecule converge -s docker
+	cd roles/vmsingle && molecule converge -s docker
 
 molecule-converge-vmagent:
 	. .venv/bin/activate; \
@@ -37,9 +37,9 @@ molecule-converge-vmauth:
 	. .venv/bin/activate; \
 	cd roles/vmauth && molecule converge
 
-molecule-converge-single-enterprise:
+molecule-converge-vmsingle-enterprise:
 	. .venv/bin/activate; \
-	cd roles/single && molecule converge -s docker-enterprise
+	cd roles/vmsingle && molecule converge -s docker-enterprise
 
 molecule-converge-vmagent-enterprise:
 	. .venv/bin/activate; \
@@ -73,15 +73,15 @@ molecule-converge-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule converge -s cluster-enterprise
 
-molecule-converge: molecule-converge-single molecule-converge-vmagent molecule-converge-vmalert molecule-converge-vminsert molecule-converge-vmstorage molecule-converge-vmselect molecule-converge-vmauth
+molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule-converge-vmalert molecule-converge-vminsert molecule-converge-vmstorage molecule-converge-vmselect molecule-converge-vmauth
 
-molecule-converge-enterprise: molecule-converge-single-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
+molecule-converge-enterprise: molecule-converge-vmsingle-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
 
 molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-cluster-integration-enterprise
 
-molecule-destroy-single:
+molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
-	cd roles/single && molecule destroy -s docker
+	cd roles/vmsingle && molecule destroy -s docker
 
 molecule-destroy-vmagent:
 	. .venv/bin/activate; \
@@ -107,9 +107,9 @@ molecule-destroy-vmauth:
 	. .venv/bin/activate; \
 	cd roles/vmauth && molecule destroy
 
-molecule-destroy-single-enterprise:
+molecule-destroy-vmsingle-enterprise:
 	. .venv/bin/activate; \
-	cd roles/single && molecule destroy -s docker-enterprise
+	cd roles/vmsingle && molecule destroy -s docker-enterprise
 
 molecule-destroy-vmagent-enterprise:
 	. .venv/bin/activate; \
@@ -143,8 +143,8 @@ molecule-destroy-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s cluster-enterprise
 
-molecule-destroy: molecule-destroy-single molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration
+molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration
 
-molecule-destroy-enterprise: molecule-destroy-single-enterprise molecule-destroy-vmagent-enterprise molecule-destroy-vmalert-enterprise molecule-destroy-vminsert-enterprise molecule-destroy-vmstorage-enterprise molecule-destroy-vmselect-enterprise molecule-destroy-vmauth-enterprise molecule-destroy-cluster-integration
+molecule-destroy-enterprise: molecule-destroy-vmsingle-enterprise molecule-destroy-vmagent-enterprise molecule-destroy-vmalert-enterprise molecule-destroy-vminsert-enterprise molecule-destroy-vmstorage-enterprise molecule-destroy-vmselect-enterprise molecule-destroy-vmauth-enterprise molecule-destroy-cluster-integration
 
 molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-cluster-integration-enterprise

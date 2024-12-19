@@ -11,13 +11,6 @@
     victoriametrics_service_args:
       storageDataPath: "{{ victoriametrics_data_dir }}"
   tasks:
-    - name: Install cron
-      ansible.builtin.apt:
-        name: cron
-        state: present
-        update_cache: yes
-        cache_valid_time: 3600
-
-    - name: "Include single"
+    - name: "Include vmsingle"
       ansible.builtin.include_role:
-        name: "single"
+        name: "vmsingle"

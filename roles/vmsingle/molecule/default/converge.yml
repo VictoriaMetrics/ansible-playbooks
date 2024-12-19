@@ -3,8 +3,6 @@
   hosts: all
   become: yes
   vars:
-    victoriametrics_enterprise: true
-    victoriametrics_license_key_file: "/tmp/vm-license"
     victoriametrics_data_dir: "/tmp/victoria-metrics/"
     victoriametrics_backup_enabled: false
     victoriametrics_service_envflag_enabled: true
@@ -13,6 +11,13 @@
     victoriametrics_service_args:
       storageDataPath: "{{ victoriametrics_data_dir }}"
   tasks:
-    - name: "Include single"
+    - name: Install cron
+      ansible.builtin.apt:
+        name: cron
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: "Include vmsingle"
       ansible.builtin.include_role:
-        name: "single"
+        name: "vmsingle"
