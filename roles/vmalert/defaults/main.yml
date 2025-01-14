@@ -1,5 +1,5 @@
 ---
-vic_vm_alert_version: "v1.108.0"
+vic_vm_alert_version: "v1.109.0"
 vic_vm_alert_enterprise: false
 vic_vm_alert_license_key: ""
 vic_vm_alert_license_key_file: ""
