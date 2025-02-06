@@ -18,6 +18,7 @@
     ansible.builtin.systemd:
       daemon_reload: true
     when: config_template is changed
+    changed_when: config_template is changed
 
   - name: Ensure VMalert service is enabled on boot
     become: true

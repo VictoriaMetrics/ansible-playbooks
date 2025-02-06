@@ -35,6 +35,7 @@
     daemon_reload: true
     name: victorialogs
   when: config_template is changed  # noqa: no-handler
+  changed_when: config_template is changed
 
 - name: Ensure VictoriaLogs service is enabled on boot
   become: true
