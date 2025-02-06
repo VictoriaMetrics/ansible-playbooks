@@ -35,6 +35,7 @@
     daemon_reload: true
     name: victoriametrics
   when: config_template is changed  # noqa: no-handler
+  changed_when: config_template is changed
 
 - name: Ensure VictoriaMetrics service is enabled on boot
   become: true
