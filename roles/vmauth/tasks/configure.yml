@@ -28,7 +28,7 @@
     dest: "{{ vmauth_config_dir }}/auth.yaml"
     owner: "{{ vmauth_system_user }}"
     group: "{{ vmauth_system_group }}"
-    mode: 0644
+    mode: 0600
   no_log: true
   when:
     - vmauth_auth_config != ""
@@ -40,5 +40,5 @@
     src: "vmauth.conf.j2"
     owner: "{{ vmauth_system_user }}"
     group: "{{ vmauth_system_group }}"
-    mode: 0644
+    mode: 0600
   notify: Restart vmauth service
