@@ -57,7 +57,7 @@
   ansible.builtin.template:
     src: alerts.yml.j2
     dest: "{{ vic_vm_alert_rules_config_path }}"
-    mode: 0751
+    mode: 0600
     owner: "{{ vic_vm_alert_system_user }}"
     group: "{{ vic_vm_alert_system_group }}"
     validate: "/usr/local/bin/vmalert-prod {% for k, v in vic_vm_alert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v }} {%endif %}{% endfor %} -dryRun -rule %s"

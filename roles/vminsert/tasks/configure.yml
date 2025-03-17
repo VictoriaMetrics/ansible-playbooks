@@ -28,7 +28,7 @@
     dest: "{{ vminsert_config_dir }}/relabel.yaml"
     owner: "{{ vminsert_system_user }}"
     group: "{{ vminsert_system_group }}"
-    mode: 0644
+    mode: 0600
   when:
     - vminsert_relabel_config != ""
   notify: Restart vminsert service
