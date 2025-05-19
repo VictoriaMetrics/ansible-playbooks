@@ -25,6 +25,5 @@ Installs `vmalert` as binary running with systemd
 | vic_vm_alert_evaluation_interval | Rules evaluation interval.                                  | `30s`                                                                                                                                |
 | vic_vm_alert_max_open_files      | Limit for number of opened files.                           | `2097152`                                                                                                                            |
 | vic_vm_alert_service_args        | Passes options defined above to `vmalert`.                  | see [defaults.yml](./defaults/main.yml)                                                                                              |
-| vic_vm_alert_service_args        | Passes options defined above to `vmalert`.                  | see [defaults.yml](./defaults/main.yml)                                                                                              |
 | vic_vm_alert_rules               | Rules                                                       | see [defaults.yml](./defaults/main.yml)                                                                                              |
 | vic_vm_alert_service_name        | Service name that will be created by systemd or init         | see [defaults.yml](./defaults/main.yml)
