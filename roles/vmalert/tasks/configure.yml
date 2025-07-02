@@ -64,3 +64,4 @@
     backup: yes
   notify: Restart VMalert service
   tags: notest # skip in molecule since there is no valid license provided in tests
+  when: vic_vm_alert_rules_config_path is defined
