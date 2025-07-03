@@ -48,7 +48,4 @@ In order to set up development environment, you need to have `docker`, `python` 
 Run `make init-venv` to create virtual environment and install required packages for linting and testing
 with [molecule](https://ansible.readthedocs.io/projects/molecule).
 
-Please, note that [cluster](./roles/cluster) role is tested with `vagrant` and `libvirt` provider and
-requires `vagrant` [to be installed](https://www.vagrantup.com/downloads).
-
 Refer to [Makefile](./Makefile) for available commands for linting and molecule testing.
