@@ -63,4 +63,3 @@
     validate: "/usr/local/bin/vmalert-prod {% for k, v in vic_vm_alert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v }} {%endif %}{% endfor %} -dryRun -rule %s"
     backup: yes
   notify: Restart VMalert service
-  tags: notest # skip in molecule since there is no valid license provided in tests
