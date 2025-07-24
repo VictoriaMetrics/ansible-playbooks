@@ -4,7 +4,6 @@
     that: ansible_service_mgr == 'systemd' or ansible_service_mgr == "upstart"
     msg: "This role only works with systemd and upstart"
 
-
 - name: Get systemd version
   ansible.builtin.command: systemctl --version
   changed_when: false
@@ -31,3 +30,9 @@
   check_mode: false
   register: vic_vm_alert_current_version
   when: vic_vm_alert_is_installed.stat.exists | bool
+
+- name: Add rule parameter to service config for default rules
+  ansible.builtin.set_fact:
+    vic_vm_alert_service_args: "{{ vic_vm_alert_service_args | combine({'rule': vic_vm_alert_rules_config_path}) }}"
+  when:
+    - vic_vm_alert_rules_config_path | length > 0

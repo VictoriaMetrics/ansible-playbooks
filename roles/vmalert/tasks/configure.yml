@@ -63,4 +63,5 @@
     validate: "/usr/local/bin/vmalert-prod {% for k, v in vic_vm_alert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v }} {%endif %}{% endfor %} -dryRun -rule %s"
     backup: yes
   notify: Restart VMalert service
-  when: vic_vm_alert_rules_config_path is defined
+  when:
+    - vic_vm_alert_default_rules_enabled | bool
