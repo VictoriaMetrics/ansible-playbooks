@@ -1,5 +1,5 @@
 ---
-vic_vm_alert_version: "v1.123.0"
+vic_vm_alert_version: "v1.124.0"
 vic_vm_alert_enterprise: false
 vic_vm_alert_license_key: ""
 vic_vm_alert_license_key_file: ""
@@ -26,6 +26,7 @@ vic_vm_alert_service_args:
 
 vic_vm_alert_max_open_files: 2097152
 
+vic_vm_alert_rules_enabled: true
 # Great examples of alerts - https://awesome-prometheus-alerts.grep.to/rules.html
 vic_vm_alert_rules:
   - name: ansible managed alert rules
