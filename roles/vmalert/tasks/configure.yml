@@ -64,4 +64,4 @@
     backup: yes
   notify: Restart VMalert service
   when:
-    - vic_vm_alert_default_rules_enabled | bool
+  - vic_vm_alert_default_rules_enabled | bool
