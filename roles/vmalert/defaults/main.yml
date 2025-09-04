@@ -19,8 +19,11 @@ vic_vm_alert_service_args:
   "httpListenAddr": "127.0.0.1:9431"
   "datasource.url": "{{ vic_vm_alert_datasource_url }}"
   "notifier.url": "{{ vic_vm_alert_alertmanager_url }}"
-  # "notifier.url":
-  #   - "{{ vic_vm_alert_alertmanager_url }}"
+  # It is possible to use list of values to specify multiple Alertmanager endpoints, for example:
+  #  "notifier.url":
+  #    - "http://host1:9093"
+  #    - "http://host2:9093"
+  #    - "http://host3:9093"
   "rule": "{{ vic_vm_alert_rules_config_path }}"
   "evaluationInterval": "{{ vic_vm_alert_evaluation_interval }}"
 
