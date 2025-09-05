@@ -1,0 +1,45 @@
+---
+- name: Configure env
+  when: victoriatraces_service_envflag_enabled | bool
+  block:
+    - name: Check envfile presence
+      ansible.builtin.stat:
+        path: "{{ victoriatraces_service_envflag_file }}"
+      register: envfile_state
+
+    - name: Setup envfile
+      ansible.builtin.file:
+        state: touch
+        path: "{{ victoriatraces_service_envflag_file }}"
+        owner: root
+        group: root
+        mode: 0644
+        access_time: preserve
+      notify: Restart VictoriaTraces service
+      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
+
+- name: Copy VictoriaTraces systemd unit file
+  ansible.builtin.template:
+    src: victoriatraces.service.j2
+    dest: /etc/systemd/system/victoriatraces.service
+    owner: root
+    group: root
+    mode: 0644
+  register: config_template
+  no_log: True
+
+- name: Daemon-reload VictoriaTraces service
+  become: true
+  notify: Restart VictoriaTraces service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: victoriatraces
+  when: config_template is changed  # noqa: no-handler
+  changed_when: config_template is changed
+
+- name: Ensure VictoriaTraces service is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    name: victoriatraces
+    enabled: true
+    state: started
