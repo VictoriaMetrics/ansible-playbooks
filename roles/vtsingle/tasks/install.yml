@@ -1,0 +1,96 @@
+---
+- name: Create VictoriaTraces system group
+  ansible.builtin.group:
+    name: "{{ victoriatraces_system_group }}"
+    state: present
+    system: true
+  when: victoriatraces_system_group != "root"
+
+- name: Create VictoriaTraces system user
+  ansible.builtin.user:
+    name: "{{ victoriatraces_system_user }}"
+    groups: "{{ victoriatraces_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: victoriatraces_system_user != "root"
+
+- name: Ensure existence of /usr/local/bin
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: 0755
+
+- name: Ensure existence of VictoriaTraces storage directory
+  ansible.builtin.file:
+    path: "{{ victoriatraces_data_dir }}"
+    state: directory
+    mode: 0755
+    owner: "{{ victoriatraces_system_user }}"
+    group: "{{ victoriatraces_system_group }}"
+
+- name: Delete existing VictoriaTraces version if it is different.
+  ansible.builtin.file:
+    path: /usr/local/bin/victoria-traces-prod
+    state: absent
+  when:
+    - victoriatraces_is_installed.stat.exists | bool
+    - victoriatraces_version not in victoriatraces_current_version.stdout
+
+- name: Download and setup binaries
+  block:
+    - name: Prepare local download paths
+      delegate_to: localhost
+      become: no
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      loop:
+        - /tmp/vt-single/
+      when:
+        - not ansible_check_mode
+        - not victoriatraces_is_installed.stat.exists or
+          victoriatraces_version not in victoriatraces_current_version.stdout
+
+    - name: Download and unarchive VictoriaTraces release binary
+      environment:
+        http_proxy: ''
+        https_proxy: ''
+      ansible.builtin.unarchive:
+        src: "{{ victoriatraces_download_url }}"
+        dest: /tmp/vt-single/
+        remote_src: true
+        extra_opts:
+          - --no-same-owner
+      notify: Restart VictoriaTraces service
+      register: archive_downloaded
+      become: no
+      delegate_to: localhost
+      when:
+        - not ansible_check_mode
+        - not victoriatraces_is_installed.stat.exists or
+          victoriatraces_version not in victoriatraces_current_version.stdout
+
+    - name: Upload VictoriaTraces release binary # noqa: no-handler
+      ansible.builtin.copy:
+        src: /tmp/vt-single/victoria-traces-prod
+        dest: /usr/local/bin
+        mode: 0751
+        owner: "{{ victoriatraces_system_user }}"
+        group: "{{ victoriatraces_system_group }}"
+      when:
+        - archive_downloaded is changed
+
+  always:
+    - name: Clear download paths
+      delegate_to: localhost
+      become: no
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/vt-single/
+      when:
+        - not ansible_check_mode
