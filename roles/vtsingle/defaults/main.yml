@@ -1,0 +1,26 @@
+---
+victoriatraces_version: "v0.2.0"
+
+victoriatraces_platform: "linux"
+victoriatraces_repo_url: "https://github.com/VictoriaMetrics/VictoriaTraces"
+victoriatraces_download_url: "{{ victoriatraces_repo_url }}/releases/download/{{ victoriatraces_version }}/victoria-traces-{{ victoriatraces_platform }}-{{ go_arch }}-{{ victoriatraces_version }}.tar.gz"
+
+victoriatraces_system_user: "victoriatraces"
+victoriatraces_system_group: "{{ victoriatraces_system_user }}"
+victoriatraces_data_dir: "/var/lib/victoria-traces/"
+victoriatraces_retention_period_months: "12"
+
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+victoriatraces_service_envflag_enabled: "false"
+# Array of strings to pass
+victoriatraces_service_envflag_data: []
+#  - "graphiteListenAddr=127.0.0.1:12345"
+victoriatraces_service_envflag_file: "/etc/default/victoriatraces"
+
+
+victoriatraces_service_args:
+  storageDataPath: "{{ victoriatraces_data_dir }}"
+  retentionPeriod: "{{ victoriatraces_retention_period_months }}"
+
+victoriatraces_max_open_files: 2097152
