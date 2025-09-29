@@ -1,0 +1,30 @@
+---
+- name: Assert usage of systemd as an init system
+  ansible.builtin.assert:
+    that: ansible_service_mgr == 'systemd'
+    msg: "This role only works with systemd"
+
+- name: Get systemd version
+  ansible.builtin.command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+
+- name: Set systemd version fact
+  ansible.builtin.set_fact:
+    victoriatraces_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+
+- name: Check if VictoriaTraces is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/victoria-traces-prod
+  changed_when: false
+  check_mode: false
+  register: victoriatraces_is_installed
+
+- name: Check current VictoriaTraces version
+  ansible.builtin.command: /usr/local/bin/victoria-traces-prod --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: victoriatraces_current_version
+  when: victoriatraces_is_installed.stat.exists | bool

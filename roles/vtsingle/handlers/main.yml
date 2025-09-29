@@ -1,0 +1,6 @@
+# handlers file for VictoriaTraces
+---
+- name: Restart VictoriaTraces service
+  ansible.builtin.systemd:
+    name: victoriatraces
+    state: restarted
