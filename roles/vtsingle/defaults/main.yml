@@ -1,5 +1,5 @@
 ---
-victoriatraces_version: "v0.2.0"
+victoriatraces_version: "v0.3.0"
 
 victoriatraces_platform: "linux"
 victoriatraces_repo_url: "https://github.com/VictoriaMetrics/VictoriaTraces"
