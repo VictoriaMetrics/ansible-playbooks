@@ -9,7 +9,7 @@ Type=simple
 LimitNOFILE={{ victorialogs_max_open_files }}
 User={{ victorialogs_system_user }}
 Group={{ victorialogs_system_group }}
-ExecStart=/usr/local/bin/victoria-logs-prod {% if (victorialogs_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in victorialogs_service_args.items() %}-{{ flag }}={{ flag_value }} {% endfor %}
+ExecStart=/usr/local/bin/victoria-logs-prod {% if (victorialogs_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in victorialogs_service_args.items() %}-{{ flag }}={{ flag_value }} {% endfor %}{% for flag in victorialogs_service_args_novalue %}-{{ flag }} {% endfor %}
 
 SyslogIdentifier=victorialogs
 Restart=always
