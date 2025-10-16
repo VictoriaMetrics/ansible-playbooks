@@ -23,4 +23,8 @@ victorialogs_service_args:
   storageDataPath: "{{ victorialogs_data_dir }}"
   retentionPeriod: "{{ victorialogs_retention_period_months }}"
 
+# Array of standalone argument without value associated 
+victorialogs_service_args_novalue: []
+# victorialogs_service_args_novalue: ["enableTCP6"]
+
 victorialogs_max_open_files: 2097152
