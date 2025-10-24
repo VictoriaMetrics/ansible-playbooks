@@ -35,3 +35,18 @@
   ansible.builtin.set_fact:
     vic_vm_alert_service_args: "{{ vic_vm_alert_service_args | combine({'rule': vic_vm_alert_rules_config_path}) }}"
   when: vic_vm_alert_rules_config_path | length > 0
+
+- name: Get latest VMalert version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vic_vm_alert_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vic_vm_alert_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vic_vm_alert_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vic_vm_alert_version == "latest"

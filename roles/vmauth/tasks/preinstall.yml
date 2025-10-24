@@ -30,3 +30,18 @@
   check_mode: false
   register: vmauth_current_version
   when: vmauth_is_installed.stat.exists | bool
+
+- name: Get latest VMauth version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vmauth_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vmauth_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vmauth_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vmauth_version == "latest"

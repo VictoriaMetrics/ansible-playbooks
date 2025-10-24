@@ -29,9 +29,9 @@
   register: victorialogs_current_version
   when: victorialogs_is_installed.stat.exists | bool
 
-- name: Get latest Victoria Logs version via GitHub redirect
+- name: Get latest VictoriaLogs version via GitHub redirect
   ansible.builtin.uri:
-    url: "https://github.com/VictoriaMetrics/VictoriaLogs/releases/latest"
+    url: "{{ victorialogs_repo_url }}/releases/latest"
     method: HEAD
     return_content: false
     follow_redirects: false
