@@ -2,9 +2,49 @@
 
 Ansible roles and playbooks for Victoria Metrics.
 
-## How to install
+## Quick start
 
-Roles are published in ansible galaxy: https://galaxy.ansible.com/ui/namespaces/victoriametrics/
+1. Install ansible binaries `ansible-galaxy` and `ansible-playbook`.
+
+1. Install the collection:
+    ```sh
+    ansible-galaxy collection install victoriametrics.cluster
+    ```
+
+1. Create an inventory file `inventory.ini` describing your hosts. Adjust IP addresses as needed:
+    ```ini
+    [homelab]
+      192.168.50.2
+    ```
+
+1. Create a playbook `deploy_vmsingle.yml` to deploy VictoriaMetrics single node:
+    ```yaml
+    - name: Deploy VictoriaMetrics
+      hosts: homelab
+      become: true
+      collections:
+        - victoriametrics.cluster
+
+      roles:
+        - role: vmsingle
+          vars:
+            # Check available variables and their defaults here:
+            # https://github.com/VictoriaMetrics/ansible-playbooks/tree/master/roles/vmsingle
+            victoriametrics_retention_period_months: "3"
+    ```
+
+1. Run the playbook. Address any errors that may arise:
+    ```sh
+    ansible-playbook -i inventory.ini  deploy_vmsingle.yml
+    ```
+   
+1. Check that VictoriaMetrics is running by accessing `http://192.168.50.2:8428/vmui` in your browser.
+
+You can deploy other playbooks in a similar way. See [Contents](#contents) section for available roles.
+
+## Install collection
+
+Roles are published to ansible galaxy: https://galaxy.ansible.com/ui/namespaces/victoriametrics/
 
 Install collection:
 
