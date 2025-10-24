@@ -31,3 +31,18 @@
   check_mode: false
   register: vmagent_current_version
   when: vmagent_is_installed.stat.exists | bool
+
+- name: Get latest VMagent version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vmagent_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vmagent_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vmagent_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vmagent_version == "latest"
