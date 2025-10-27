@@ -30,3 +30,18 @@
   check_mode: false
   register: vmstorage_current_version
   when: vmstorage_is_installed.stat.exists | bool
+
+- name: Get latest VMstorage version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vmstorage_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vmstorage_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vmstorage_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vmstorage_version == "latest"
