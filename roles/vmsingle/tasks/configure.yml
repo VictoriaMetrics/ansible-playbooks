@@ -13,7 +13,7 @@
         path: "{{ victoriametrics_service_envflag_file }}"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
         access_time: preserve
       notify: Restart VictoriaMetrics service
       when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
@@ -24,7 +24,7 @@
     dest: /etc/systemd/system/victoriametrics.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   register: config_template
   no_log: True
 
@@ -53,13 +53,13 @@
       ansible.builtin.file:
         path: ~/.aws
         state: directory
-        mode: 0755
+        mode: "0755"
 
     - name: Create aws config file
       become: true
       ansible.builtin.copy:
         dest: ~/.aws/config
-        mode: 0600
+        mode: "0600"
         content: |
           [default]
           region = eu-west-1
@@ -69,7 +69,7 @@
       ansible.builtin.template:
         src: creds.j2
         dest: ~/.aws/credentials
-        mode: 0600
+        mode: "0600"
 
     - name: Set proxy config
       ansible.builtin.set_fact:

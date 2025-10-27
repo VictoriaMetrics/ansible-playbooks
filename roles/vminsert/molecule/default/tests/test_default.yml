@@ -2,3 +2,7 @@ service:
   "vminsert":
     enabled: true
     running: true
+
+port:
+  tcp:8480:
+    listening: true

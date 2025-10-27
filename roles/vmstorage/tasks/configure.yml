@@ -5,7 +5,7 @@
     dest: /etc/systemd/system/vmstorage.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: Restart vmstorage service
 
 - name: "Systemd | ensure vmstorage service is enabled" # noqa: no-handler
@@ -18,7 +18,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ vmstorage_config_dir }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmstorage_system_user }}"
     group: "{{ vmstorage_system_group }}"
 
@@ -28,13 +28,13 @@
     src: "vmstorage.conf.j2"
     owner: "{{ vmstorage_system_user }}"
     group: "{{ vmstorage_system_group }}"
-    mode: 0644
+    mode: "0644"
   notify: Restart vmstorage service
 
 - name: Prepare data dir
   ansible.builtin.file:
     state: directory
     path: "{{ vmstorage_data_dir }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmstorage_system_user }}"
     group: "{{ vmstorage_system_group }}"

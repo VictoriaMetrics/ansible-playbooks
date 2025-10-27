@@ -20,7 +20,7 @@
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Delete existing vmauth version if it's different.
   ansible.builtin.file:
@@ -53,7 +53,7 @@
     ansible.builtin.copy:
       src: /tmp/vmauth-prod
       dest: /tmp/vmauth-prod
-      mode: 0751
+      mode: "0751"
       owner: "{{ vmauth_system_user }}"
       group: "{{ vmauth_system_group }}"
     when:

@@ -1,18 +1,4 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
-  hosts: all
-  tasks:
-    - name: Check if port  10428 is listening
-      ansible.builtin.wait_for:
-        port: 10428
-        delay: 5
-        timeout: 10
-        msg: "Timeout waiting for port to respond"
-      register: port_check
-      ignore_errors: true
-
-    - name: Validate victoria is listening
-      ansible.builtin.assert:
-        that: port_check is succeeded
+  become: true
+  ansible.builtin.import_playbook: "../../../../playbooks/testing/goss.yml"

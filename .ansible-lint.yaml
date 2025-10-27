@@ -1,0 +1,14 @@
+skip_list:
+  - 'var-naming[no-role-prefix]'
+
+kinds:
+  - playbook: "playbooks/{cluster,vmsingle}.yml"
+  - playbook: "playbooks/testing/molecule/*/converge.{yml,yaml}"
+  - tasks: "roles/*/tasks/*.yml"
+  - vars: "roles/*/vars/*.yml"
+  - meta: "roles/*/meta/main.yml"
+
+exclude_paths:
+  - .cache
+  - .ansible
+  - roles/*/molecule/

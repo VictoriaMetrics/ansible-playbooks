@@ -20,7 +20,7 @@
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Delete existing VMagent version if it's different.
   ansible.builtin.file:
@@ -53,7 +53,7 @@
     ansible.builtin.copy:
       src: /tmp/vmagent-prod
       dest: /tmp/vmagent-prod
-      mode: 0751
+      mode: "0751"
       owner: "{{ vmagent_system_user }}"
       group: "{{ vmagent_system_group }}"
     when:

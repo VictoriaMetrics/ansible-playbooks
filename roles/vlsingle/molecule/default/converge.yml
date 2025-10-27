@@ -4,7 +4,6 @@
   become: yes
   vars:
     victoriametrics_data_dir: "/tmp/victoria-logs/"
-    victoriametrics_backup_enabled: false
     victoriametrics_service_args:
       storageDataPath: "{{ victoriametrics_data_dir }}"
   tasks:

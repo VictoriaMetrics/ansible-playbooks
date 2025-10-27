@@ -2,3 +2,7 @@ service:
   "vmauth":
     enabled: true
     running: true
+
+port:
+  tcp:8427:
+    listening: true

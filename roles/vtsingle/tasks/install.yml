@@ -20,13 +20,13 @@
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure existence of VictoriaTraces storage directory
   ansible.builtin.file:
     path: "{{ victoriatraces_data_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: "{{ victoriatraces_system_user }}"
     group: "{{ victoriatraces_system_group }}"
 
@@ -46,7 +46,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
-        mode: 0755
+        mode: "0755"
       loop:
         - /tmp/vt-single/
       when:
@@ -77,7 +77,7 @@
       ansible.builtin.copy:
         src: /tmp/vt-single/victoria-traces-prod
         dest: /usr/local/bin
-        mode: 0751
+        mode: "0751"
         owner: "{{ victoriatraces_system_user }}"
         group: "{{ victoriatraces_system_group }}"
       when:

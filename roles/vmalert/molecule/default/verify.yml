@@ -1,9 +1,4 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    ansible.builtin.assert:
-      that: true
+  become: true
+  ansible.builtin.import_playbook: "../../../../playbooks/testing/goss.yml"

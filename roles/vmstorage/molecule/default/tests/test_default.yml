@@ -2,3 +2,10 @@ service:
   "vmstorage":
     enabled: true
     running: true
+port:
+  tcp:8482:
+    listening: true
+  tcp:8400:
+    listening: true
+  tcp:8401:
+    listening: true

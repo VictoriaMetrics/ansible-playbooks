@@ -8,7 +8,7 @@
       dest: /etc/systemd/system/vic-vmagent.service
       owner: root
       group: root
-      mode: 0644
+      mode: "0644"
     register: config_template
     no_log: True
     notify: Restart VMagent service
@@ -50,7 +50,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ vmagent_config_dir }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
 
@@ -58,7 +58,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ vmagent_sd_config_dir }}"
-    mode: 0777
+    mode: "0777"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
 
@@ -66,7 +66,7 @@
   ansible.builtin.template:
     src: prometheus_scrape.yml.j2
     dest: "{{ vmagent_config_dir }}/config.yml"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: "/usr/local/bin/vmagent-prod -promscrape.config %s -dryRun"
@@ -76,7 +76,7 @@
   ansible.builtin.template:
     src: stream_aggregation.yml.j2
     dest: "{{ vmagent_config_dir }}/aggregation.yml"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: "/usr/local/bin/vmagent-prod -streamAggr.config %s -dryRun"
@@ -86,6 +86,6 @@
   ansible.builtin.file:
     state: directory
     path: "{{ vmagent_tmp_data_path }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"

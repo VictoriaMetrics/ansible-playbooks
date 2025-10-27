@@ -5,10 +5,10 @@
   tasks:
     - name: "Include vminsert"
       vars:
-        vminsert_relabel_config: |
-            - source_labels: [__address__]
-              target_label: instance
-              regex: '(.+):.*'
-              replacement: '${1}'
+        vminsert_relabel_config: |-
+          - source_labels: [__address__]
+            target_label: instance
+            regex: '(.+):.*'
+            replacement: '${1}'
       ansible.builtin.include_role:
         name: "vminsert"

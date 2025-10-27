@@ -12,7 +12,8 @@ rules:
     level: warning
   commas:
     level: warning
-  comments: disable
+  comments:
+    min-spaces-from-content: 1
   comments-indentation: disable
   document-start: disable
   empty-lines:
@@ -24,3 +25,6 @@ rules:
     indent-sequences: consistent
   line-length: disable
   truthy: disable
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
