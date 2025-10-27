@@ -1,8 +1,7 @@
-ansible-compat==4.1.11
-ansible-core==2.16.3
-ansible-lint==24.2.0
-docker==7.0.0
-molecule==24.2.0
-molecule-plugins==23.5.3
-yamllint==1.35.1
-requests==2.31.0 # until https://github.com/docker/docker-py/issues/3256 is fixed
+ansible-compat==25.8.2
+ansible-core==2.19.3
+ansible-lint==25.9.2
+docker==7.1.0
+molecule==25.9.0
+molecule-plugins==25.8.12
+yamllint==1.37.1

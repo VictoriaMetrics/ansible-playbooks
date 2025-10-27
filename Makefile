@@ -2,7 +2,7 @@ init-venv:
 	python3 -m venv .venv; \
 	. .venv/bin/activate; \
 	pip install -r requirements.txt; \
-	ansible-galaxy collection install community.general==8.3.0
+	ansible-galaxy collection install community.general==11.4.0
 
 lint:
 	. .venv/bin/activate; \
