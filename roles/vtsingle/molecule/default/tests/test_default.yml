@@ -1,7 +1,7 @@
 service:
-  "vmselect":
+  "victoriatraces":
     enabled: true
     running: true
 port:
-  tcp:8481:
+  tcp:10428:
     listening: true

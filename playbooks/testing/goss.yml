@@ -1,14 +1,11 @@
 ---
-# Molecule Goss Tests
-
 - name: Verify
   hosts: all
   become: true
   vars:
-    goss_version: v0.3.10
+    goss_version: v0.4.9
     goss_arch: amd64
     goss_bin: /usr/local/bin/goss
-    goss_sha256sum: 150f25495ca0d1d4fd2ef8d0e750dbd767a15e9a522505f99b61dd1dd40a76d4
     goss_url: "https://github.com/aelsabbahy/goss/releases/download/{{ goss_version }}/goss-linux-{{ goss_arch }}"
     goss_test_directory: /tmp/molecule/goss
     goss_format: documentation
@@ -17,7 +14,6 @@
       ansible.builtin.get_url:
         url: "{{ goss_url }}"
         dest: "{{ goss_bin }}"
-        sha256sum: "{{ goss_sha256sum }}" # noqa: args[module]
         mode: "u=rwx,go=rx"
       register: download_goss
       until: download_goss is succeeded

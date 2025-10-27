@@ -1,8 +1,0 @@
----
-- name: Converge
-  hosts: all
-  become: yes
-  tasks:
-    - name: "Include vmalert"
-      ansible.builtin.include_role:
-        name: "vmalert"

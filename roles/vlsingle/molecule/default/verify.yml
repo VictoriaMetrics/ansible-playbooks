@@ -4,7 +4,7 @@
 - name: Verify
   hosts: all
   tasks:
-    - name: Check if port  9428 is listening
+    - name: Check if port 9428 is listening
       ansible.builtin.wait_for:
         port: 9428
         delay: 5

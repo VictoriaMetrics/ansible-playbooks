@@ -2,3 +2,7 @@ service:
   "vic-vmagent":
     enabled: true
     running: true
+
+port:
+  tcp:8429:
+    listening: true

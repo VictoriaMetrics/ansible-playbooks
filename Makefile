@@ -11,67 +11,67 @@ lint:
 
 molecule-converge-vmsingle:
 	. .venv/bin/activate; \
-	cd roles/vmsingle && molecule converge -s docker
+	cd roles/vmsingle && molecule converge && molecule verify
 
 molecule-converge-vmagent:
 	. .venv/bin/activate; \
-	cd roles/vmagent && molecule converge -s docker
+	cd roles/vmagent && molecule converge && molecule verify
 
 molecule-converge-vmalert:
 	. .venv/bin/activate; \
-	cd roles/vmalert && molecule converge -s docker
+	cd roles/vmalert && molecule converge && molecule verify
 
 molecule-converge-vminsert:
 	. .venv/bin/activate; \
-	cd roles/vminsert && molecule converge
+	cd roles/vminsert && molecule converge && molecule verify
 
 molecule-converge-vmstorage:
 	. .venv/bin/activate; \
-	cd roles/vmstorage && molecule converge
+	cd roles/vmstorage && molecule converge && molecule verify
 
 molecule-converge-vmselect:
 	. .venv/bin/activate; \
-	cd roles/vmselect && molecule converge
+	cd roles/vmselect && molecule converge && molecule verify
 
 molecule-converge-vmauth:
 	. .venv/bin/activate; \
-	cd roles/vmauth && molecule converge
+	cd roles/vmauth && molecule converge && molecule verify
 
 molecule-converge-vlsingle:
 	. .venv/bin/activate; \
-	cd roles/vlsingle && molecule converge -s docker && molecule verify -s docker
+	cd roles/vlsingle && molecule converge && molecule verify
 
 molecule-converge-vtsingle:
 	. .venv/bin/activate; \
-	cd roles/vtsingle && molecule converge -s docker && molecule verify -s docker
+	cd roles/vtsingle && molecule converge && molecule verify
 
 molecule-converge-vmsingle-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmsingle && molecule converge -s docker-enterprise
+	cd roles/vmsingle && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vmagent-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmagent && molecule converge -s docker-enterprise
+	cd roles/vmagent && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vmalert-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmalert && molecule converge -s docker-enterprise
+	cd roles/vmalert && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vminsert-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vminsert && molecule converge -s enterprise
+	cd roles/vminsert && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vmstorage-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmstorage && molecule converge -s enterprise
+	cd roles/vmstorage && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vmselect-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmselect && molecule converge -s enterprise
+	cd roles/vmselect && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-vmauth-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmauth && molecule converge -s enterprise
+	cd roles/vmauth && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-converge-cluster-integration:
 	. .venv/bin/activate; \
@@ -89,23 +89,23 @@ molecule-converge-integration: molecule-converge-cluster-integration molecule-co
 
 molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
-	cd roles/vmsingle && molecule destroy -s docker
+	cd roles/vmsingle && molecule destroy
 
 molecule-destroy-vlsingle:
 	. .venv/bin/activate; \
-	cd roles/vlsingle && molecule destroy -s docker
+	cd roles/vlsingle && molecule destroy
 
 molecule-destroy-vtsingle:
 	. .venv/bin/activate; \
-	cd roles/vtsingle && molecule destroy -s docker
+	cd roles/vtsingle && molecule destroy
 
 molecule-destroy-vmagent:
 	. .venv/bin/activate; \
-	cd roles/vmagent && molecule destroy -s docker
+	cd roles/vmagent && molecule destroy
 
 molecule-destroy-vmalert:
 	. .venv/bin/activate; \
-	cd roles/vmalert && molecule destroy -s docker
+	cd roles/vmalert && molecule destroy
 
 molecule-destroy-vminsert:
 	. .venv/bin/activate; \
@@ -125,15 +125,15 @@ molecule-destroy-vmauth:
 
 molecule-destroy-vmsingle-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmsingle && molecule destroy -s docker-enterprise
+	cd roles/vmsingle && molecule destroy -s enterprise
 
 molecule-destroy-vmagent-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmagent && molecule destroy -s docker-enterprise
+	cd roles/vmagent && molecule destroy -s enterprise
 
 molecule-destroy-vmalert-enterprise:
 	. .venv/bin/activate; \
-	cd roles/vmalert && molecule destroy -s docker-enterprise
+	cd roles/vmalert && molecule destroy -s enterprise
 
 molecule-destroy-vminsert-enterprise:
 	. .venv/bin/activate; \

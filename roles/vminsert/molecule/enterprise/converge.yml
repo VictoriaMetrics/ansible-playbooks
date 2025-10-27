@@ -7,10 +7,10 @@
       vars:
         vminsert_enterprise: true
         vminsert_license_key_file: "/tmp/vm-license"
-        vminsert_relabel_config: |
-            - source_labels: [__address__]
-              target_label: instance
-              regex: '(.+):.*'
-              replacement: '${1}'
+        vminsert_relabel_config: |-
+          - source_labels: [__address__]
+            target_label: instance
+            regex: '(.+):.*'
+            replacement: '${1}'
       ansible.builtin.include_role:
         name: "vminsert"

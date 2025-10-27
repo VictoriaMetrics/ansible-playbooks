@@ -1,7 +1,10 @@
 service:
-  "vmselect":
+  "victoriametrics":
     enabled: true
     running: true
+
 port:
-  tcp:8481:
+  tcp:8428:
+    listening: true
+  tcp:12345:
     listening: true
