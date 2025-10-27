@@ -85,7 +85,9 @@ molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule
 
 molecule-converge-enterprise: molecule-converge-vmsingle-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
 
-molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-cluster-integration-enterprise
+molecule-converge-integration: molecule-converge-cluster-integration
+
+molecule-converge-integration-enterprise: molecule-converge-cluster-integration-enterprise
 
 molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
@@ -163,4 +165,6 @@ molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-de
 
 molecule-destroy-enterprise: molecule-destroy-vmsingle-enterprise molecule-destroy-vmagent-enterprise molecule-destroy-vmalert-enterprise molecule-destroy-vminsert-enterprise molecule-destroy-vmstorage-enterprise molecule-destroy-vmselect-enterprise molecule-destroy-vmauth-enterprise molecule-destroy-cluster-integration
 
-molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-cluster-integration-enterprise
+molecule-destroy-integration: molecule-destroy-cluster-integration
+
+molecule-destroy-integration-enterprise: molecule-destroy-cluster-integration-enterprise
