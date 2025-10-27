@@ -13,7 +13,7 @@
         path: "{{ victorialogs_service_envflag_file }}"
         owner: root
         group: root
-        mode: 0644
+        mode: "0644"
         access_time: preserve
       notify: Restart VictoriaLogs service
       when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
@@ -24,7 +24,7 @@
     dest: /etc/systemd/system/victorialogs.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   register: config_template
   no_log: True
 

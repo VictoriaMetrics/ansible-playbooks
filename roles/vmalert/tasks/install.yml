@@ -20,7 +20,7 @@
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Download and unarchive VMalert release binary
   environment:
@@ -44,7 +44,7 @@
   ansible.builtin.copy:
     src: /tmp/vmalert-prod
     dest: /usr/local/bin/vmalert-prod
-    mode: 0751
+    mode: "0751"
     owner: "{{ vic_vm_alert_system_user }}"
     group: "{{ vic_vm_alert_system_group }}"
   when:

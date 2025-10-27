@@ -25,7 +25,7 @@ vminsert_config:
 
 vminsert_relabel_config: ""
 
-#vminsert_relabel_config: |
+# vminsert_relabel_config: |
 #  - source_labels: [__name__]
 #    regex: '(.*)'
 #    target_label: __name__

@@ -5,7 +5,7 @@
     dest: /etc/systemd/system/vmselect.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: Restart vmselect service
 
 - name: "Systemd | ensure vmselect service is enabled" # noqa: no-handler
@@ -18,7 +18,7 @@
   ansible.builtin.file:
     state: directory
     path: "{{ vmselect_config_dir }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmselect_system_user }}"
     group: "{{ vmselect_system_group }}"
 
@@ -28,13 +28,13 @@
     src: "vmselect.conf.j2"
     owner: "{{ vmselect_system_user }}"
     group: "{{ vmselect_system_group }}"
-    mode: 0644
+    mode: "0644"
   notify: Restart vmselect service
 
 - name: Prepare cache dir
   ansible.builtin.file:
     state: directory
     path: "{{ vmselect_cache_dir }}"
-    mode: 0751
+    mode: "0751"
     owner: "{{ vmselect_system_user }}"
     group: "{{ vmselect_system_group }}"

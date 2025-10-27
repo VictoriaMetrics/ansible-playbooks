@@ -20,13 +20,13 @@
   ansible.builtin.file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Ensure existence of VictoriaMetrics storage directory
   ansible.builtin.file:
     path: "{{ victoriametrics_data_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: "{{ victoriametrics_system_user }}"
     group: "{{ victoriametrics_system_group }}"
 
@@ -46,7 +46,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
-        mode: 0755
+        mode: "0755"
       loop:
         - /tmp/vic-single/
         - /tmp/vic-utils/
@@ -78,7 +78,7 @@
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
         dest: /usr/local/bin
-        mode: 0751
+        mode: "0751"
         owner: "{{ victoriametrics_system_user }}"
         group: "{{ victoriametrics_system_group }}"
       when:
@@ -101,7 +101,7 @@
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
         dest: /usr/local/bin
-        mode: 0751
+        mode: "0751"
         owner: "{{ victoriametrics_system_user }}"
         group: "{{ victoriametrics_system_group }}"
       when:
