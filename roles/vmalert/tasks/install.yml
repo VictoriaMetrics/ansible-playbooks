@@ -22,32 +22,79 @@
     state: directory
     mode: "0755"
 
-- name: Download and unarchive VMalert release binary
-  environment:
-    http_proxy: ''
-    https_proxy: ''
-  ansible.builtin.unarchive:
-    src: "{{ vic_vm_alert_download_url }}"
-    dest: /tmp
-    remote_src: yes
-    extra_opts:
-      - --no-same-owner
-  delegate_to: localhost
-  become: no
+- name: Delete existing VMalert version if it's different.
+  ansible.builtin.file:
+    path: /usr/local/bin/vmalert-prod
+    state: absent
   when:
-    - not ansible_check_mode
-    - not vic_vm_alert_is_installed.stat.exists or
-      vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+    - vic_vm_alert_is_installed.stat.exists | bool
+    - vic_vm_alert_version not in vic_vm_alert_current_version.stdout
 
-- name: Copy VMalert binary to target host
-  notify: Restart VMalert service
-  ansible.builtin.copy:
-    src: /tmp/vmalert-prod
-    dest: /usr/local/bin/vmalert-prod
-    mode: "0751"
-    owner: "{{ vic_vm_alert_system_user }}"
-    group: "{{ vic_vm_alert_system_group }}"
-  when:
-    - not ansible_check_mode
-    - not vic_vm_alert_is_installed.stat.exists or
-      vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+- name: Install via control host
+  when: vic_vm_alert_install_download_to_control
+  block:
+    - name: Download and unarchive VMalert release binary
+      environment:
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
+      ansible.builtin.unarchive:
+        src: "{{ vic_vm_alert_download_url }}"
+        dest: /tmp
+        remote_src: yes
+      delegate_to: localhost
+      become: no
+      when:
+        - not ansible_check_mode
+        - not vic_vm_alert_is_installed.stat.exists or
+          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+    - name: Copy VMalert binary to target host
+      notify: Restart VMalert service
+      ansible.builtin.copy:
+        src: /tmp/vmalert-prod
+        dest: /tmp/vmalert-prod
+        mode: "0751"
+        owner: "{{ vic_vm_alert_system_user }}"
+        group: "{{ vic_vm_alert_system_group }}"
+      when:
+        - not ansible_check_mode
+        - not vic_vm_alert_is_installed.stat.exists or
+          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+    - name: Replace VMalert binary at target dir # noqa: no-changed-when
+      notify: Restart VMalert service
+      ansible.builtin.shell: |
+        mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
+      when:
+        - not ansible_check_mode
+        - not vic_vm_alert_is_installed.stat.exists or
+          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+- name: Install directly to target host
+  when: not vic_vm_alert_install_download_to_control
+  block:
+    - name: Download and unarchive VMalert release binary
+      environment:
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
+      ansible.builtin.unarchive:
+        src: "{{ vic_vm_alert_download_url }}"
+        dest: /tmp
+        remote_src: yes
+        extra_opts:
+          - --no-same-owner
+      when:
+        - not ansible_check_mode
+        - not vic_vm_alert_is_installed.stat.exists or
+          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+    - name: Replace VMalert binary at target dir # noqa: no-changed-when
+      notify: Restart VMalert service
+      ansible.builtin.shell: |
+        mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
+        chmod 0751 /usr/local/bin/vmalert-prod
+        chown {{ vic_vm_alert_system_user }}:{{ vic_vm_alert_system_group }} /usr/local/bin/vmalert-prod
+      when:
+        - not ansible_check_mode
+        - not vic_vm_alert_is_installed.stat.exists or
+          vic_vm_alert_version not in vic_vm_alert_current_version.stdout

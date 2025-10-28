@@ -85,9 +85,85 @@ molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule
 
 molecule-converge-enterprise: molecule-converge-vmsingle-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
 
-molecule-converge-integration: molecule-converge-cluster-integration
+molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-proxy molecule-converge-download-to-control
 
 molecule-converge-integration-enterprise: molecule-converge-cluster-integration-enterprise
+
+molecule-converge-vmsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vmagent-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmagent && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmagent-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmagent && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vmalert-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmalert && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmalert-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmalert && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vmauth-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmauth && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmauth-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmauth && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vmselect-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmselect && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmselect-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmselect && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vminsert-proxy:
+	. .venv/bin/activate; \
+	cd roles/vminsert && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vminsert-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vminsert && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vmstorage-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmstorage && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vmstorage-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmstorage && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vlsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vlsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-vtsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vtsingle && molecule converge -s proxy && molecule verify -s proxy
+
+molecule-converge-vtsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vtsingle && molecule converge -s download-to-control && molecule verify -s download-to-control
+
+molecule-converge-proxy: molecule-converge-vmsingle-proxy molecule-converge-vmagent-proxy molecule-converge-vmalert-proxy molecule-converge-vmauth-proxy molecule-converge-vmselect-proxy molecule-converge-vminsert-proxy molecule-converge-vmstorage-proxy molecule-converge-vlsingle-proxy molecule-converge-vtsingle-proxy
+
+molecule-converge-download-to-control: molecule-converge-vmsingle-download-to-control molecule-converge-vmagent-download-to-control molecule-converge-vmalert-download-to-control molecule-converge-vmauth-download-to-control molecule-converge-vmselect-download-to-control molecule-converge-vminsert-download-to-control molecule-converge-vmstorage-download-to-control molecule-converge-vlsingle-download-to-control molecule-converge-vtsingle-download-to-control
 
 molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
@@ -168,3 +244,79 @@ molecule-destroy-enterprise: molecule-destroy-vmsingle-enterprise molecule-destr
 molecule-destroy-integration: molecule-destroy-cluster-integration
 
 molecule-destroy-integration-enterprise: molecule-destroy-cluster-integration-enterprise
+
+molecule-destroy-vmsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && molecule destroy -s proxy
+
+molecule-destroy-vmsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && molecule destroy -s download-to-control
+
+molecule-destroy-vmagent-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmagent && molecule destroy -s proxy
+
+molecule-destroy-vmagent-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmagent && molecule destroy -s download-to-control
+
+molecule-destroy-vmalert-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmalert && molecule destroy -s proxy
+
+molecule-destroy-vmalert-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmalert && molecule destroy -s download-to-control
+
+molecule-destroy-vmauth-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmauth && molecule destroy -s proxy
+
+molecule-destroy-vmauth-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmauth && molecule destroy -s download-to-control
+
+molecule-destroy-vmselect-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmselect && molecule destroy -s proxy
+
+molecule-destroy-vmselect-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmselect && molecule destroy -s download-to-control
+
+molecule-destroy-vminsert-proxy:
+	. .venv/bin/activate; \
+	cd roles/vminsert && molecule destroy -s proxy
+
+molecule-destroy-vminsert-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vminsert && molecule destroy -s download-to-control
+
+molecule-destroy-vmstorage-proxy:
+	. .venv/bin/activate; \
+	cd roles/vmstorage && molecule destroy -s proxy
+
+molecule-destroy-vmstorage-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vmstorage && molecule destroy -s download-to-control
+
+molecule-destroy-vlsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule destroy -s proxy
+
+molecule-destroy-vlsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vlsingle && molecule destroy -s download-to-control
+
+molecule-destroy-vtsingle-proxy:
+	. .venv/bin/activate; \
+	cd roles/vtsingle && molecule destroy -s proxy
+
+molecule-destroy-vtsingle-download-to-control:
+	. .venv/bin/activate; \
+	cd roles/vtsingle && molecule destroy -s download-to-control
+
+molecule-destroy-proxy: molecule-destroy-vmsingle-proxy molecule-destroy-vmagent-proxy molecule-destroy-vmalert-proxy molecule-destroy-vmauth-proxy molecule-destroy-vmselect-proxy molecule-destroy-vminsert-proxy molecule-destroy-vmstorage-proxy molecule-destroy-vlsingle-proxy molecule-destroy-vtsingle-proxy
+
+molecule-destroy-download-to-control: molecule-destroy-vmsingle-download-to-control molecule-destroy-vmagent-download-to-control molecule-destroy-vmalert-download-to-control molecule-destroy-vmauth-download-to-control molecule-destroy-vmselect-download-to-control molecule-destroy-vminsert-download-to-control molecule-destroy-vmstorage-download-to-control molecule-destroy-vlsingle-download-to-control molecule-destroy-vtsingle-download-to-control

@@ -1,0 +1,8 @@
+service:
+  "victoriametrics":
+    enabled: true
+    running: true
+
+port:
+  tcp:8428:
+    listening: true

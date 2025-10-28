@@ -35,6 +35,13 @@ victoriametrics_service_args:
 victoriametrics_max_open_files: 2097152
 victoriametrics_backup_proxy_enable: false
 
+# Download behavior
+victoriametrics_install_download_to_control: false
+
+# Proxy environment for downloads
+vm_proxy_http: ""
+vm_proxy_https: ""
+
 victoriametrics_backup_enabled: false
 victoriametrics_backup_destination: "s3://"
 

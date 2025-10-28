@@ -1,0 +1,8 @@
+service:
+  "vmselect":
+    enabled: true
+    running: true
+
+port:
+  tcp:8481:
+    listening: true

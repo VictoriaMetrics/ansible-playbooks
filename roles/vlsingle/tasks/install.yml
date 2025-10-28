@@ -38,7 +38,8 @@
     - victorialogs_is_installed.stat.exists | bool
     - victorialogs_version not in victorialogs_current_version.stdout
 
-- name: Download and setup binaries
+- name: Install via control host
+  when: victorialogs_install_download_to_control
   block:
     - name: Prepare local download paths
       delegate_to: localhost
@@ -56,8 +57,8 @@
 
     - name: Download and unarchive VictoriaLogs release binary
       environment:
-        http_proxy: ''
-        https_proxy: ''
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
         src: "{{ victorialogs_download_url }}"
         dest: /tmp/vl-single/
@@ -94,3 +95,32 @@
         - /tmp/vl-single/
       when:
         - not ansible_check_mode
+
+- name: Install directly to target host
+  when: not victorialogs_install_download_to_control
+  block:
+    - name: Download and unarchive VictoriaLogs release binary
+      environment:
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
+      ansible.builtin.unarchive:
+        src: "{{ victorialogs_download_url }}"
+        dest: /tmp
+        remote_src: yes
+        extra_opts:
+          - --no-same-owner
+      when:
+        - not ansible_check_mode
+        - not victorialogs_is_installed.stat.exists or
+          victorialogs_version not in victorialogs_current_version.stdout
+
+    - name: Replace VictoriaLogs binary at target dir # noqa: no-changed-when
+      notify: Restart VictoriaLogs service
+      ansible.builtin.shell: |
+        mv /tmp/victoria-logs-prod /usr/local/bin/victoria-logs-prod
+        chmod 0751 /usr/local/bin/victoria-logs-prod
+        chown {{ victorialogs_system_user }}:{{ victorialogs_system_group }} /usr/local/bin/victoria-logs-prod
+      when:
+        - not ansible_check_mode
+        - not victorialogs_is_installed.stat.exists or
+          victorialogs_version not in victorialogs_current_version.stdout

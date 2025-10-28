@@ -38,7 +38,8 @@
     - victoriatraces_is_installed.stat.exists | bool
     - victoriatraces_version not in victoriatraces_current_version.stdout
 
-- name: Download and setup binaries
+- name: Install via control host
+  when: victoriatraces_install_download_to_control
   block:
     - name: Prepare local download paths
       delegate_to: localhost
@@ -56,12 +57,12 @@
 
     - name: Download and unarchive VictoriaTraces release binary
       environment:
-        http_proxy: ''
-        https_proxy: ''
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
         src: "{{ victoriatraces_download_url }}"
         dest: /tmp/vt-single/
-        remote_src: true
+        remote_src: yes
         extra_opts:
           - --no-same-owner
       notify: Restart VictoriaTraces service
@@ -94,3 +95,32 @@
         - /tmp/vt-single/
       when:
         - not ansible_check_mode
+
+- name: Install directly to target host
+  when: not victoriatraces_install_download_to_control
+  block:
+    - name: Download and unarchive VictoriaTraces release binary
+      environment:
+        http_proxy: "{{ vm_proxy_http }}"
+        https_proxy: "{{ vm_proxy_https }}"
+      ansible.builtin.unarchive:
+        src: "{{ victoriatraces_download_url }}"
+        dest: /tmp
+        remote_src: yes
+        extra_opts:
+          - --no-same-owner
+      when:
+        - not ansible_check_mode
+        - not victoriatraces_is_installed.stat.exists or
+          victoriatraces_version not in victoriatraces_current_version.stdout
+
+    - name: Replace VictoriaTraces binary at target dir # noqa: no-changed-when
+      notify: Restart VictoriaTraces service
+      ansible.builtin.shell: |
+        mv /tmp/victoria-traces-prod /usr/local/bin/victoria-traces-prod
+        chmod 0751 /usr/local/bin/victoria-traces-prod
+        chown {{ victoriatraces_system_user }}:{{ victoriatraces_system_group }} /usr/local/bin/victoria-traces-prod
+      when:
+        - not ansible_check_mode
+        - not victoriatraces_is_installed.stat.exists or
+          victoriatraces_version not in victoriatraces_current_version.stdout

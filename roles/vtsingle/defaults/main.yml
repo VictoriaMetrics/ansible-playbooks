@@ -18,6 +18,12 @@ victoriatraces_service_envflag_data: []
 #  - "graphiteListenAddr=127.0.0.1:12345"
 victoriatraces_service_envflag_file: "/etc/default/victoriatraces"
 
+# Download behavior
+victoriatraces_install_download_to_control: false
+
+# Proxy environment for downloads
+vm_proxy_http: ""
+vm_proxy_https: ""
 
 victoriatraces_service_args:
   storageDataPath: "{{ victoriatraces_data_dir }}"
