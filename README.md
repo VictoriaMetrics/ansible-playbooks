@@ -88,4 +88,10 @@ In order to set up development environment, you need to have `docker`, `python` 
 Run `make init-venv` to create virtual environment and install required packages for linting and testing
 with [molecule](https://ansible.readthedocs.io/projects/molecule).
 
-Refer to [Makefile](./Makefile) for available commands for linting and molecule testing.
+The following commands are useful for development:
+- `make lint` - runs ansible-lint on all roles and playbooks
+- `make molecule-converge` - runs molecule converge for default scenario of all roles
+- `make molecule-converge-integration` - runs molecule converge for integration scenario of all roles
+- `make molecule-destroy` - destroys all molecule instances created during testing
+
+Refer to [Makefile](./Makefile) for the full list of commands.

@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vmselect_install_download_to_control: true
+  tasks:
+    - name: "Include vmselect"
+      ansible.builtin.include_role:
+        name: "vmselect"

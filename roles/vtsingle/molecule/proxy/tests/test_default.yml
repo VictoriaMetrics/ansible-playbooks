@@ -1,0 +1,8 @@
+service:
+  "victoriatraces":
+    enabled: true
+    running: true
+
+port:
+  tcp:10428:
+    listening: true

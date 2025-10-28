@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    victoriametrics_data_dir: "/tmp/victoria-logs/"
+    victorialogs_install_download_to_control: true
+    victoriametrics_service_args:
+      storageDataPath: "{{ victoriametrics_data_dir }}"
+  tasks:
+    - name: "Include vlsingle"
+      ansible.builtin.include_role:
+        name: "vlsingle"
+

@@ -1,0 +1,45 @@
+---
+- name: Setup Proxy Server
+  hosts: vmagent-proxy-server
+  become: yes
+  tasks:
+    - name: Install squid proxy
+      ansible.builtin.apt:
+        name: squid
+        state: present
+        update_cache: yes
+
+    - name: Configure squid to allow all
+      ansible.builtin.copy:
+        content: |
+          http_port 3128
+          acl localnet src 0.0.0.0/0
+          http_access allow localnet
+          http_access allow localhost
+          http_access deny all
+        dest: /etc/squid/squid.conf
+        mode: '0644'
+
+    - name: Start squid service
+      ansible.builtin.service:
+        name: squid
+        state: started
+        enabled: yes
+
+- name: Converge
+  hosts: vmagent-proxy-debian13
+  become: yes
+  vars:
+    vmagent_install_download_to_control: false
+    vm_proxy_http: "http://vmagent-proxy-server:3128"
+    vm_proxy_https: "http://vmagent-proxy-server:3128"
+  tasks:
+    - name: "Include vmagent"
+      vars:
+        vmagent_service_args:
+          "remoteWrite.url":
+            - "http://url1/api/v1/write"
+            - "http://url2/api/v1/write"
+          "remoteWrite.tmpDataPath": /tmp/vmagent
+      ansible.builtin.include_role:
+        name: "vmagent"

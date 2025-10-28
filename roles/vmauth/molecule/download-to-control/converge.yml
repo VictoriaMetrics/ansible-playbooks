@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vmauth_install_download_to_control: true
+  tasks:
+    - name: "Include vmauth"
+      ansible.builtin.include_role:
+        name: "vmauth"

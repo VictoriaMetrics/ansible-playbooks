@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    victoriatraces_install_download_to_control: true
+  tasks:
+    - name: "Include vtsingle"
+      ansible.builtin.include_role:
+        name: "vtsingle"

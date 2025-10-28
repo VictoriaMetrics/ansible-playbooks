@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vminsert_install_download_to_control: true
+  tasks:
+    - name: "Include vminsert"
+      ansible.builtin.include_role:
+        name: "vminsert"

@@ -42,3 +42,10 @@ vic_vm_alert_rules:
         annotations:
           summary: '{% raw %}Host out of memory (instance {{ $labels.instance }}){% endraw %}'
           description: '{% raw %}"Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"{% endraw %}'
+
+# Download behavior
+vic_vm_alert_install_download_to_control: false
+
+# Proxy environment for downloads
+vm_proxy_http: ""
+vm_proxy_https: ""

@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vmstorage_install_download_to_control: true
+  tasks:
+    - name: "Include vmstorage"
+      ansible.builtin.include_role:
+        name: "vmstorage"
