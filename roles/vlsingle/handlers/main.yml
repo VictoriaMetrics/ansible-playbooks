@@ -5,3 +5,4 @@
   ansible.builtin.systemd:
     name: victorialogs
     state: restarted
+  when: not ansible_check_mode

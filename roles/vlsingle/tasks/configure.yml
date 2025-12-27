@@ -43,3 +43,4 @@
     name: victorialogs
     enabled: true
     state: started
+  when: not (ansible_check_mode and config_template is changed)
