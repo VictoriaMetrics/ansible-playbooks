@@ -57,13 +57,10 @@
 
     - name: Create aws config file
       become: true
-      ansible.builtin.copy:
+      ansible.builtin.template:
+        src: aws_config.j2
         dest: ~/.aws/config
         mode: "0600"
-        content: |
-          [default]
-          region = eu-west-1
-          output = json
 
     - name: Template credentials file
       ansible.builtin.template:
