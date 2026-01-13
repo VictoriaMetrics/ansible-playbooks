@@ -30,9 +30,9 @@
         paths: "{{ lookup('env', 'MOLECULE_VERIFIER_TEST_DIRECTORY') }}"
         patterns:
           - "test[-.\\w]*.yml"
-          - "test_host_{{ ansible_hostname }}[-.\\w]*.yml"
+          - "test_host_{{ ansible_facts['hostname'] }}[-.\\w]*.yml"
         excludes:
-          - "test_host_(?!{{ ansible_hostname }})[-.\\w]*.yml"
+          - "test_host_(?!{{ ansible_facts['hostname'] }})[-.\\w]*.yml"
         use_regex: true
       delegate_to: localhost
       register: test_files
