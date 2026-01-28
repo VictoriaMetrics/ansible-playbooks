@@ -6,4 +6,4 @@ go_arch_map:
   armv7l: 'arm'
   armv6l: 'arm6vl'
 
-go_arch: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
