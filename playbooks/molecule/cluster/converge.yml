@@ -1,4 +1,21 @@
 ---
+# Upstream issue, see: https://github.com/geerlingguy/docker-rockylinux9-ansible/issues/6
+# TODO: remove when fixed upstream
+- name: Fix /etc/shadow permissions if SELinux is enabled
+  hosts: all
+  become: yes
+  tasks:
+    - name: Debugging
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |
+          ls -l /etc/shadow
+          chmod 0640 /etc/shadow || true
+          ls -l /etc/shadow
+      when:
+        - ansible_selinux is defined
+        - ansible_selinux.status == "enabled"
+
 - name: Setup storage
   become: true
   hosts: vmstorage
@@ -24,7 +41,7 @@
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
   roles:
     - vminsert
-#
+
 - name: Setup vmauth
   become: true
   hosts: vmauth
