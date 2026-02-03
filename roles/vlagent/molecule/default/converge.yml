@@ -8,6 +8,5 @@
         vlagent_service_args:
           "remoteWrite.url":
             - "http://url1/internal/insert"
-          "remoteWrite.tmpDataPath": /tmp/vlagent
       ansible.builtin.include_role:
         name: "vlagent"
