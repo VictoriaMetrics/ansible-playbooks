@@ -1,0 +1,44 @@
+---
+- name: Setup Proxy Server
+  hosts: vlagent-proxy-server
+  become: yes
+  tasks:
+    - name: Install squid proxy
+      ansible.builtin.apt:
+        name: squid
+        state: present
+        update_cache: yes
+
+    - name: Configure squid to allow all
+      ansible.builtin.copy:
+        content: |
+          http_port 3128
+          acl localnet src 0.0.0.0/0
+          http_access allow localnet
+          http_access allow localhost
+          http_access deny all
+        dest: /etc/squid/squid.conf
+        mode: '0644'
+
+    - name: Start squid service
+      ansible.builtin.service:
+        name: squid
+        state: started
+        enabled: yes
+
+- name: Converge
+  hosts: vlagent-proxy-debian13
+  become: yes
+  vars:
+    vlagent_install_download_to_control: false
+    vl_proxy_http: "http://vlagent-proxy-server:3128"
+    vl_proxy_https: "http://vlagent-proxy-server:3128"
+  tasks:
+    - name: "Include vlagent"
+      vars:
+        vlagent_service_args:
+          "remoteWrite.url":
+            - "http://url1/internal/insert"
+          "remoteWrite.tmpDataPath": /tmp/vlagent
+      ansible.builtin.include_role:
+        name: "vlagent"

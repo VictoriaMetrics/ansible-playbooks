@@ -57,6 +57,7 @@ ansible-galaxy collection install victoriametrics.cluster
 Collection includes the following roles:
 
 - [vmsingle](./roles/vmsingle) - installs and configures [VictoriaMetrics single node](https://docs.victoriametrics.com/single-server-victoriametrics/)
+- [vlagent](./roles/vlagent) - installs and configures [`vlagent`](https://docs.victoriametrics.com/vlagent/)
 - [vmagent](./roles/vmagent) - installs and configures [`vmagent`](https://docs.victoriametrics.com/vmagent/)
 - [vmalert](./roles/vmalert) - installs and configures [`vmalert`](https://docs.victoriametrics.com/vmalert/)
 - [vmselect](./roles/vmselect) - installs and configures [`vmselect`](https://docs.victoriametrics.com/cluster-victoriametrics/)

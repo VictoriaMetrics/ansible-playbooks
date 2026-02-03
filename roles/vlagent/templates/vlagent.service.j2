@@ -1,0 +1,41 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Description=VictoriaLogs agent service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vlagent_system_user }}
+Group={{ vlagent_system_group }}
+ExecStart=/usr/local/bin/vlagent-prod {%- for flag, flag_values in vlagent_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values }} {% endif %}
+{% endfor %}
+
+SyslogIdentifier=vic-vlagent
+Restart=always
+
+PrivateTmp=yes
+ProtectHome={{ vlagent_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vlagent_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vlagent_exec_start_post != "" %}
+ExecStartPost={{ vlagent_exec_start_post }}
+{% endif %}
+
+{% if vlagent_exec_stop != "" %}
+ExecStop={{ vlagent_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

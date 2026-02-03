@@ -1,0 +1,7 @@
+# handlers file for VictoriaLogs
+---
+- name: Restart VLagent service
+  become: true
+  ansible.builtin.service:
+    name: vic-vlagent
+    state: restarted

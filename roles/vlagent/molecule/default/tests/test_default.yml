@@ -1,0 +1,16 @@
+service:
+  "vic-vlagent":
+    enabled: true
+    running: true
+
+port:
+  tcp:9428:
+    listening: true
+
+file:
+  /etc/systemd/system/vic-vlagent.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"

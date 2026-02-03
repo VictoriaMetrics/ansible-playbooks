@@ -1,0 +1,28 @@
+---
+vlagent_version: "v1.44.0"
+vlagent_enterprise: false
+vlagent_license_key: ""
+vlagent_license_key_file: ""
+
+vlagent_repo_url: "http s://github.com/VictoriaMetrics/VictoriaLogs"
+vlagent_platform: "-linux"
+vlagent_download_url: "{{ vlagent_repo_url }}/releases/download/{{ vlagent_version }}/victoria-logs{{ vlagent_platform }}-{{ go_arch }}-{{ vlagent_version }}{%if vlagent_enterprise %}-enterprise{% endif %}.tar.gz"
+
+vlagent_system_user: "vic_vl_agent"
+vlagent_system_group: "{{ vlagent_system_user }}"
+
+vlagent_remote_write_host: "http://localhost:9428"
+vlagent_service_args:
+  "remoteWrite.url": "{{ vlagent_remote_write_host }}/internal/insert"
+
+vlagent_install_download_to_control: false
+
+vl_proxy_http: ""
+vl_proxy_https: ""
+
+vlagent_exec_start_post: ""
+vlagent_exec_stop: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vlagent_systemd_protect_home: "yes"

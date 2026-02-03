@@ -1,0 +1,6 @@
+---
+- name: Ensure vic-vlagent service started
+  ansible.builtin.service:
+    name: vic-vlagent
+    state: started
+    enabled: yes

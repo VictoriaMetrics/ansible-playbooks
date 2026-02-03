@@ -1,0 +1,8 @@
+service:
+  "vic-vlagent":
+    enabled: true
+    running: true
+
+port:
+  tcp:9428:
+    listening: true
