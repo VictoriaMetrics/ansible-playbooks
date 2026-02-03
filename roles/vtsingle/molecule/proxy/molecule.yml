@@ -9,6 +9,8 @@ driver:
 platforms:
   - name: vtsingle-proxy-${MOLECULE_DISTRO:-debian13}
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - test_target
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw

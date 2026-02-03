@@ -44,7 +44,7 @@
         enabled: yes
 
 - name: Converge
-  hosts: vmalert-proxy-debian13
+  hosts: test_target
   become: yes
   vars:
     vic_vm_alert_install_download_to_control: false

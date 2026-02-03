@@ -44,7 +44,7 @@
         enabled: yes
 
 - name: Converge
-  hosts: vmsingle-proxy-debian13
+  hosts: test_target
   become: yes
   vars:
     victoriametrics_data_dir: "/tmp/victoria-metrics/"
