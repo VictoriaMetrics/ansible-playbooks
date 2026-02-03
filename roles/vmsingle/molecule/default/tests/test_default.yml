@@ -8,3 +8,11 @@ port:
     listening: true
   tcp:12345:
     listening: true
+
+file:
+  /etc/systemd/system/victoriametrics.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"

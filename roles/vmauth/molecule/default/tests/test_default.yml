@@ -6,3 +6,11 @@ service:
 port:
   tcp:8427:
     listening: true
+
+file:
+  /etc/systemd/system/vmauth.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"

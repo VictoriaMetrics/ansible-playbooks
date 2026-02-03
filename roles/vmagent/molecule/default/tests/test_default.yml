@@ -6,3 +6,11 @@ service:
 port:
   tcp:8429:
     listening: true
+
+file:
+  /etc/systemd/system/vic-vmagent.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"

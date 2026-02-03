@@ -12,7 +12,7 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    victoriametrics_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+    victoriametrics_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
 
 - name: Check if VictoriaMetrics is installed
   ansible.builtin.stat:

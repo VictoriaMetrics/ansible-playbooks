@@ -13,7 +13,7 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    vic_vm_alert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+    vic_vm_alert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
   when: ansible_service_mgr == 'systemd'
 
 - name: Check if VMalert is installed

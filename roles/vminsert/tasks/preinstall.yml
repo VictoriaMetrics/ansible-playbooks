@@ -13,7 +13,7 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    vminsert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+    vminsert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
   when: ansible_service_mgr == 'systemd'
 
 - name: Check if vminsert is installed

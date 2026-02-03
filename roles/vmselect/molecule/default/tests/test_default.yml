@@ -2,6 +2,15 @@ service:
   "vmselect":
     enabled: true
     running: true
+
 port:
   tcp:8481:
     listening: true
+
+file:
+  /etc/systemd/system/vmselect.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"
