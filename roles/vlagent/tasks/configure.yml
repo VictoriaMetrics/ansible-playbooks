@@ -1,6 +1,6 @@
 ---
 - name: Configure systemd
-  when: ansible_service_mgr == "systemd"
+  when: ansible_facts['service_mgr'] == "systemd"
   block:
   - name: "Systemd | Copy VLagent systemd unit file"
     ansible.builtin.template:
@@ -27,7 +27,7 @@
       enabled: true
 
 - name: Configure upstart
-  when: ansible_service_mgr == "upstart"
+  when: ansible_facts['service_mgr'] == "upstart"
   block:
   - name: "Upstart |  Install vic-vlagent service file"
     ansible.builtin.template:
