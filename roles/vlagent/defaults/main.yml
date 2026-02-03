@@ -4,7 +4,7 @@ vlagent_enterprise: false
 vlagent_license_key: ""
 vlagent_license_key_file: ""
 
-vlagent_repo_url: "http s://github.com/VictoriaMetrics/VictoriaLogs"
+vlagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaLogs"
 vlagent_platform: "-linux"
 vlagent_download_url: "{{ vlagent_repo_url }}/releases/download/{{ vlagent_version }}/victoria-logs{{ vlagent_platform }}-{{ go_arch }}-{{ vlagent_version }}{%if vlagent_enterprise %}-enterprise{% endif %}.tar.gz"
 
