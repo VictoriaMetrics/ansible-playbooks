@@ -2,6 +2,15 @@ service:
   "victoriatraces":
     enabled: true
     running: true
+
 port:
   tcp:10428:
     listening: true
+
+file:
+  /etc/systemd/system/victoriatraces.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"

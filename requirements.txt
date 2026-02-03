@@ -1,5 +1,5 @@
 ansible-compat==25.8.2
-ansible-core==2.19.3
+ansible-core>=2.20.0
 ansible-lint==25.9.2
 docker==7.1.0
 molecule==25.9.0

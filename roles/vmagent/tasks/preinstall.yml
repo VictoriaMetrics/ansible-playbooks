@@ -14,7 +14,7 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    vmagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+    vmagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
   when: ansible_service_mgr == 'systemd'
 
 - name: Check if VMagent is installed

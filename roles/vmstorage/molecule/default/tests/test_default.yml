@@ -2,6 +2,7 @@ service:
   "vmstorage":
     enabled: true
     running: true
+
 port:
   tcp:8482:
     listening: true
@@ -9,3 +10,11 @@ port:
     listening: true
   tcp:8401:
     listening: true
+
+file:
+  /etc/systemd/system/vmstorage.service:
+    exists: true
+    contains:
+      - "ProtectControlGroups=true"
+      - "ProtectKernelModules=true"
+      - "ProtectKernelTunables=yes"
