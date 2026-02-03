@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: vmstorage-proxy-debian13
+  - name: vmstorage-proxy-${MOLECULE_DISTRO:-debian13}
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

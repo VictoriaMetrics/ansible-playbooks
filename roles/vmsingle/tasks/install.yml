@@ -194,3 +194,20 @@
         - not ansible_check_mode
         - not victoriametrics_is_installed.stat.exists or
           victoriametrics_version not in victoriametrics_current_version.stdout
+
+- name: Restore SELinux context for VictoriaMetrics binaries
+  ansible.builtin.command:
+    cmd: >
+      restorecon -v
+      /usr/local/bin/victoria-metrics-prod
+      /usr/local/bin/vmagent-prod
+      /usr/local/bin/vmalert-prod
+      /usr/local/bin/vmauth-prod
+      /usr/local/bin/vmbackup-prod
+      /usr/local/bin/vmrestore-prod
+  register: restorecon_result
+  changed_when: "'relabeled' in restorecon_result.stdout"
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux.status == "enabled"
+    - not ansible_check_mode

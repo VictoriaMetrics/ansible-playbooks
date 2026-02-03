@@ -124,3 +124,13 @@
         - not ansible_check_mode
         - not victoriatraces_is_installed.stat.exists or
           victoriatraces_version not in victoriatraces_current_version.stdout
+
+- name: Restore SELinux context for VictoriaTraces binary
+  ansible.builtin.command:
+    cmd: restorecon -v /usr/local/bin/victoria-traces-prod
+  register: restorecon_result
+  changed_when: "'relabeled' in restorecon_result.stdout"
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux.status == "enabled"
+    - not ansible_check_mode

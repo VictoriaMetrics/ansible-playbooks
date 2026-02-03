@@ -81,6 +81,9 @@ molecule-converge-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule converge -s cluster-enterprise
 
+molecule-converge-selinux:
+	MOLECULE_DISTRO=rockylinux10 $(MAKE) molecule-converge
+
 molecule-converge: molecule-converge-vmsingle molecule-converge-vmagent molecule-converge-vmalert molecule-converge-vminsert molecule-converge-vmstorage molecule-converge-vmselect molecule-converge-vmauth molecule-converge-vlsingle molecule-converge-vtsingle
 
 molecule-converge-enterprise: molecule-converge-vmsingle-enterprise molecule-converge-vmagent-enterprise molecule-converge-vmalert-enterprise molecule-converge-vminsert-enterprise molecule-converge-vmstorage-enterprise molecule-converge-vmselect-enterprise molecule-converge-vmauth-enterprise
@@ -236,6 +239,9 @@ molecule-destroy-cluster-integration:
 molecule-destroy-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s cluster-enterprise
+
+molecule-destroy-selinux:
+	MOLECULE_DISTRO=rockylinux10 $(MAKE) molecule-destroy
 
 molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration molecule-destroy-vlsingle molecule-destroy-vtsingle
 

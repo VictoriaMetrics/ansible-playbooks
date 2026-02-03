@@ -98,3 +98,13 @@
         - not ansible_check_mode
         - not vic_vm_alert_is_installed.stat.exists or
           vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+
+- name: Restore SELinux context for vmalert binary
+  ansible.builtin.command:
+    cmd: restorecon -v /usr/local/bin/vmalert-prod
+  register: restorecon_result
+  changed_when: "'relabeled' in restorecon_result.stdout"
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux.status == "enabled"
+    - not ansible_check_mode

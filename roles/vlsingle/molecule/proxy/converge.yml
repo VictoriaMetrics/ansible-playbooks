@@ -40,4 +40,3 @@
     - name: "Include vlsingle"
       ansible.builtin.include_role:
         name: "vlsingle"
-

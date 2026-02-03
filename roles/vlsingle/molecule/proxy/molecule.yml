@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: vlsingle-proxy-debian13
+  - name: vlsingle-proxy-${MOLECULE_DISTRO:-debian13}
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -34,4 +34,3 @@ provisioner:
     ANSIBLE_ROLES_PATH: ../../../
 verifier:
   name: ansible
-

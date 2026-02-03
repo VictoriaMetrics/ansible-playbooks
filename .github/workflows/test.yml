@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  lint:
-    name: 'Test'
+  test-debian:
+    name: 'Test - debian'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -22,6 +22,27 @@ jobs:
       - name: Converge
         run: |
           make init-venv
-          
+
           make molecule-converge
+          make molecule-converge-selinux
+          
           make molecule-converge-integration
+
+  test-rocky:
+    name: 'Test - rocky'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: Cache .venv directory
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Converge
+        run: |
+          make init-venv
+
+          make molecule-converge-selinux
