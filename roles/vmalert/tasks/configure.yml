@@ -1,6 +1,6 @@
 ---
 - name: Configure unit
-  when: ansible_service_mgr == "systemd"
+  when: ansible_facts['service_mgr'] == "systemd"
   block:
   - name: "Systemd | Copy VMalert systemd unit file"
     ansible.builtin.template:
@@ -28,7 +28,7 @@
     ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Configure upstart
-  when: ansible_service_mgr == "upstart"
+  when: ansible_facts['service_mgr'] == "upstart"
   block:
   - name: "Upstart | Install service file {{ vic_vm_alert_service_name }}"
     ansible.builtin.template:
