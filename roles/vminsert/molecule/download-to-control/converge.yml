@@ -1,19 +1,4 @@
 ---
-# Upstream issue, see: https://github.com/geerlingguy/docker-rockylinux9-ansible/issues/6
-# TODO: remove when fixed upstream
-- name: Fix /etc/shadow permissions if SELinux is enabled
-  hosts: all
-  become: yes
-  gather_facts: no
-  tasks:
-    - name: Fix /etc/shadow permissions
-      changed_when: false
-      ansible.builtin.shell:
-        cmd: |
-          if command -v getenforce &> /dev/null && [ "$(getenforce)" != "Disabled" ]; then
-            chmod 0640 /etc/shadow || true
-          fi
-
 - name: Converge
   hosts: all
   become: yes
