@@ -124,3 +124,13 @@
         - not ansible_check_mode
         - not victorialogs_is_installed.stat.exists or
           victorialogs_version not in victorialogs_current_version.stdout
+
+- name: Restore SELinux context for VictoriaLogs binary
+  ansible.builtin.command:
+    cmd: restorecon -v /usr/local/bin/victoria-logs-prod
+  register: restorecon_result
+  changed_when: "'relabeled' in restorecon_result.stdout"
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux.status == "enabled"
+    - not ansible_check_mode

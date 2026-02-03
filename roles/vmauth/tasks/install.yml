@@ -98,3 +98,13 @@
     - not ansible_check_mode
     - not vmauth_is_installed.stat.exists or
       vmauth_version not in vmauth_current_version.stdout
+
+- name: Restore SELinux context for vmauth binary
+  ansible.builtin.command:
+    cmd: restorecon -v /usr/local/bin/vmauth-prod
+  register: restorecon_result
+  changed_when: "'relabeled' in restorecon_result.stdout"
+  when:
+  - ansible_selinux is defined
+  - ansible_selinux.status == "enabled"
+  - not ansible_check_mode

@@ -24,7 +24,7 @@
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
   roles:
     - vminsert
-#
+
 - name: Setup vmauth
   become: true
   hosts: vmauth
