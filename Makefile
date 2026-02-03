@@ -9,6 +9,10 @@ lint:
 	yamllint roles playbooks; \
 	ansible-lint roles/ playbooks/
 
+molecule-converge-vlagent:
+	. .venv/bin/activate; \
+	cd roles/vlagent && molecule converge && molecule verify
+
 molecule-converge-vmsingle:
 	. .venv/bin/activate; \
 	cd roles/vmsingle && molecule converge && molecule verify
