@@ -4,17 +4,15 @@
 - name: Fix /etc/shadow permissions if SELinux is enabled
   hosts: all
   become: yes
+  gather_facts: no
   tasks:
-    - name: Debugging
+    - name: Fix /etc/shadow permissions
       changed_when: false
       ansible.builtin.shell:
         cmd: |
-          ls -l /etc/shadow
-          chmod 0640 /etc/shadow || true
-          ls -l /etc/shadow
-      when:
-        - ansible_selinux is defined
-        - ansible_selinux.status == "enabled"
+          if command -v getenforce &> /dev/null && [ "$(getenforce)" != "Disabled" ]; then
+            chmod 0640 /etc/shadow || true
+          fi
 
 - name: Converge
   hosts: all

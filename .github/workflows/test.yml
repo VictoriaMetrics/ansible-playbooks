@@ -26,10 +26,7 @@ jobs:
       - name: Converge
         run: |
           make init-venv
-
           make molecule-converge
-          make molecule-converge-selinux
-          
           make molecule-converge-integration
 
   test-rocky:
@@ -48,5 +45,4 @@ jobs:
       - name: Converge
         run: |
           make init-venv
-
           make molecule-converge-selinux
