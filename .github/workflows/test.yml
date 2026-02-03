@@ -1,4 +1,8 @@
 name: 'Molecule Test'
+
+permissions:
+  contents: read
+
 on:
   pull_request: { }
   push:
