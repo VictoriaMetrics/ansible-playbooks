@@ -1,4 +1,9 @@
 name: 'Lint'
+
+permissions:
+  contents: read
+  actions: write
+
 on:
   pull_request: { }
   push: { }

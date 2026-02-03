@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: vmalert-debian13-enterprise
+  - name: vmalert-${MOLECULE_DISTRO:-debian13}-enterprise
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

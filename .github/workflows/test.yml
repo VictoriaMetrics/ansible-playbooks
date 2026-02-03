@@ -1,4 +1,9 @@
 name: 'Molecule Test'
+
+permissions:
+  contents: read
+  actions: write
+
 on:
   pull_request: { }
   push:
@@ -6,8 +11,8 @@ on:
       - master
 
 jobs:
-  lint:
-    name: 'Test'
+  test-debian:
+    name: 'Test - debian'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -22,6 +27,5 @@ jobs:
       - name: Converge
         run: |
           make init-venv
-          
           make molecule-converge
           make molecule-converge-integration

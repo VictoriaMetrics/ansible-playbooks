@@ -1,6 +1,6 @@
 ---
 - name: Verify
-  hosts: vmauth-proxy-debian13
+  hosts: test_target
   become: true
   vars:
     goss_version: v0.4.9

@@ -27,7 +27,7 @@
         enabled: yes
 
 - name: Converge
-  hosts: vtsingle-proxy-debian13
+  hosts: test_target
   become: yes
   vars:
     victoriatraces_install_download_to_control: false

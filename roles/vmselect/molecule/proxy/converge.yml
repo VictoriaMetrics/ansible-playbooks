@@ -27,7 +27,7 @@
         enabled: yes
 
 - name: Converge
-  hosts: vmselect-proxy-debian13
+  hosts: test_target
   become: yes
   vars:
     vmselect_install_download_to_control: false

@@ -27,7 +27,7 @@
         enabled: yes
 
 - name: Converge
-  hosts: vlsingle-proxy-debian13
+  hosts: test_target
   become: yes
   vars:
     victoriametrics_data_dir: "/tmp/victoria-logs/"
@@ -40,4 +40,3 @@
     - name: "Include vlsingle"
       ansible.builtin.include_role:
         name: "vlsingle"
-
