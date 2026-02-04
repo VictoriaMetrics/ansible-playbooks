@@ -1,0 +1,100 @@
+---
+- name: Create VLagent system group
+  ansible.builtin.group:
+    name: "{{ vlagent_system_group }}"
+    state: present
+    system: true
+  when: vlagent_system_group != "root"
+
+- name: Create VLagent system user
+  ansible.builtin.user:
+    name: "{{ vlagent_system_user }}"
+    groups: "{{ vlagent_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vlagent_system_user != "root"
+
+- name: Ensure existence of /usr/local/bin
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: "0755"
+
+- name: Delete existing VLagent version if it's different.
+  ansible.builtin.file:
+    path: /usr/local/bin/vlagent-prod
+    state: absent
+  when:
+  - vlagent_is_installed.stat.exists | bool
+  - vlagent_version not in vlagent_current_version.stdout
+
+- name: Install via control host
+  when: vlagent_install_download_to_control
+  block:
+  - name: Download and unarchive VLagent release binary
+    environment:
+      http_proxy: "{{ vl_proxy_http }}"
+      https_proxy: "{{ vl_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vlagent_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vlagent_is_installed.stat.exists or
+      vlagent_version not in vlagent_current_version.stdout
+
+  - name: Copy vlagent binary to target host
+    notify: Restart VLagent service
+    ansible.builtin.copy:
+      src: /tmp/vlagent-prod
+      dest: /tmp/vlagent-prod
+      mode: "0751"
+      owner: "{{ vlagent_system_user }}"
+      group: "{{ vlagent_system_group }}"
+    when:
+    - not ansible_check_mode
+    - not vlagent_is_installed.stat.exists or
+      vlagent_version not in vlagent_current_version.stdout
+
+  - name: Replace vlagent binary at target dir # noqa: no-changed-when
+    notify: Restart VLagent service
+    ansible.builtin.shell: |
+      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
+    when:
+    - not ansible_check_mode
+    - not vlagent_is_installed.stat.exists or
+      vlagent_version not in vlagent_current_version.stdout
+
+- name: Install directly to target host
+  when: not vlagent_install_download_to_control
+  block:
+  - name: Download and unarchive VLagent release binary
+    environment:
+      http_proxy: "{{ vl_proxy_http }}"
+      https_proxy: "{{ vl_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vlagent_download_url }}"
+      dest: /tmp
+      remote_src: yes
+      extra_opts:
+      - --no-same-owner
+    when:
+    - not ansible_check_mode
+    - not vlagent_is_installed.stat.exists or
+      vlagent_version not in vlagent_current_version.stdout
+
+  - name: Replace vlagent binary at target dir # noqa: no-changed-when
+    notify: Restart VLagent service
+    ansible.builtin.shell: |
+      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
+      chmod 0751 /usr/local/bin/vlagent-prod
+      chown {{ vlagent_system_user }}:{{ vlagent_system_group }} /usr/local/bin/vlagent-prod
+    when:
+    - not ansible_check_mode
+    - not vlagent_is_installed.stat.exists or
+      vlagent_version not in vlagent_current_version.stdout

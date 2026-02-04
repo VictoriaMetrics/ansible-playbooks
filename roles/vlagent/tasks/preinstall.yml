@@ -1,0 +1,48 @@
+---
+- name: Assert usage of systemd or upstart as an init system
+  ansible.builtin.assert:
+    that: ansible_facts['service_mgr'] == 'systemd' or ansible_facts['service_mgr'] == "upstart"
+    msg: "This role only works with systemd and upstart"
+
+
+- name: Get systemd version
+  ansible.builtin.command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+  when: ansible_facts['service_mgr'] == 'systemd'
+
+- name: Set systemd version fact
+  ansible.builtin.set_fact:
+    vlagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
+  when: ansible_facts['service_mgr'] == 'systemd'
+
+- name: Check if VLagent is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/vlagent-prod
+  changed_when: false
+  check_mode: false
+  register: vlagent_is_installed
+
+- name: Check current VLagent version
+  ansible.builtin.command: /usr/local/bin/vlagent-prod --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: vlagent_current_version
+  when: vlagent_is_installed.stat.exists | bool
+
+- name: Get latest VLagent version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vlagent_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vlagent_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vlagent_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vlagent_version == "latest"

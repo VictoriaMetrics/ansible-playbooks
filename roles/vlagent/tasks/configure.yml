@@ -1,0 +1,47 @@
+---
+- name: Configure systemd
+  when: ansible_facts['service_mgr'] == "systemd"
+  block:
+  - name: "Systemd | Copy VLagent systemd unit file"
+    ansible.builtin.template:
+      src: vlagent.service.j2
+      dest: /etc/systemd/system/vic-vlagent.service
+      owner: root
+      group: root
+      mode: "0644"
+    register: config_template
+    no_log: True
+    notify: Restart VLagent service
+
+  - name: "Systemd | daemon-reload VLagent service" # noqa: no-handler
+    become: true
+    ansible.builtin.systemd:
+      daemon_reload: true
+    when: config_template is changed
+    changed_when: config_template is changed
+
+  - name: Ensure VLagent service is enabled on boot
+    become: true
+    ansible.builtin.systemd:
+      name: vic-vlagent
+      enabled: true
+
+- name: Configure upstart
+  when: ansible_facts['service_mgr'] == "upstart"
+  block:
+  - name: "Upstart |  Install vic-vlagent service file"
+    ansible.builtin.template:
+      src: "upstart.j2"
+      dest: "/etc/init.d/vic-vlagent"
+      mode: "0755"
+      owner: root
+      group: root
+    notify: Restart VLagent service
+    register: config_template
+
+  - name: "Upstart |  Enable vic-vlagent service" # noqa: no-handler
+    ansible.builtin.service:
+      name: "vic-vlagent"
+      enabled: "yes"
+    when:
+    - config_template is changed
