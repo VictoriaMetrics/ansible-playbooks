@@ -1,9 +1,12 @@
 ---
 victorialogs_version: "v1.44.0"
+victorialogs_enterprise: false
+victorialogs_license_key: ""
+victorialogs_license_key_file: ""
 
 victorialogs_platform: "linux"
 victorialogs_repo_url: "https://github.com/VictoriaMetrics/VictoriaLogs"
-victorialogs_download_url: "{{ victorialogs_repo_url }}/releases/download/{{ victorialogs_version }}/victoria-logs-{{ victorialogs_platform }}-{{ go_arch }}-{{ victorialogs_version }}.tar.gz"
+victorialogs_download_url: "{{ victorialogs_repo_url }}/releases/download/{{ victorialogs_version }}/victoria-logs-{{ victorialogs_platform }}-{{ go_arch }}-{{ victorialogs_version }}{% if victorialogs_enterprise %}-enterprise{% endif %}.tar.gz"
 
 victorialogs_system_user: "victorialogs"
 victorialogs_system_group: "{{ victorialogs_system_user }}"

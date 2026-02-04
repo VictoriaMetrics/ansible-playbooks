@@ -6,7 +6,8 @@
     - name: "Include vminsert"
       vars:
         vminsert_enterprise: true
-        vminsert_license_key_file: "/tmp/vm-license"
+        vminsert_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+        vminsert_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
         vminsert_relabel_config: |-
           - source_labels: [__address__]
             target_label: instance
