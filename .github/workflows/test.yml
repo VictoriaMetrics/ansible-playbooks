@@ -27,5 +27,5 @@ jobs:
       - name: Converge
         run: |
           make init-venv
-          make molecule-converge
+          make -j$(( $(nproc) * 2 )) molecule-converge
           make molecule-converge-integration

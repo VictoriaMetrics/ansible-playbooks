@@ -4,6 +4,7 @@ lint: |
   ansible-lint .
 dependency:
   name: galaxy
+  enabled: false
 driver:
   name: docker
 platforms:
