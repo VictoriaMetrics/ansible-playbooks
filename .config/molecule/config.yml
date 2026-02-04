@@ -1,0 +1,4 @@
+---
+# Disable prerun to allow parallel molecule test execution
+# Without this, parallel runs race on installing the collection to ~/.ansible/collections
+prerun: false
