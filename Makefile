@@ -189,10 +189,6 @@ molecule-destroy-vmsingle:
 	. .venv/bin/activate; \
 	cd roles/vmsingle && molecule destroy
 
-molecule-destroy-vlagent-enterprise:
-	. .venv/bin/activate; \
-	cd roles/vlagent && molecule destroy -s enterprise
-
 molecule-destroy-vlsingle:
 	. .venv/bin/activate; \
 	cd roles/vlsingle && molecule destroy
@@ -225,6 +221,10 @@ molecule-destroy-vmauth:
 	. .venv/bin/activate; \
 	cd roles/vmauth && molecule destroy
 
+molecule-destroy-vlagent:
+	. .venv/bin/activate; \
+	cd roles/vlagent && molecule destroy
+
 molecule-destroy-vmsingle-enterprise:
 	. .venv/bin/activate; \
 	cd roles/vmsingle && molecule destroy -s enterprise
@@ -253,6 +253,10 @@ molecule-destroy-vmauth-enterprise:
 	. .venv/bin/activate; \
 	cd roles/vmauth && molecule destroy -s enterprise
 
+molecule-destroy-vlagent-enterprise:
+	. .venv/bin/activate; \
+	cd roles/vlagent && molecule destroy -s enterprise
+
 molecule-destroy-cluster-integration:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s cluster
@@ -263,6 +267,8 @@ molecule-destroy-cluster-integration-enterprise:
 
 molecule-destroy-selinux:
 	MOLECULE_DISTRO=rockylinux10 $(MAKE) molecule-destroy
+
+molecule-destroy: molecule-destroy-vmsingle molecule-destroy-vmagent molecule-destroy-vmalert molecule-destroy-vminsert molecule-destroy-vmstorage molecule-destroy-vmselect molecule-destroy-vmauth molecule-destroy-cluster-integration molecule-destroy-vlsingle molecule-destroy-vtsingle molecule-destroy-vlagent
 
 molecule-destroy-enterprise: molecule-destroy-vmsingle-enterprise molecule-destroy-vmagent-enterprise molecule-destroy-vmalert-enterprise molecule-destroy-vminsert-enterprise molecule-destroy-vmstorage-enterprise molecule-destroy-vmselect-enterprise molecule-destroy-vmauth-enterprise molecule-destroy-cluster-integration molecule-destroy-vlagent-enterprise
 
