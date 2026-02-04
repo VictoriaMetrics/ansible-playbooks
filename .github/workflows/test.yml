@@ -28,4 +28,4 @@ jobs:
         run: |
           make init-venv
           make -j$(( $(nproc) * 2 )) molecule-converge
-          make molecule-converge-integration
+          make -j$(( $(nproc) * 2 )) molecule-converge-integration
