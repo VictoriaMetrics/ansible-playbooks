@@ -6,7 +6,8 @@
     - name: "Include vlagent"
       vars:
         vlagent_enterprise: true
-        vlagent_license_key_file: "/tmp/vm-license"
+        vlagent_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+        vlagent_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
         vlagent_service_args:
           "remoteWrite.url":
             - "http://url1/internal/insert"

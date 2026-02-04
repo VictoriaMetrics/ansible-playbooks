@@ -4,7 +4,8 @@
   become: yes
   vars:
     victoriametrics_enterprise: true
-    victoriametrics_license_key_file: "/tmp/vm-license"
+    victoriametrics_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+    victoriametrics_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
     victoriametrics_data_dir: "/tmp/victoria-metrics/"
     victoriametrics_backup_enabled: false
     victoriametrics_service_envflag_enabled: true

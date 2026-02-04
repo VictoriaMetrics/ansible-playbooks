@@ -6,6 +6,7 @@
     - name: "Include vmauth"
       vars:
         vmauth_enterprise: true
-        vmauth_license_key_file: "/tmp/vm-license"
+        vmauth_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+        vmauth_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
       ansible.builtin.include_role:
         name: "vmauth"

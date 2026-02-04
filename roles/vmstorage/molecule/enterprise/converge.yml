@@ -6,6 +6,7 @@
     - name: "Include vmstorage"
       vars:
         vmstorage_enterprise: true
-        vmstorage_license_key_file: "/tmp/vm-license"
+        vmstorage_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+        vmstorage_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
       ansible.builtin.include_role:
         name: "vmstorage"
