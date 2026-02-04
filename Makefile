@@ -69,7 +69,7 @@ molecule-converge-proxy: $(addprefix molecule-converge-,$(addsuffix -proxy,$(ROL
 molecule-converge-download-to-control: $(addprefix molecule-converge-,$(addsuffix -download-to-control,$(ROLES)))
 
 molecule-destroy: $(addprefix molecule-destroy-,$(ROLES)) molecule-destroy-cluster-integration
-molecule-destroy-enterprise: $(addprefix molecule-destroy-,$(addsuffix -enterprise,$(ENTERPRISE_ROLES))) molecule-destroy-cluster-integration
+molecule-destroy-enterprise: $(addprefix molecule-destroy-,$(addsuffix -enterprise,$(ENTERPRISE_ROLES))) molecule-destroy-cluster-integration-enterprise
 molecule-destroy-proxy: $(addprefix molecule-destroy-,$(addsuffix -proxy,$(ROLES)))
 molecule-destroy-download-to-control: $(addprefix molecule-destroy-,$(addsuffix -download-to-control,$(ROLES)))
 
