@@ -1,0 +1,48 @@
+---
+- name: Setup vlstorage
+  become: true
+  hosts: vlstorage
+  roles:
+    - vlsingle
+
+- name: Setup vlinsert
+  become: true
+  hosts: vlinsert
+  vars:
+    victorialogs_service_args:
+      storageNode: "{{ groups['vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      select.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vlselect
+  become: true
+  hosts: vlselect
+  vars:
+    victorialogs_service_args:
+      storageNode: "{{ groups['vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      insert.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for insert in groups['vlinsert'] %}
+              - "http://{{ insert }}:9428/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vlselect'] %}
+              - "http://{{ select }}:9428/"
+      {% endfor %}
+  roles:
+    - vmauth
