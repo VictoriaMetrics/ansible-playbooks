@@ -68,7 +68,7 @@ molecule-converge-enterprise: $(addprefix molecule-converge-,$(addsuffix -enterp
 molecule-converge-proxy: $(addprefix molecule-converge-,$(addsuffix -proxy,$(ROLES)))
 molecule-converge-download-to-control: $(addprefix molecule-converge-,$(addsuffix -download-to-control,$(ROLES)))
 
-molecule-destroy: $(addprefix molecule-destroy-,$(ROLES)) molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration
+molecule-destroy: $(addprefix molecule-destroy-,$(ROLES)) molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration
 molecule-destroy-enterprise: $(addprefix molecule-destroy-,$(addsuffix -enterprise,$(ENTERPRISE_ROLES))) molecule-destroy-cluster-integration-enterprise
 molecule-destroy-proxy: $(addprefix molecule-destroy-,$(addsuffix -proxy,$(ROLES)))
 molecule-destroy-download-to-control: $(addprefix molecule-destroy-,$(addsuffix -download-to-control,$(ROLES)))
@@ -107,7 +107,15 @@ molecule-destroy-vlcluster-integration:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s vlcluster
 
-molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-vlcluster-integration molecule-converge-proxy molecule-converge-download-to-control
+molecule-converge-vtcluster-integration:
+	. .venv/bin/activate; \
+	cd playbooks/ && molecule converge -s vtcluster
+
+molecule-destroy-vtcluster-integration:
+	. .venv/bin/activate; \
+	cd playbooks/ && molecule destroy -s vtcluster
+
+molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-vlcluster-integration molecule-converge-vtcluster-integration molecule-converge-proxy molecule-converge-download-to-control
 molecule-converge-integration-enterprise: molecule-converge-cluster-integration-enterprise
-molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration
+molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration
 molecule-destroy-integration-enterprise: molecule-destroy-cluster-integration-enterprise

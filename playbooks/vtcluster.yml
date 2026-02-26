@@ -1,0 +1,48 @@
+---
+- name: Setup vtstorage
+  become: true
+  hosts: vtstorage
+  roles:
+    - vtsingle
+
+- name: Setup vtinsert
+  become: true
+  hosts: vtinsert
+  vars:
+    victoriatraces_service_args:
+      storageNode: "{{ groups['vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
+      select.disable: "true"
+  roles:
+    - vtsingle
+
+- name: Setup vtselect
+  become: true
+  hosts: vtselect
+  vars:
+    victoriatraces_service_args:
+      storageNode: "{{ groups['vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
+      insert.disable: "true"
+  roles:
+    - vtsingle
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for insert in groups['vtinsert'] %}
+              - "http://{{ insert }}:10428/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vtselect'] %}
+              - "http://{{ select }}:10428/"
+      {% endfor %}
+  roles:
+    - vmauth
