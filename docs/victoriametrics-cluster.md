@@ -1,7 +1,7 @@
 # VictoriaMetrics Cluster Deployment
 
 Cluster deployment example is available in [playbooks/cluster.yml](../playbooks/cluster.yml).
-The playbook deploys [VictoriaMetrics cluster](https://docs.victoriametrics.com/cluster-victoriametrics/) and [vmauth](https://docs.victoriametrics.com/vmauth/) to [act as a load balancer](https://docs.victoriametrics.com/vmauth/#load-balancer-for-victoriametrics-cluster) and authentication proxy.
+The playbook deploys [VictoriaMetrics cluster](https://docs.victoriametrics.com/victoriametrics/cluster-victoriametrics/) and [vmauth](https://docs.victoriametrics.com/victoriametrics/vmauth/) to [act as a load balancer](https://docs.victoriametrics.com/victoriametrics/vmauth/#load-balancer-for-victoriametrics-cluster) and authentication proxy.
 See [inventory](../inventory_example/cluster-inventory) for example of inventory file.
 
 Here is a diagram of the cluster deployment:
