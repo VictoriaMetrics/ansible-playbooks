@@ -21,3 +21,21 @@ See full list at [defaults.yml](./defaults/main.yml)
 | victorialogs_install_download_to_control | Whether use control or remote host to download archive                                                                               | `true`                                                                                                                                                                                           |
 | vm_proxy_http                             | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
 | vm_proxy_https                            | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
+
+## Flag naming and environment variables
+
+`victorialogs_service_args` keys are passed directly as command-line flags:
+
+```yaml
+victorialogs_service_args:
+  storageDataPath: "/var/lib/victoria-logs/"
+  "retention.maxDiskSpaceUsageBytes": "10GB"  # passed as -retention.maxDiskSpaceUsageBytes
+```
+
+When `victorialogs_service_envflag_enabled` is set to `true`, the `victorialogs_service_envflag_data` entries are passed as environment variables. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+```yaml
+victorialogs_service_envflag_enabled: "true"
+victorialogs_service_envflag_data:
+  - "retention_maxDiskSpaceUsageBytes=10GB"  # corresponds to -retention.maxDiskSpaceUsageBytes flag
+```

@@ -28,3 +28,21 @@ The following table lists the configurable parameters of the roles and their def
 | vmauth_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                            |
 | vm_proxy_http                      | Sets environment for downloading archive                                                                                   | `""`                                                                                               |
 | vm_proxy_https                     | Sets environment for downloading archive                                                                                   | `""`                                                                                               |
+
+## Configuration via environment variables
+
+This role configures vmauth using environment variables via `vmauth_config` with `-envflag.enable`. Additional flags can also be passed directly on the command line via `vmauth_service_args`.
+
+For `vmauth_config` keys: each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+For `vmauth_service_args` keys: dots can be used as-is since these are passed directly as command-line flags.
+
+```yaml
+vmauth_config:
+  # envflag-based config: use _ instead of .
+  http_pathPrefix: "/vm"  # corresponds to -http.pathPrefix flag
+
+vmauth_service_args:
+  # CLI flags: dots work as-is
+  http.pathPrefix: "/vm"  # passed directly as --http.pathPrefix
+```

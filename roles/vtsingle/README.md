@@ -21,3 +21,21 @@ See full list at [defaults.yml](./defaults/main.yml)
 | victoriatraces_install_download_to_control | Whether use control or remote host to download archive                                                                               | `true`                                                                                                                                                                                           |
 | vm_proxy_http                               | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
 | vm_proxy_https                              | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
+
+## Flag naming and environment variables
+
+`victoriatraces_service_args` keys are passed directly as command-line flags:
+
+```yaml
+victoriatraces_service_args:
+  storageDataPath: "/var/lib/victoria-traces/"
+  "http.pathPrefix": "/traces"  # passed as -http.pathPrefix
+```
+
+When `victoriatraces_service_envflag_enabled` is set to `true`, the `victoriatraces_service_envflag_data` entries are passed as environment variables. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+```yaml
+victoriatraces_service_envflag_enabled: "true"
+victoriatraces_service_envflag_data:
+  - "http_pathPrefix=/traces"  # corresponds to -http.pathPrefix flag
+```

@@ -36,3 +36,22 @@ See full list at [defaults.yml](./defaults/main.yml)
 | victoriametrics_install_download_to_control | Whether use control or remote host to download archive                                                                              | `true`                                                                                                                                        |
 | vm_proxy_http                               | Sets environment for downloading archive                                                                                            | `""`                                                                                                                                          |
 | vm_proxy_https                              | Sets environment for downloading archive                                                                                            | `""`                                                                                                                                          |
+
+## Flag naming and environment variables
+
+`victoriametrics_service_args` keys are passed directly as command-line flags:
+
+```yaml
+victoriametrics_service_args:
+  storageDataPath: "/var/lib/victoria-metrics/"
+  retentionPeriod: "12"
+  "search.maxUniqueTimeseries": "900000"  # passed as -search.maxUniqueTimeseries
+```
+
+When `victoriametrics_service_envflag_enabled` is set to `true`, the `victoriametrics_service_envflag_data` entries are passed as environment variables. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+```yaml
+victoriametrics_service_envflag_enabled: "true"
+victoriametrics_service_envflag_data:
+  - "search_maxUniqueTimeseries=900000"  # corresponds to -search.maxUniqueTimeseries flag
+```

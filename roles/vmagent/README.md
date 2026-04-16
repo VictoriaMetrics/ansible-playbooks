@@ -30,3 +30,14 @@ The following table lists the configurable parameters of the roles and their def
 | vmagent_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                               |
 | vm_proxy_http                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
 | vm_proxy_https                      | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
+
+## Flag naming
+
+`vmagent_service_args` keys are passed directly as command-line flags:
+
+```yaml
+vmagent_service_args:
+  promscrape.config: "/opt/vic-vmagent/scrape.yml"
+  remoteWrite.url: "http://localhost:8428/api/v1/write"
+  remoteWrite.tmpDataPath: "/var/lib/vmagent-remotewrite-data"
+```

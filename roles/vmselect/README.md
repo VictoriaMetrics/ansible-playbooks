@@ -28,3 +28,15 @@ The following table lists the configurable parameters of the roles and their def
 | vmselect_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                                  |
 | vm_proxy_http                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |
 | vm_proxy_https                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                     |
+
+## Configuration via environment variables
+
+This role configures vmselect using environment variables with `-envflag.enable`. Each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+For example, to set the `-search.maxUniqueTimeseries` flag, use `search_maxUniqueTimeseries` as the key in `vmselect_config`:
+
+```yaml
+vmselect_config:
+  storageNode: "vmstorage1,vmstorage2,vmstorage3"
+  search_maxUniqueTimeseries: 900000  # corresponds to -search.maxUniqueTimeseries flag
+```

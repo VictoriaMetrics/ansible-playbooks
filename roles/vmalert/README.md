@@ -30,3 +30,14 @@ Installs `vmalert` as binary running with systemd
 | vic_vm_alert_install_download_to_control    | Whether use control or remote host to download archive      | `true`                                                                                                                               |
 | vm_proxy_http                               | Sets environment for downloading archive                    | `""`                                                                                                                                |
 | vm_proxy_https                              | Sets environment for downloading archive                    | `""`                                                                                                                                |
+
+## Flag naming
+
+`vic_vm_alert_service_args` keys are passed directly as command-line flags:
+
+```yaml
+vic_vm_alert_service_args:
+  datasource.url: "http://localhost:8428"
+  notifier.url: "http://localhost:9093"
+  rule: "/opt/vic-vmalert/rules.yml"
+```

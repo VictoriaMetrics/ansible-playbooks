@@ -29,3 +29,16 @@ The following table lists the configurable parameters of the roles and their def
 | vmstorage_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                                     |
 | vm_proxy_http                         | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |
 | vm_proxy_https                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |
+
+## Configuration via environment variables
+
+This role configures vmstorage using environment variables with `-envflag.enable`. Each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+For example, to set the `-storage.minFreeDiskSpaceBytes` flag, use `storage_minFreeDiskSpaceBytes` as the key in `vmstorage_config`:
+
+```yaml
+vmstorage_config:
+  retentionPeriod: 1
+  storageDataPath: "/var/lib/vmstorage"
+  storage_minFreeDiskSpaceBytes: "1GB"  # corresponds to -storage.minFreeDiskSpaceBytes flag
+```

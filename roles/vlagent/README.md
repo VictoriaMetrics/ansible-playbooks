@@ -24,3 +24,13 @@ The following table lists the configurable parameters of the roles and their def
 | vlagent_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                               |
 | vl_proxy_http                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
 | vl_proxy_https                      | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
+
+## Flag naming
+
+`vlagent_service_args` keys are passed directly as command-line flags:
+
+```yaml
+vlagent_service_args:
+  remoteWrite.url: "http://localhost:9428/insert/jsonline"
+  remoteWrite.tmpDataPath: "/var/lib/vlagent-remotewrite-data"
+```
