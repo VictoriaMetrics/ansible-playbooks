@@ -11,7 +11,6 @@ vic_vm_alert_download_url: "{{ vic_vm_alert_repo_url }}/releases/download/{{ vic
 vic_vm_alert_system_user: "vic_vm_alert"
 vic_vm_alert_system_group: "{{ vic_vm_alert_system_user }}"
 vic_vm_alert_config_dir: "/opt/vic-vmalert"
-vic_vm_alert_rules_config_path: "{{ vic_vm_alert_config_dir }}/rules.yml"
 vic_vm_alert_alertmanager_url: "http://localhost:9093"
 vic_vm_alert_datasource_url: "http://localhost:8428"
 vic_vm_alert_evaluation_interval: "30s"
@@ -29,6 +28,7 @@ vic_vm_alert_service_args:
 vic_vm_alert_max_open_files: 2097152
 
 vic_vm_alert_default_rules_enabled: true
+vic_vm_alert_rules_config_path: "{{ vic_vm_alert_config_dir }}/rules.yml"
 # Great examples of alerts - https://awesome-prometheus-alerts.grep.to/rules.html
 vic_vm_alert_rules:
   - name: ansible managed alert rules
