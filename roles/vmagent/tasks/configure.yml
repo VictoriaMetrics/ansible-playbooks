@@ -69,7 +69,7 @@
     mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
-    validate: "/usr/local/bin/vmagent-prod -promscrape.config %s -dryRun"
+    validate: "/usr/local/bin/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v }} {% endif %}{% endfor %} -promscrape.config %s -dryRun"
   notify: Restart VMagent service
 
 - name: Configure stream aggregation config
@@ -79,7 +79,7 @@
     mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
-    validate: "/usr/local/bin/vmagent-prod -streamAggr.config %s -dryRun"
+    validate: "/usr/local/bin/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v }} {% endif %}{% endfor %} -streamAggr.config %s -dryRun"
   notify: Restart VMagent service
 
 - name: Prepare tmp data dir
