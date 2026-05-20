@@ -11,6 +11,7 @@ file:
   /etc/systemd/system/vic-vmagent.service:
     exists: true
     contains:
+      - "/^Description=VictoriaMetrics vmagent service$/"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"

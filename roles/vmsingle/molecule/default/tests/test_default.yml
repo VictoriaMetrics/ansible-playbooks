@@ -13,6 +13,7 @@ file:
   /etc/systemd/system/victoriametrics.service:
     exists: true
     contains:
+      - "/^Description=VictoriaMetrics service$/"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
