@@ -11,7 +11,7 @@ file:
   /etc/systemd/system/vic-vmalert.service:
     exists: true
     contains:
-      - "^Description=VictoriaMetrics VMalert service$"
+      - "/^Description=VictoriaMetrics VMalert service$/"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"

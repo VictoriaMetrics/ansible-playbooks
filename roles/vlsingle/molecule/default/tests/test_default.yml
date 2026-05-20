@@ -11,7 +11,7 @@ file:
   /etc/systemd/system/victorialogs.service:
     exists: true
     contains:
-      - "^Description=VictoriaLogs service$"
+      - "/^Description=VictoriaLogs service$/"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"

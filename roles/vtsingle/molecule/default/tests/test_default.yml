@@ -11,7 +11,7 @@ file:
   /etc/systemd/system/victoriatraces.service:
     exists: true
     contains:
-      - "^Description=VictoriaTraces service$"
+      - "/^Description=VictoriaTraces service$/"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
