@@ -11,7 +11,7 @@ Group={{ vic_vm_alert_system_group }}
 ExecStart=/usr/local/bin/vmalert-prod {%- for flag, flag_values in vic_vm_alert_service_args.items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value }} {% endfor %}
-{% else %} --{{ flag }}={{ flag_values }} {% endif %}
+{% else %}{% if flag_values | length > 0 %} --{{ flag }}={{ flag_values }} {% endif %}{% endif %}
 {% endfor %}
 
 SyslogIdentifier={{ vic_vm_alert_service_name }}
