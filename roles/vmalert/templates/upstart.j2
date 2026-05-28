@@ -14,7 +14,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/local/bin/VMalert-prod
-DAEMON_ARGS="{% for flag, flag_value in vic_vm_alert_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
+DAEMON_ARGS="{% for flag, flag_value in _runtime_vic_vm_alert_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
 NAME={{ vic_vm_alert_service_name }}
 DESC="VictoriaMetrics scrape agent"
 
