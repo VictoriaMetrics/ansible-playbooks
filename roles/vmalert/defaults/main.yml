@@ -24,7 +24,6 @@ vic_vm_alert_service_args:
   #    - "http://host2:9093"
   #    - "http://host3:9093"
   "evaluationInterval": "{{ vic_vm_alert_evaluation_interval }}"
-  "rule": "{{ vic_vm_alert_rules_config_path if vic_vm_alert_default_rules_enabled | bool else '' }}"
 
 vic_vm_alert_max_open_files: 2097152
 
