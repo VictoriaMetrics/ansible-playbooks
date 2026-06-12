@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          persist-credentials: false
 
       - name: Cache .venv directory
         uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c  # v3.5.0
