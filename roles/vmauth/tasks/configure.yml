@@ -2,7 +2,7 @@
 - name: "Systemd | Copy vmauth systemd unit file"
   ansible.builtin.template:
     src: vmauth.service.j2
-    dest: /etc/systemd/system/vmauth.service
+    dest: "/etc/systemd/system/{{ vmauth_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -11,7 +11,7 @@
 - name: "Systemd | ensure vmauth service is enabled" # noqa: no-handler
   become: true
   ansible.builtin.systemd:
-    name: vmauth
+    name: "{{ vmauth_service_name }}"
     enabled: true
 
 - name: Prepare configuration dir
