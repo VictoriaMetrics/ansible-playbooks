@@ -11,6 +11,7 @@ vmauth_download_url: "{{ vmauth_repo_url }}/releases/download/{{ vmauth_version 
 vmauth_system_user: "victoriametrics"
 vmauth_system_group: "{{ vmauth_system_user }}"
 
+vmauth_service_name: vmauth
 vmauth_service_state: started
 vmauth_service_enabled: true
 vmauth_service_args: {}
