@@ -7,3 +7,24 @@ go_arch_map:
   armv6l: 'arm6vl'
 
 go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
+
+# Maps deprecated variable names to their canonical replacements. Consumed by
+# tasks/deprecations.yml to emit a warning when a user still sets an old name.
+_vlsingle_deprecated_vars:
+  victorialogs_version: vlsingle_version
+  victorialogs_enterprise: vlsingle_enterprise
+  victorialogs_license_key: vlsingle_license_key
+  victorialogs_license_key_file: vlsingle_license_key_file
+  victorialogs_platform: vlsingle_platform
+  victorialogs_repo_url: vlsingle_repo_url
+  victorialogs_download_url: vlsingle_download_url
+  victorialogs_system_user: vlsingle_system_user
+  victorialogs_system_group: vlsingle_system_group
+  victorialogs_data_dir: vlsingle_data_dir
+  victorialogs_retention_period_months: vlsingle_retention_period
+  victorialogs_service_envflag_enabled: vlsingle_service_envflag_enabled
+  victorialogs_service_envflag_data: vlsingle_service_envflag_data
+  victorialogs_service_envflag_file: vlsingle_service_envflag_file
+  victorialogs_install_download_to_control: vlsingle_install_download_to_control
+  victorialogs_service_args: vlsingle_service_args
+  victorialogs_max_open_files: vlsingle_max_open_files

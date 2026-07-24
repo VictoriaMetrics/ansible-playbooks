@@ -13,7 +13,7 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    vic_vm_alert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
+    vmalert_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
   when: ansible_facts['service_mgr'] == 'systemd'
 
 - name: Check if VMalert is installed
@@ -21,38 +21,38 @@
     path: /usr/local/bin/vmalert-prod
   changed_when: false
   check_mode: false
-  register: vic_vm_alert_is_installed
+  register: vmalert_is_installed
 
 - name: Check current VMalert version
   ansible.builtin.command: /usr/local/bin/vmalert-prod --version
   changed_when: false
   failed_when: false
   check_mode: false
-  register: vic_vm_alert_current_version
-  when: vic_vm_alert_is_installed.stat.exists | bool
+  register: vmalert_current_version
+  when: vmalert_is_installed.stat.exists | bool
 
 - name: Setup default service config
   ansible.builtin.set_fact:
-    _runtime_vic_vm_alert_service_args: "{{ vic_vm_alert_service_args }}"
+    _runtime_vmalert_service_args: "{{ vmalert_service_args }}"
 
 - name: Add rule parameter to service config for default rules
   ansible.builtin.set_fact:
-    _runtime_vic_vm_alert_service_args: "{{ _runtime_vic_vm_alert_service_args | combine({'rule': vic_vm_alert_rules_config_path}) }}"
+    _runtime_vmalert_service_args: "{{ _runtime_vmalert_service_args | combine({'rule': vmalert_rules_config_path}) }}"
   when:
-    - vic_vm_alert_default_rules_enabled | bool
-    - vic_vm_alert_rules_config_path | length > 0
+    - vmalert_default_rules_enabled | bool
+    - vmalert_rules_config_path | length > 0
 
 - name: Get latest VMalert version via GitHub redirect
   ansible.builtin.uri:
-    url: "{{ vic_vm_alert_repo_url }}/releases/latest"
+    url: "{{ vmalert_repo_url }}/releases/latest"
     method: HEAD
     return_content: false
     follow_redirects: false
     status_code: 302,200
   register: gh_redirect
-  when: vic_vm_alert_version == "latest"
+  when: vmalert_version == "latest"
 
 - name: Extract version from Location header
   ansible.builtin.set_fact:
-    vic_vm_alert_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
-  when: vic_vm_alert_version == "latest"
+    vmalert_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vmalert_version == "latest"

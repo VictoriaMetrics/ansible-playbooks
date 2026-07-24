@@ -7,3 +7,21 @@ go_arch_map:
   armv6l: 'arm6vl'
 
 go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
+
+# Maps deprecated variable names to their canonical replacements. Consumed by
+# tasks/deprecations.yml to emit a warning when a user still sets an old name.
+_vtsingle_deprecated_vars:
+  victoriatraces_version: vtsingle_version
+  victoriatraces_platform: vtsingle_platform
+  victoriatraces_repo_url: vtsingle_repo_url
+  victoriatraces_download_url: vtsingle_download_url
+  victoriatraces_system_user: vtsingle_system_user
+  victoriatraces_system_group: vtsingle_system_group
+  victoriatraces_data_dir: vtsingle_data_dir
+  victoriatraces_retention_period_months: vtsingle_retention_period
+  victoriatraces_service_envflag_enabled: vtsingle_service_envflag_enabled
+  victoriatraces_service_envflag_data: vtsingle_service_envflag_data
+  victoriatraces_service_envflag_file: vtsingle_service_envflag_file
+  victoriatraces_install_download_to_control: vtsingle_install_download_to_control
+  victoriatraces_service_args: vtsingle_service_args
+  victoriatraces_max_open_files: vtsingle_max_open_files

@@ -35,8 +35,8 @@
   block:
   - name: Download and unarchive VLagent release binary
     environment:
-      http_proxy: "{{ vl_proxy_http }}"
-      https_proxy: "{{ vl_proxy_https }}"
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
     ansible.builtin.unarchive:
       src: "{{ vlagent_download_url }}"
       dest: /tmp
@@ -75,8 +75,8 @@
   block:
   - name: Download and unarchive VLagent release binary
     environment:
-      http_proxy: "{{ vl_proxy_http }}"
-      https_proxy: "{{ vl_proxy_https }}"
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
     ansible.builtin.unarchive:
       src: "{{ vlagent_download_url }}"
       dest: /tmp

@@ -19,6 +19,9 @@ vmstorage_exec_stop: ""
 vmstorage_config_dir: "/opt/victoriametrics-vmstorage"
 vmstorage_data_dir: "/var/lib/vmstorage"
 vmstorage_bin_dir: /usr/local/bin
+# Passed verbatim to -retentionPeriod. With no unit suffix the value is counted
+# in months; see the docs for the supported unit suffixes.
+# https://docs.victoriametrics.com/#retention
 vmstorage_retention_period: 1
 
 vmstorage_config:

@@ -30,7 +30,7 @@ Ansible roles and playbooks for Victoria Metrics.
           vars:
             # Check available variables and their defaults here:
             # https://github.com/VictoriaMetrics/ansible-playbooks/tree/master/roles/vmsingle
-            victoriametrics_retention_period_months: "3"
+            vmsingle_retention_period: "3"
     ```
 
 1. Run the playbook. Address any errors that may arise:

@@ -7,3 +7,27 @@ go_arch_map:
   armv6l: 'arm6vl'
 
 go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
+
+# Maps deprecated variable names to their canonical replacements. Consumed by
+# tasks/deprecations.yml to emit a warning when a user still sets an old name.
+_vmalert_deprecated_vars:
+  vic_vm_alert_version: vmalert_version
+  vic_vm_alert_enterprise: vmalert_enterprise
+  vic_vm_alert_license_key: vmalert_license_key
+  vic_vm_alert_license_key_file: vmalert_license_key_file
+  vic_vm_alert_service_name: vmalert_service_name
+  vic_vm_alert_repo_url: vmalert_repo_url
+  vic_vm_alert_platform: vmalert_platform
+  vic_vm_alert_download_url: vmalert_download_url
+  vic_vm_alert_system_user: vmalert_system_user
+  vic_vm_alert_system_group: vmalert_system_group
+  vic_vm_alert_config_dir: vmalert_config_dir
+  vic_vm_alert_alertmanager_url: vmalert_alertmanager_url
+  vic_vm_alert_datasource_url: vmalert_datasource_url
+  vic_vm_alert_evaluation_interval: vmalert_evaluation_interval
+  vic_vm_alert_service_args: vmalert_service_args
+  vic_vm_alert_max_open_files: vmalert_max_open_files
+  vic_vm_alert_default_rules_enabled: vmalert_default_rules_enabled
+  vic_vm_alert_rules_config_path: vmalert_rules_config_path
+  vic_vm_alert_rules: vmalert_rules
+  vic_vm_alert_install_download_to_control: vmalert_install_download_to_control

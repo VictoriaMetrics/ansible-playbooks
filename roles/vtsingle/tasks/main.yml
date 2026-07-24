@@ -1,5 +1,7 @@
 ---
 # tasks file for VictoriaTraces
+- name: Deprecation warnings
+  ansible.builtin.import_tasks: deprecations.yml
 - name: Preinstall checks
   ansible.builtin.import_tasks: preinstall.yml
 - name: Install

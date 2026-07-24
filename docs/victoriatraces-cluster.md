@@ -4,7 +4,7 @@ Cluster deployment example is available in [playbooks/vtcluster.yml](../playbook
 The playbook deploys [VictoriaTraces cluster](https://docs.victoriametrics.com/victoriatraces/cluster/) and [vmauth](https://docs.victoriametrics.com/victoriametrics/vmauth/) to act as a load balancer.
 See [inventory](../inventory_example/vtcluster-inventory) for example of inventory file.
 
-All three cluster components (vtstorage, vtinsert, vtselect) use the same `vtsingle` role since they share a single binary. The component role is determined by flags passed via `victoriatraces_service_args`:
+All three cluster components (vtstorage, vtinsert, vtselect) use the same `vtsingle` role since they share a single binary. The component role is determined by flags passed via `vtsingle_service_args`:
 
 - **vtstorage** — uses role defaults (no extra flags needed)
 - **vtinsert** — sets `storageNode` and `select.disable: "true"`

@@ -7,3 +7,9 @@ go_arch_map:
   armv6l: 'arm6vl'
 
 go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
+
+# Maps deprecated variable names to their canonical replacements. Consumed by
+# tasks/deprecations.yml to emit a warning when a user still sets an old name.
+_vlagent_deprecated_vars:
+  vl_proxy_http: vm_proxy_http
+  vl_proxy_https: vm_proxy_https

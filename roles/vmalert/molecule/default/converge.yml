@@ -2,7 +2,20 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    # Deprecated alias set on purpose to prove backward-compatible resolution.
+    # Distinct from the 30s default so the assert below is not vacuous.
+    vic_vm_alert_evaluation_interval: "45s"
   tasks:
     - name: "Include vmalert"
       ansible.builtin.include_role:
         name: "vmalert"
+        public: true
+
+    - name: "Assert deprecated alias resolves into service args"
+      ansible.builtin.assert:
+        that:
+          - vmalert_service_args['evaluationInterval'] == '45s'
+        fail_msg: >-
+          Deprecated alias vic_vm_alert_evaluation_interval did not resolve into
+          vmalert_service_args

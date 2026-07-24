@@ -1,0 +1,10 @@
+---
+- name: Warn about deprecated variable aliases
+  ansible.builtin.debug:
+    msg: >-
+      DEPRECATION: '{{ item.key }}' is deprecated and will be removed in a
+      future release. Use '{{ item.value }}' instead.
+  loop: "{{ _vmsingle_deprecated_vars | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when: item.key in vars

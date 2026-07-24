@@ -1,20 +1,20 @@
 ---
 - name: Create VMalert system group
   ansible.builtin.group:
-    name: "{{ vic_vm_alert_system_group }}"
+    name: "{{ vmalert_system_group }}"
     state: present
     system: true
-  when: vic_vm_alert_system_group != "root"
+  when: vmalert_system_group != "root"
 
 - name: Create VMalert system user
   ansible.builtin.user:
-    name: "{{ vic_vm_alert_system_user }}"
-    groups: "{{ vic_vm_alert_system_group }}"
+    name: "{{ vmalert_system_user }}"
+    groups: "{{ vmalert_system_group }}"
     append: true
     shell: /usr/sbin/nologin
     system: true
     createhome: false
-  when: vic_vm_alert_system_user != "root"
+  when: vmalert_system_user != "root"
 
 - name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
@@ -27,26 +27,26 @@
     path: /usr/local/bin/vmalert-prod
     state: absent
   when:
-    - vic_vm_alert_is_installed.stat.exists | bool
-    - vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+    - vmalert_is_installed.stat.exists | bool
+    - vmalert_version not in vmalert_current_version.stdout
 
 - name: Install via control host
-  when: vic_vm_alert_install_download_to_control
+  when: vmalert_install_download_to_control
   block:
     - name: Download and unarchive VMalert release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ vic_vm_alert_download_url }}"
+        src: "{{ vmalert_download_url }}"
         dest: /tmp
         remote_src: yes
       delegate_to: localhost
       become: no
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
 
     - name: Copy VMalert binary to target host
       notify: Restart VMalert service
@@ -54,12 +54,12 @@
         src: /tmp/vmalert-prod
         dest: /tmp/vmalert-prod
         mode: "0751"
-        owner: "{{ vic_vm_alert_system_user }}"
-        group: "{{ vic_vm_alert_system_group }}"
+        owner: "{{ vmalert_system_user }}"
+        group: "{{ vmalert_system_group }}"
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
 
     - name: Replace VMalert binary at target dir # noqa: no-changed-when
       notify: Restart VMalert service
@@ -67,37 +67,37 @@
         mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
 
 - name: Install directly to target host
-  when: not vic_vm_alert_install_download_to_control
+  when: not vmalert_install_download_to_control
   block:
     - name: Download and unarchive VMalert release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ vic_vm_alert_download_url }}"
+        src: "{{ vmalert_download_url }}"
         dest: /tmp
         remote_src: yes
         extra_opts:
           - --no-same-owner
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
 
     - name: Replace VMalert binary at target dir # noqa: no-changed-when
       notify: Restart VMalert service
       ansible.builtin.shell: |
         mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
         chmod 0751 /usr/local/bin/vmalert-prod
-        chown {{ vic_vm_alert_system_user }}:{{ vic_vm_alert_system_group }} /usr/local/bin/vmalert-prod
+        chown {{ vmalert_system_user }}:{{ vmalert_system_group }} /usr/local/bin/vmalert-prod
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
 
 - name: Restore SELinux context for vmalert binary
   ansible.builtin.command:
