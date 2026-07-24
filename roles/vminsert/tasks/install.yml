@@ -16,15 +16,15 @@
     createhome: false
   when: vminsert_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ vminsert_bin_dir }}"
     state: directory
     mode: "0755"
 
 - name: Delete existing vminsert version if it's different.
   ansible.builtin.file:
-    path: /usr/local/bin/vminsert-prod
+    path: "{{ vminsert_bin_dir }}/vminsert-prod"
     state: absent
   when:
   - vminsert_is_installed.stat.exists | bool
@@ -52,23 +52,24 @@
     notify: Restart vminsert service
     ansible.builtin.copy:
       src: /tmp/vminsert-prod
-      dest: /tmp/vminsert-prod
+      dest: "{{ vminsert_bin_dir }}/vminsert-prod"
       mode: "0751"
-      owner: "{{ vminsert_system_user }}"
+      owner: root
       group: "{{ vminsert_system_group }}"
     when:
     - not ansible_check_mode
     - not vminsert_is_installed.stat.exists or
       vminsert_version not in vminsert_current_version.stdout
 
-  - name: Replace vminsert binary at target dir # noqa: no-changed-when
-    notify: Restart vminsert service
-    ansible.builtin.shell: |
-      mv /tmp/vminsert-prod /usr/local/bin/vminsert-prod
-    when:
-    - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
+  always:
+    - name: Clear download file
+      delegate_to: localhost
+      become: no
+      ansible.builtin.file:
+        path: /tmp/vminsert-prod
+        state: absent
+      when:
+        - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vminsert_install_download_to_control
@@ -90,18 +91,32 @@
 
   - name: Replace vminsert binary at target dir # noqa: no-changed-when
     notify: Restart vminsert service
-    ansible.builtin.shell: |
-      mv /tmp/vminsert-prod /usr/local/bin/vminsert-prod
-      chmod 0751 /usr/local/bin/vminsert-prod
-      chown {{ vminsert_system_user }}:{{ vminsert_system_group }} /usr/local/bin/vminsert-prod
+    ansible.builtin.copy:
+      src: /tmp/vminsert-prod
+      dest: "{{ vminsert_bin_dir }}/vminsert-prod"
+      mode: "0751"
+      owner: root
+      group: "{{ vminsert_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vminsert_is_installed.stat.exists or
       vminsert_version not in vminsert_current_version.stdout
 
+  always:
+    - name: Clear download file
+      ansible.builtin.file:
+        path: /tmp/vminsert-prod
+        state: absent
+      when:
+        - not ansible_check_mode
+
 - name: Restore SELinux context for vminsert binary
   ansible.builtin.command:
-    cmd: restorecon -v /usr/local/bin/vminsert-prod
+    argv:
+      - restorecon
+      - -v
+      - "{{ vminsert_bin_dir }}/vminsert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

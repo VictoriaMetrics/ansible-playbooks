@@ -16,15 +16,15 @@
     createhome: false
   when: vic_vm_alert_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ vic_vm_alert_bin_dir }}"
     state: directory
     mode: "0755"
 
 - name: Delete existing VMalert version if it's different.
   ansible.builtin.file:
-    path: /usr/local/bin/vmalert-prod
+    path: "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
     state: absent
   when:
     - vic_vm_alert_is_installed.stat.exists | bool
@@ -52,23 +52,24 @@
       notify: Restart VMalert service
       ansible.builtin.copy:
         src: /tmp/vmalert-prod
-        dest: /tmp/vmalert-prod
+        dest: "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
         mode: "0751"
-        owner: "{{ vic_vm_alert_system_user }}"
+        owner: root
         group: "{{ vic_vm_alert_system_group }}"
       when:
         - not ansible_check_mode
         - not vic_vm_alert_is_installed.stat.exists or
           vic_vm_alert_version not in vic_vm_alert_current_version.stdout
 
-    - name: Replace VMalert binary at target dir # noqa: no-changed-when
-      notify: Restart VMalert service
-      ansible.builtin.shell: |
-        mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
+  always:
+    - name: Clear download file
+      delegate_to: localhost
+      become: no
+      ansible.builtin.file:
+        path: /tmp/vmalert-prod
+        state: absent
       when:
         - not ansible_check_mode
-        - not vic_vm_alert_is_installed.stat.exists or
-          vic_vm_alert_version not in vic_vm_alert_current_version.stdout
 
 - name: Install directly to target host
   when: not vic_vm_alert_install_download_to_control
@@ -88,20 +89,34 @@
         - not vic_vm_alert_is_installed.stat.exists or
           vic_vm_alert_version not in vic_vm_alert_current_version.stdout
 
-    - name: Replace VMalert binary at target dir # noqa: no-changed-when
+    - name: Replace VMalert binary at target dir
       notify: Restart VMalert service
-      ansible.builtin.shell: |
-        mv /tmp/vmalert-prod /usr/local/bin/vmalert-prod
-        chmod 0751 /usr/local/bin/vmalert-prod
-        chown {{ vic_vm_alert_system_user }}:{{ vic_vm_alert_system_group }} /usr/local/bin/vmalert-prod
+      ansible.builtin.copy:
+        src: /tmp/vmalert-prod
+        dest: "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
+        mode: "0751"
+        owner: root
+        group: "{{ vic_vm_alert_system_group }}"
+        remote_src: true
       when:
         - not ansible_check_mode
         - not vic_vm_alert_is_installed.stat.exists or
           vic_vm_alert_version not in vic_vm_alert_current_version.stdout
 
+  always:
+    - name: Clear download file
+      ansible.builtin.file:
+        path: /tmp/vmalert-prod
+        state: absent
+      when:
+        - not ansible_check_mode
+
 - name: Restore SELinux context for vmalert binary
   ansible.builtin.command:
-    cmd: restorecon -v /usr/local/bin/vmalert-prod
+    argv: 
+      - restorecon
+      - -v 
+      - "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

@@ -11,6 +11,7 @@ vmagent_download_url: "{{ vmagent_repo_url }}/releases/download/{{ vmagent_versi
 vmagent_system_user: "vic_vm_agent"
 vmagent_system_group: "{{ vmagent_system_user }}"
 
+vmagent_bin_dir: "/usr/local/bin"
 vmagent_config_dir: "/opt/vic-vmagent"
 vmagent_sd_config_dir: "{{ vmagent_config_dir }}/file_sd_configs"
 vmagent_tmp_data_path: "/tmp/vmagent"

@@ -18,13 +18,13 @@
 
 - name: Check if vmselect is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/vmselect-prod
+    path: "{{ vmselect_bin_dir }}/vmselect-prod"
   changed_when: false
   check_mode: false
   register: vmselect_is_installed
 
 - name: Check current vmselect version
-  ansible.builtin.command: /usr/local/bin/vmselect-prod --version
+  ansible.builtin.command: "{{ vmselect_bin_dir }}/vmselect-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

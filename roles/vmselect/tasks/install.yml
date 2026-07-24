@@ -16,15 +16,15 @@
     createhome: false
   when: vmselect_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ vmselect_bin_dir }}"
     state: directory
     mode: "0755"
 
 - name: Delete existing vmselect version if it's different.
   ansible.builtin.file:
-    path: /usr/local/bin/vmselect-prod
+    path: "{{ vmselect_bin_dir }}/vmselect-prod"
     state: absent
   when:
   - vmselect_is_installed.stat.exists | bool
@@ -52,23 +52,24 @@
     notify: Restart vmselect service
     ansible.builtin.copy:
       src: /tmp/vmselect-prod
-      dest: /tmp/vmselect-prod
+      dest: "{{ vmselect_bin_dir }}/vmselect-prod"
       mode: "0751"
-      owner: "{{ vmselect_system_user }}"
+      owner: root
       group: "{{ vmselect_system_group }}"
     when:
     - not ansible_check_mode
     - not vmselect_is_installed.stat.exists or
       vmselect_version not in vmselect_current_version.stdout
 
-  - name: Replace vmselect binary at target dir # noqa: no-changed-when
-    notify: Restart vmselect service
-    ansible.builtin.shell: |
-      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
-    when:
-    - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
+  always:
+    - name: Clear download file
+      delegate_to: localhost
+      become: no
+      ansible.builtin.file:
+        path: /tmp/vmselect-prod
+        state: absent
+      when:
+        - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vmselect_install_download_to_control
@@ -90,18 +91,32 @@
 
   - name: Replace vmselect binary at target dir # noqa: no-changed-when
     notify: Restart vmselect service
-    ansible.builtin.shell: |
-      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
-      chmod 0751 /usr/local/bin/vmselect-prod
-      chown {{ vmselect_system_user }}:{{ vmselect_system_group }} /usr/local/bin/vmselect-prod
+    ansible.builtin.copy:
+      src: /tmp/vmselect-prod
+      dest: "{{ vmselect_bin_dir }}/vmselect-prod"
+      mode: "0751"
+      owner: root
+      group: "{{ vmselect_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vmselect_is_installed.stat.exists or
       vmselect_version not in vmselect_current_version.stdout
 
+  always:
+    - name: Clear download file
+      ansible.builtin.file:
+        path: /tmp/vmselect-prod
+        state: absent
+      when:
+        - not ansible_check_mode
+
 - name: Restore SELinux context for vmselect binary
   ansible.builtin.command:
-    cmd: restorecon -v /usr/local/bin/vmselect-prod
+    argv:
+      - restorecon
+      - -v
+      - "{{ vmselect_bin_dir }}/vmselect-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

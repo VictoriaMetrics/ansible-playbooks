@@ -7,6 +7,7 @@ victoriatraces_download_url: "{{ victoriatraces_repo_url }}/releases/download/{{
 
 victoriatraces_system_user: "victoriatraces"
 victoriatraces_system_group: "{{ victoriatraces_system_user }}"
+victoriatraces_bin_dir: "/usr/local/bin"
 victoriatraces_data_dir: "/var/lib/victoria-traces/"
 victoriatraces_retention_period_months: "12"
 

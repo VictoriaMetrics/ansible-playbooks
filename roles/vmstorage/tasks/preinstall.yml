@@ -18,13 +18,13 @@
 
 - name: Check if vmstorage is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/vmstorage-prod
+    path: "{{ vmstorage_bin_dir }}/vmstorage-prod"
   changed_when: false
   check_mode: false
   register: vmstorage_is_installed
 
 - name: Check current vmstorage version
-  ansible.builtin.command: /usr/local/bin/vmstorage-prod --version
+  ansible.builtin.command: "{{ vmstorage_bin_dir }}/vmstorage-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

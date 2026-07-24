@@ -18,13 +18,13 @@
 
 - name: Check if vminsert is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/vminsert-prod
+    path: "{{ vminsert_bin_dir }}/vminsert-prod"
   changed_when: false
   check_mode: false
   register: vminsert_is_installed
 
 - name: Check current vminsert version
-  ansible.builtin.command: /usr/local/bin/vminsert-prod --version
+  ansible.builtin.command: "{{ vminsert_bin_dir }}/vminsert-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

@@ -16,9 +16,9 @@
     createhome: false
   when: victorialogs_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ victorialogs_bin_dir }}"
     state: directory
     mode: "0755"
 
@@ -32,7 +32,7 @@
 
 - name: Delete existing VictoriaLogs version if it is different.
   ansible.builtin.file:
-    path: /usr/local/bin/victoria-logs-prod
+    path: "{{ victorialogs_bin_dir }}/victoria-logs-prod"
     state: absent
   when:
     - victorialogs_is_installed.stat.exists | bool
@@ -75,11 +75,12 @@
           victorialogs_version not in victorialogs_current_version.stdout
 
     - name: Upload VictoriaLogs release binary # noqa: no-handler
+      notify: Restart VictoriaLogs service
       ansible.builtin.copy:
         src: /tmp/vl-single/victoria-logs-prod
-        dest: /usr/local/bin
+        dest: "{{ victorialogs_bin_dir }}/victoria-logs-prod"
         mode: "0751"
-        owner: "{{ victorialogs_system_user }}"
+        owner: root
         group: "{{ victorialogs_system_group }}"
       when:
         - archive_downloaded is changed
@@ -114,20 +115,34 @@
         - not victorialogs_is_installed.stat.exists or
           victorialogs_version not in victorialogs_current_version.stdout
 
-    - name: Replace VictoriaLogs binary at target dir # noqa: no-changed-when
+    - name: Replace VictoriaLogs binary at target dir
       notify: Restart VictoriaLogs service
-      ansible.builtin.shell: |
-        mv /tmp/victoria-logs-prod /usr/local/bin/victoria-logs-prod
-        chmod 0751 /usr/local/bin/victoria-logs-prod
-        chown {{ victorialogs_system_user }}:{{ victorialogs_system_group }} /usr/local/bin/victoria-logs-prod
+      ansible.builtin.copy:
+        src: /tmp/victoria-logs-prod
+        dest: "{{ victorialogs_bin_dir }}/victoria-logs-prod"
+        mode: "0751"
+        owner: root
+        group: "{{ victorialogs_system_group }}"
+        remote_src: true
       when:
         - not ansible_check_mode
         - not victorialogs_is_installed.stat.exists or
           victorialogs_version not in victorialogs_current_version.stdout
 
+  always:
+    - name: Clear download paths
+      become: no
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/vl-single/
+      when:
+        - not ansible_check_mode
+
 - name: Restore SELinux context for VictoriaLogs binary
   ansible.builtin.command:
-    cmd: restorecon -v /usr/local/bin/victoria-logs-prod
+    cmd: "restorecon -v {{ victorialogs_bin_dir }}/victoria-logs-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

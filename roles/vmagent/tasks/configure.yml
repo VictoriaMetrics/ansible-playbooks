@@ -69,7 +69,7 @@
     mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
-    validate: "/usr/local/bin/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config %s -dryRun"
+    validate: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config %s -dryRun"
   no_log: true
   notify: Restart VMagent service
 
@@ -80,7 +80,7 @@
     mode: "0751"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
-    validate: "/usr/local/bin/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -streamAggr.config %s -dryRun"
+    validate: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -streamAggr.config %s -dryRun"
   no_log: true
   notify: Restart VMagent service
 

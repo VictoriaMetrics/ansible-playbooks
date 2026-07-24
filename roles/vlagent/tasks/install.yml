@@ -16,15 +16,15 @@
     createhome: false
   when: vlagent_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ vlagent_bin_dir }}"
     state: directory
     mode: "0755"
 
 - name: Delete existing VLagent version if it's different.
   ansible.builtin.file:
-    path: /usr/local/bin/vlagent-prod
+    path: "{{ vlagent_bin_dir }}/vlagent-prod"
     state: absent
   when:
   - vlagent_is_installed.stat.exists | bool
@@ -52,23 +52,24 @@
     notify: Restart VLagent service
     ansible.builtin.copy:
       src: /tmp/vlagent-prod
-      dest: /tmp/vlagent-prod
+      dest: "{{ vlagent_bin_dir }}/vlagent-prod"
       mode: "0751"
-      owner: "{{ vlagent_system_user }}"
+      owner: root
       group: "{{ vlagent_system_group }}"
     when:
     - not ansible_check_mode
     - not vlagent_is_installed.stat.exists or
       vlagent_version not in vlagent_current_version.stdout
 
-  - name: Replace vlagent binary at target dir # noqa: no-changed-when
-    notify: Restart VLagent service
-    ansible.builtin.shell: |
-      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
-    when:
-    - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
+  always:
+    - name: Clear download file
+      become: no
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "/tmp/vlagent-prod"
+        state: absent
+      when:
+        - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vlagent_install_download_to_control
@@ -88,13 +89,24 @@
     - not vlagent_is_installed.stat.exists or
       vlagent_version not in vlagent_current_version.stdout
 
-  - name: Replace vlagent binary at target dir # noqa: no-changed-when
+  - name: Replace vlagent binary at target dir
     notify: Restart VLagent service
-    ansible.builtin.shell: |
-      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
-      chmod 0751 /usr/local/bin/vlagent-prod
-      chown {{ vlagent_system_user }}:{{ vlagent_system_group }} /usr/local/bin/vlagent-prod
+    ansible.builtin.copy:
+      src: /tmp/vlagent-prod
+      dest: "{{ vlagent_bin_dir }}/vlagent-prod"
+      mode: "0751"
+      owner: root
+      group: "{{ vlagent_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vlagent_is_installed.stat.exists or
       vlagent_version not in vlagent_current_version.stdout
+
+  always:
+    - name: Clear download file
+      ansible.builtin.file:
+        path: "/tmp/vlagent-prod"
+        state: absent
+      when:
+        - not ansible_check_mode

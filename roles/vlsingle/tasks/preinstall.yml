@@ -16,13 +16,13 @@
 
 - name: Check if VictoriaLogs is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/victoria-logs-prod
+    path: "{{ victorialogs_bin_dir }}/victoria-logs-prod"
   changed_when: false
   check_mode: false
   register: victorialogs_is_installed
 
 - name: Check current VictoriaLogs version
-  ansible.builtin.command: /usr/local/bin/victoria-logs-prod --version
+  ansible.builtin.command: "{{ victorialogs_bin_dir }}/victoria-logs-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

@@ -85,7 +85,7 @@
         day: "{{ victoriametrics_backup_cron_day }}"
         weekday: "{{ victoriametrics_backup_cron_weekday }}"
         month: "{{ victoriametrics_backup_cron_month }}"
-        job: "{{ _victoria_backup_proxy | default('') }} /usr/local/bin/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if victoriametrics_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ victoriametrics_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ victoriametrics_data_dir }} -dst {{ victoriametrics_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
+        job: "{{ _victoria_backup_proxy | default('') }} {{ victoriametrics_bin_dir }}/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if victoriametrics_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ victoriametrics_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ victoriametrics_data_dir }} -dst {{ victoriametrics_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
 
 - name: Delete cron if backup disabled
   ansible.builtin.cron:
