@@ -1,16 +1,16 @@
 ---
 - name: Configure env
-  when: victoriametrics_service_envflag_enabled | bool
+  when: vmsingle_service_envflag_enabled | bool
   block:
     - name: Check envfile presence
       ansible.builtin.stat:
-        path: "{{ victoriametrics_service_envflag_file }}"
+        path: "{{ vmsingle_service_envflag_file }}"
       register: envfile_state
 
     - name: Setup envfile
       ansible.builtin.file:
         state: touch
-        path: "{{ victoriametrics_service_envflag_file }}"
+        path: "{{ vmsingle_service_envflag_file }}"
         owner: root
         group: root
         mode: "0644"
@@ -45,7 +45,7 @@
 
 - name: Configure credentials
   when:
-    - victoriametrics_backup_enabled | bool
+    - vmsingle_backup_enabled | bool
     - crontab_which.rc == 0
   block:
     - name: Create aws credentials dir
@@ -70,9 +70,9 @@
 
     - name: Set proxy config
       ansible.builtin.set_fact:
-        _victoria_backup_proxy: "http_proxy={{ http_proxy }} https_proxy={{ http_proxy }} "
+        _vmsingle_backup_proxy: "http_proxy={{ http_proxy }} https_proxy={{ http_proxy }} "
       when:
-        - victoriametrics_backup_proxy_enable
+        - vmsingle_backup_proxy_enable
         - http_proxy is defined
 
     - name: Configure cron
@@ -80,23 +80,23 @@
         name: "backup victoriametrics data"
         user: root
         state: present
-        minute: "{{ victoriametrics_backup_cron_minute }}"
-        hour: "{{ victoriametrics_backup_cron_hour }}"
-        day: "{{ victoriametrics_backup_cron_day }}"
-        weekday: "{{ victoriametrics_backup_cron_weekday }}"
-        month: "{{ victoriametrics_backup_cron_month }}"
-        job: "{{ _victoria_backup_proxy | default('') }} /usr/local/bin/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if victoriametrics_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ victoriametrics_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ victoriametrics_data_dir }} -dst {{ victoriametrics_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
+        minute: "{{ vmsingle_backup_cron_minute }}"
+        hour: "{{ vmsingle_backup_cron_hour }}"
+        day: "{{ vmsingle_backup_cron_day }}"
+        weekday: "{{ vmsingle_backup_cron_weekday }}"
+        month: "{{ vmsingle_backup_cron_month }}"
+        job: "{{ _vmsingle_backup_proxy | default('') }} /usr/local/bin/vmbackup-prod -snapshot.createURL=http://localhost:8428/snapshot/create {% if vmsingle_backup_custom_s3_endpoint != '' %} -customS3Endpoint {{ vmsingle_backup_custom_s3_endpoint }} {% endif %} -storageDataPath {{ vmsingle_data_dir }} -dst {{ vmsingle_backup_destination }}/$(date +\\%Y-\\%m-\\%d)"
 
 - name: Delete cron if backup disabled
   ansible.builtin.cron:
     name: "backup victoriametrics data"
     user: root
-    minute: "{{ victoriametrics_backup_cron_minute }}"
-    hour: "{{ victoriametrics_backup_cron_hour }}"
-    day: "{{ victoriametrics_backup_cron_day }}"
-    weekday: "{{ victoriametrics_backup_cron_weekday }}"
-    month: "{{ victoriametrics_backup_cron_month }}"
+    minute: "{{ vmsingle_backup_cron_minute }}"
+    hour: "{{ vmsingle_backup_cron_hour }}"
+    day: "{{ vmsingle_backup_cron_day }}"
+    weekday: "{{ vmsingle_backup_cron_weekday }}"
+    month: "{{ vmsingle_backup_cron_month }}"
     state: absent
   when:
-    - not victoriametrics_backup_enabled | bool
+    - not vmsingle_backup_enabled | bool
     - crontab_which.rc == 0

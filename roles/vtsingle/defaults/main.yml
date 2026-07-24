@@ -1,32 +1,36 @@
 ---
-victoriatraces_version: "v0.9.4"
+vtsingle_version: "{{ victoriatraces_version | default('v0.9.4') }}"
 
-victoriatraces_platform: "linux"
-victoriatraces_repo_url: "https://github.com/VictoriaMetrics/VictoriaTraces"
-victoriatraces_download_url: "{{ victoriatraces_repo_url }}/releases/download/{{ victoriatraces_version }}/victoria-traces-{{ victoriatraces_platform }}-{{ go_arch }}-{{ victoriatraces_version }}.tar.gz"
+vtsingle_platform: "{{ victoriatraces_platform | default('linux') }}"
+vtsingle_repo_url: "{{ victoriatraces_repo_url | default('https://github.com/VictoriaMetrics/VictoriaTraces') }}"
+vtsingle_download_url: "{{ victoriatraces_download_url | default(vtsingle_repo_url ~ '/releases/download/' ~ vtsingle_version ~ '/victoria-traces-' ~ vtsingle_platform ~ '-' ~ go_arch ~ '-' ~ vtsingle_version ~ '.tar.gz') }}"
 
-victoriatraces_system_user: "victoriatraces"
-victoriatraces_system_group: "{{ victoriatraces_system_user }}"
-victoriatraces_data_dir: "/var/lib/victoria-traces/"
-victoriatraces_retention_period_months: "12"
+vtsingle_system_user: "{{ victoriatraces_system_user | default('victoriatraces') }}"
+vtsingle_system_group: "{{ victoriatraces_system_group | default(vtsingle_system_user) }}"
+vtsingle_data_dir: "{{ victoriatraces_data_dir | default('/var/lib/victoria-traces/') }}"
+# Passed verbatim to -retentionPeriod. With no unit suffix the value is counted
+# in months; see the docs for the supported unit suffixes.
+# https://docs.victoriametrics.com/victoriatraces/#retention
+vtsingle_retention_period: "{{ victoriatraces_retention_period_months | default('12') }}"
 
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
-victoriatraces_service_envflag_enabled: "false"
+vtsingle_service_envflag_enabled: "{{ victoriatraces_service_envflag_enabled | default('false') }}"
 # Array of strings to pass
-victoriatraces_service_envflag_data: []
+vtsingle_service_envflag_data: "{{ victoriatraces_service_envflag_data | default([]) }}"
 #  - "graphiteListenAddr=127.0.0.1:12345"
-victoriatraces_service_envflag_file: "/etc/default/victoriatraces"
+vtsingle_service_envflag_file: "{{ victoriatraces_service_envflag_file | default('/etc/default/victoriatraces') }}"
 
 # Download behavior
-victoriatraces_install_download_to_control: false
+vtsingle_install_download_to_control: "{{ victoriatraces_install_download_to_control | default(false) }}"
 
 # Proxy environment for downloads
 vm_proxy_http: ""
 vm_proxy_https: ""
 
-victoriatraces_service_args:
-  storageDataPath: "{{ victoriatraces_data_dir }}"
-  retentionPeriod: "{{ victoriatraces_retention_period_months }}"
+_vtsingle_service_args_default:
+  storageDataPath: "{{ vtsingle_data_dir }}"
+  retentionPeriod: "{{ vtsingle_retention_period }}"
+vtsingle_service_args: "{{ victoriatraces_service_args | default(_vtsingle_service_args_default) }}"
 
-victoriatraces_max_open_files: 2097152
+vtsingle_max_open_files: "{{ victoriatraces_max_open_files | default(2097152) }}"

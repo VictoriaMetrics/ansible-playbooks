@@ -1,4 +1,6 @@
 ---
+- name: Deprecation warnings
+  ansible.builtin.import_tasks: deprecations.yml
 - name: License preinstall checks
   ansible.builtin.import_tasks: preinstall_license.yml
 - name: Preinstall checks

@@ -1,57 +1,60 @@
 ---
-victoriametrics_version: "v1.148.0"
-victoriametrics_enterprise: false
-victoriametrics_license_key: ""
-victoriametrics_license_key_file: ""
+vmsingle_version: "{{ victoriametrics_version | default('v1.148.0') }}"
+vmsingle_enterprise: "{{ victoriametrics_enterprise | default(false) }}"
+vmsingle_license_key: "{{ victoriametrics_license_key | default('') }}"
+vmsingle_license_key_file: "{{ victoriametrics_license_key_file | default('') }}"
 
-victoriametrics_platform: "{% if victoriametrics_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
-victoriametrics_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
-victoriametrics_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/victoria-metrics{{ victoriametrics_platform }}-{{ go_arch }}-{{ victoriametrics_version }}{%if victoriametrics_enterprise %}-enterprise{% endif %}.tar.gz"
+vmsingle_platform: "{{ victoriametrics_platform | default('-linux' if vmsingle_version.replace('v', '') is version('1.79.0', '>=') else '') }}"
+vmsingle_repo_url: "{{ victoriametrics_repo_url | default('https://github.com/VictoriaMetrics/VictoriaMetrics') }}"
+vmsingle_download_url: "{{ victoriametrics_download_url | default(vmsingle_repo_url ~ '/releases/download/' ~ vmsingle_version ~ '/victoria-metrics' ~ vmsingle_platform ~ '-' ~ go_arch ~ '-' ~ vmsingle_version ~ ('-enterprise' if vmsingle_enterprise else '') ~ '.tar.gz') }}"
 
-victoriametrics_utils_download_url: "{{ victoriametrics_repo_url }}/releases/download/{{ victoriametrics_version }}/vmutils{{ victoriametrics_platform }}-{{ go_arch }}-{{ victoriametrics_version }}.tar.gz"
-victoriametrics_system_user: "victoriametrics"
-victoriametrics_system_group: "{{ victoriametrics_system_user }}"
-victoriametrics_data_dir: "/var/lib/victoria-metrics/"
-victoriametrics_self_scrape_interval: "30s"
-victoriametrics_retention_period_months: "12"
-victoriametrics_search_max_unique_timeseries: "900000"
+vmsingle_utils_download_url: "{{ victoriametrics_utils_download_url | default(vmsingle_repo_url ~ '/releases/download/' ~ vmsingle_version ~ '/vmutils' ~ vmsingle_platform ~ '-' ~ go_arch ~ '-' ~ vmsingle_version ~ '.tar.gz') }}"
+vmsingle_system_user: "{{ victoriametrics_system_user | default('victoriametrics') }}"
+vmsingle_system_group: "{{ victoriametrics_system_group | default(vmsingle_system_user) }}"
+vmsingle_data_dir: "{{ victoriametrics_data_dir | default('/var/lib/victoria-metrics/') }}"
+vmsingle_self_scrape_interval: "{{ victoriametrics_self_scrape_interval | default('30s') }}"
+# Passed verbatim to -retentionPeriod. With no unit suffix the value is counted
+# in months; see the docs for the supported unit suffixes.
+# https://docs.victoriametrics.com/#retention
+vmsingle_retention_period: "{{ victoriametrics_retention_period_months | default('12') }}"
+vmsingle_search_max_unique_timeseries: "{{ victoriametrics_search_max_unique_timeseries | default('900000') }}"
 
 # more on envflags usage
 # https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#environment-variables
-victoriametrics_service_envflag_enabled: "false"
+vmsingle_service_envflag_enabled: "{{ victoriametrics_service_envflag_enabled | default('false') }}"
 # Array of strings to pass
-victoriametrics_service_envflag_data: []
+vmsingle_service_envflag_data: "{{ victoriametrics_service_envflag_data | default([]) }}"
 #  - "graphiteListenAddr=127.0.0.1:12345"
-victoriametrics_service_envflag_file: "/etc/default/victoriametrics"
+vmsingle_service_envflag_file: "{{ victoriametrics_service_envflag_file | default('/etc/default/victoriametrics') }}"
 
-
-victoriametrics_service_args:
-  storageDataPath: "{{ victoriametrics_data_dir }}"
-  selfScrapeInterval: "{{ victoriametrics_self_scrape_interval }}"
-  retentionPeriod: "{{ victoriametrics_retention_period_months }}"
+_vmsingle_service_args_default:
+  storageDataPath: "{{ vmsingle_data_dir }}"
+  selfScrapeInterval: "{{ vmsingle_self_scrape_interval }}"
+  retentionPeriod: "{{ vmsingle_retention_period }}"
   maxConcurrentInserts: 32
-  "search.maxUniqueTimeseries": "{{ victoriametrics_search_max_unique_timeseries }}"
+  "search.maxUniqueTimeseries": "{{ vmsingle_search_max_unique_timeseries }}"
+vmsingle_service_args: "{{ victoriametrics_service_args | default(_vmsingle_service_args_default) }}"
 
-victoriametrics_max_open_files: 2097152
-victoriametrics_backup_proxy_enable: false
+vmsingle_max_open_files: "{{ victoriametrics_max_open_files | default(2097152) }}"
+vmsingle_backup_proxy_enable: "{{ victoriametrics_backup_proxy_enable | default(false) }}"
 
 # Download behavior
-victoriametrics_install_download_to_control: false
+vmsingle_install_download_to_control: "{{ victoriametrics_install_download_to_control | default(false) }}"
 
 # Proxy environment for downloads
 vm_proxy_http: ""
 vm_proxy_https: ""
 
-victoriametrics_backup_enabled: false
-victoriametrics_backup_destination: "s3://"
+vmsingle_backup_enabled: "{{ victoriametrics_backup_enabled | default(false) }}"
+vmsingle_backup_destination: "{{ victoriametrics_backup_destination | default('s3://') }}"
 
-victoriametrics_backup_cron_minute: "0"
-victoriametrics_backup_cron_hour: "*/2"
-victoriametrics_backup_cron_day: "*"
-victoriametrics_backup_cron_weekday: "*"
-victoriametrics_backup_cron_month: "*"
+vmsingle_backup_cron_minute: "{{ victoriametrics_backup_cron_minute | default('0') }}"
+vmsingle_backup_cron_hour: "{{ victoriametrics_backup_cron_hour | default('*/2') }}"
+vmsingle_backup_cron_day: "{{ victoriametrics_backup_cron_day | default('*') }}"
+vmsingle_backup_cron_weekday: "{{ victoriametrics_backup_cron_weekday | default('*') }}"
+vmsingle_backup_cron_month: "{{ victoriametrics_backup_cron_month | default('*') }}"
 
-victoriametrics_backup_access_key: ""
-victoriametrics_backup_secret_key: ""
-victoriametrics_backup_custom_s3_endpoint: ""
-victoriametrics_backup_region: "eu-west-1"
+vmsingle_backup_access_key: "{{ victoriametrics_backup_access_key | default('') }}"
+vmsingle_backup_secret_key: "{{ victoriametrics_backup_secret_key | default('') }}"
+vmsingle_backup_custom_s3_endpoint: "{{ victoriametrics_backup_custom_s3_endpoint | default('') }}"
+vmsingle_backup_region: "{{ victoriametrics_backup_region | default('eu-west-1') }}"

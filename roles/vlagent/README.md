@@ -22,8 +22,17 @@ The following table lists the configurable parameters of the roles and their def
 | vlagent_exec_start_post             | Post start hook for systemd unit.                                                                                         | `""`                                                                                                  |
 | vlagent_exec_stop                   | Stop command for systemd unit.                                                                                            | `""`                                                                                                  |
 | vlagent_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                               |
-| vl_proxy_http                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
-| vl_proxy_https                      | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
+| vm_proxy_http                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
+| vm_proxy_https                      | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
+
+## Deprecated aliases
+
+The `vl_proxy_*` variable names are deprecated in favor of the unified `vm_proxy_*` prefix (shared with the other roles) and will be removed in a future release. Old names still work (each is used as a fallback when the corresponding new name is unset), and the role emits a deprecation warning when it detects one. Migrate to the new names:
+
+| Deprecated    | Use instead   |
+|---------------|---------------|
+| vl_proxy_http | vm_proxy_http |
+| vl_proxy_https | vm_proxy_https |
 
 ## Flag naming
 

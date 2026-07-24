@@ -30,7 +30,7 @@
   hosts: test_target
   become: yes
   vars:
-    victoriatraces_install_download_to_control: false
+    vtsingle_install_download_to_control: false
     vm_proxy_http: "http://vtsingle-proxy-server:3128"
     vm_proxy_https: "http://vtsingle-proxy-server:3128"
   tasks:

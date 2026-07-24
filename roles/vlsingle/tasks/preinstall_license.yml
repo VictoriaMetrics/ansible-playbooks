@@ -1,38 +1,38 @@
 - name: Ensure license key is provided
   ansible.builtin.assert:
-    that: victorialogs_license_key != "" or victorialogs_license_key_file != ""
+    that: vlsingle_license_key != "" or vlsingle_license_key_file != ""
     msg: Either license key or license key file location must be provided.
-  when: victorialogs_enterprise | bool
+  when: vlsingle_enterprise | bool
 
 - name: Ensure only one of key or file is provided
   ansible.builtin.assert:
-    that: victorialogs_license_key_file == ""
+    that: vlsingle_license_key_file == ""
     msg: Only one of license key or license key file must be provided.
   when:
-    - victorialogs_enterprise | bool
-    - victorialogs_license_key != ""
+    - vlsingle_enterprise | bool
+    - vlsingle_license_key != ""
 
 
 - name: Ensure only one of key or file is provided
   ansible.builtin.assert:
-    that: victorialogs_license_key == ""
+    that: vlsingle_license_key == ""
     msg: Only one of license key or license key file must be provided.
   when:
-    - victorialogs_enterprise | bool
-    - victorialogs_license_key_file != ""
+    - vlsingle_enterprise | bool
+    - vlsingle_license_key_file != ""
 
 
 - name: Add license key parameter to service config
   ansible.builtin.set_fact:
-    victorialogs_service_args: "{{ victorialogs_service_args | combine({'license': victorialogs_license_key}) }}"
+    vlsingle_service_args: "{{ vlsingle_service_args | combine({'license': vlsingle_license_key}) }}"
   when:
-    - victorialogs_enterprise | bool
-    - victorialogs_license_key != ""
+    - vlsingle_enterprise | bool
+    - vlsingle_license_key != ""
 
 
 - name: Add license key parameter to service config
   ansible.builtin.set_fact:
-    victorialogs_service_args: "{{ victorialogs_service_args | combine({'licenseFile': victorialogs_license_key_file}) }}"
+    vlsingle_service_args: "{{ vlsingle_service_args | combine({'licenseFile': vlsingle_license_key_file}) }}"
   when:
-    - victorialogs_enterprise | bool
-    - victorialogs_license_key_file != ""
+    - vlsingle_enterprise | bool
+    - vlsingle_license_key_file != ""

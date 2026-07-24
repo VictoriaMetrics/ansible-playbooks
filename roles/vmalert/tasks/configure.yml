@@ -5,7 +5,7 @@
   - name: "Systemd | Copy VMalert systemd unit file"
     ansible.builtin.template:
       src: systemd-service.j2
-      dest: "/etc/systemd/system/{{ vic_vm_alert_service_name }}.service"
+      dest: "/etc/systemd/system/{{ vmalert_service_name }}.service"
       owner: root
       group: root
       mode: "0644"
@@ -23,45 +23,45 @@
   - name: Ensure VMalert service is enabled on boot
     become: true
     ansible.builtin.systemd:
-      name: "{{ vic_vm_alert_service_name }}"
+      name: "{{ vmalert_service_name }}"
       enabled: true
     ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Configure upstart
   when: ansible_facts['service_mgr'] == "upstart"
   block:
-  - name: "Upstart | Install service file {{ vic_vm_alert_service_name }}"
+  - name: "Upstart | Install service file {{ vmalert_service_name }}"
     ansible.builtin.template:
       src: "upstart.j2"
-      dest: "/etc/init.d/{{ vic_vm_alert_service_name }}"
+      dest: "/etc/init.d/{{ vmalert_service_name }}"
       mode: "0755"
       owner: root
       group: root
     notify: Restart VMalert service
     register: config_template
 
-  - name: "Upstart | Enable service {{ vic_vm_alert_service_name }}"
+  - name: "Upstart | Enable service {{ vmalert_service_name }}"
     ansible.builtin.service:
-      name: "{{ vic_vm_alert_service_name }}"
+      name: "{{ vmalert_service_name }}"
       enabled: "yes"
 
 - name: Prepare configuration dir
   ansible.builtin.file:
     state: directory
-    path: "{{ vic_vm_alert_config_dir }}"
+    path: "{{ vmalert_config_dir }}"
     mode: "0751"
-    owner: "{{ vic_vm_alert_system_user }}"
-    group: "{{ vic_vm_alert_system_group }}"
+    owner: "{{ vmalert_system_user }}"
+    group: "{{ vmalert_system_group }}"
 
 - name: Configure alerts config
   ansible.builtin.template:
     src: alerts.yml.j2
-    dest: "{{ vic_vm_alert_rules_config_path }}"
+    dest: "{{ vmalert_rules_config_path }}"
     mode: "0600"
-    owner: "{{ vic_vm_alert_system_user }}"
-    group: "{{ vic_vm_alert_system_group }}"
-    validate: "/usr/local/bin/vmalert-prod {% for k, v in vic_vm_alert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -dryRun -rule %s"
+    owner: "{{ vmalert_system_user }}"
+    group: "{{ vmalert_system_group }}"
+    validate: "/usr/local/bin/vmalert-prod {% for k, v in vmalert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -dryRun -rule %s"
     backup: yes
   no_log: true
   notify: Restart VMalert service
-  when: vic_vm_alert_default_rules_enabled | bool
+  when: vmalert_default_rules_enabled | bool

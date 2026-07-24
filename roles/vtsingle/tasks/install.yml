@@ -1,20 +1,20 @@
 ---
 - name: Create VictoriaTraces system group
   ansible.builtin.group:
-    name: "{{ victoriatraces_system_group }}"
+    name: "{{ vtsingle_system_group }}"
     state: present
     system: true
-  when: victoriatraces_system_group != "root"
+  when: vtsingle_system_group != "root"
 
 - name: Create VictoriaTraces system user
   ansible.builtin.user:
-    name: "{{ victoriatraces_system_user }}"
-    groups: "{{ victoriatraces_system_group }}"
+    name: "{{ vtsingle_system_user }}"
+    groups: "{{ vtsingle_system_group }}"
     append: true
     shell: /usr/sbin/nologin
     system: true
     createhome: false
-  when: victoriatraces_system_user != "root"
+  when: vtsingle_system_user != "root"
 
 - name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
@@ -24,22 +24,22 @@
 
 - name: Ensure existence of VictoriaTraces storage directory
   ansible.builtin.file:
-    path: "{{ victoriatraces_data_dir }}"
+    path: "{{ vtsingle_data_dir }}"
     state: directory
     mode: "0755"
-    owner: "{{ victoriatraces_system_user }}"
-    group: "{{ victoriatraces_system_group }}"
+    owner: "{{ vtsingle_system_user }}"
+    group: "{{ vtsingle_system_group }}"
 
 - name: Delete existing VictoriaTraces version if it is different.
   ansible.builtin.file:
     path: /usr/local/bin/victoria-traces-prod
     state: absent
   when:
-    - victoriatraces_is_installed.stat.exists | bool
-    - victoriatraces_version not in victoriatraces_current_version.stdout
+    - vtsingle_is_installed.stat.exists | bool
+    - vtsingle_version not in vtsingle_current_version.stdout
 
 - name: Install via control host
-  when: victoriatraces_install_download_to_control
+  when: vtsingle_install_download_to_control
   block:
     - name: Prepare local download paths
       delegate_to: localhost
@@ -52,15 +52,15 @@
         - /tmp/vt-single/
       when:
         - not ansible_check_mode
-        - not victoriatraces_is_installed.stat.exists or
-          victoriatraces_version not in victoriatraces_current_version.stdout
+        - not vtsingle_is_installed.stat.exists or
+          vtsingle_version not in vtsingle_current_version.stdout
 
     - name: Download and unarchive VictoriaTraces release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriatraces_download_url }}"
+        src: "{{ vtsingle_download_url }}"
         dest: /tmp/vt-single/
         remote_src: yes
         extra_opts:
@@ -71,16 +71,16 @@
       delegate_to: localhost
       when:
         - not ansible_check_mode
-        - not victoriatraces_is_installed.stat.exists or
-          victoriatraces_version not in victoriatraces_current_version.stdout
+        - not vtsingle_is_installed.stat.exists or
+          vtsingle_version not in vtsingle_current_version.stdout
 
     - name: Upload VictoriaTraces release binary # noqa: no-handler
       ansible.builtin.copy:
         src: /tmp/vt-single/victoria-traces-prod
         dest: /usr/local/bin
         mode: "0751"
-        owner: "{{ victoriatraces_system_user }}"
-        group: "{{ victoriatraces_system_group }}"
+        owner: "{{ vtsingle_system_user }}"
+        group: "{{ vtsingle_system_group }}"
       when:
         - archive_downloaded is changed
 
@@ -97,33 +97,33 @@
         - not ansible_check_mode
 
 - name: Install directly to target host
-  when: not victoriatraces_install_download_to_control
+  when: not vtsingle_install_download_to_control
   block:
     - name: Download and unarchive VictoriaTraces release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriatraces_download_url }}"
+        src: "{{ vtsingle_download_url }}"
         dest: /tmp
         remote_src: yes
         extra_opts:
           - --no-same-owner
       when:
         - not ansible_check_mode
-        - not victoriatraces_is_installed.stat.exists or
-          victoriatraces_version not in victoriatraces_current_version.stdout
+        - not vtsingle_is_installed.stat.exists or
+          vtsingle_version not in vtsingle_current_version.stdout
 
     - name: Replace VictoriaTraces binary at target dir # noqa: no-changed-when
       notify: Restart VictoriaTraces service
       ansible.builtin.shell: |
         mv /tmp/victoria-traces-prod /usr/local/bin/victoria-traces-prod
         chmod 0751 /usr/local/bin/victoria-traces-prod
-        chown {{ victoriatraces_system_user }}:{{ victoriatraces_system_group }} /usr/local/bin/victoria-traces-prod
+        chown {{ vtsingle_system_user }}:{{ vtsingle_system_group }} /usr/local/bin/victoria-traces-prod
       when:
         - not ansible_check_mode
-        - not victoriatraces_is_installed.stat.exists or
-          victoriatraces_version not in victoriatraces_current_version.stdout
+        - not vtsingle_is_installed.stat.exists or
+          vtsingle_version not in vtsingle_current_version.stdout
 
 - name: Restore SELinux context for VictoriaTraces binary
   ansible.builtin.command:

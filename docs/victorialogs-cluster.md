@@ -4,7 +4,7 @@ Cluster deployment example is available in [playbooks/vlcluster.yml](../playbook
 The playbook deploys [VictoriaLogs cluster](https://docs.victoriametrics.com/victorialogs/cluster/) and [vmauth](https://docs.victoriametrics.com/victoriametrics/vmauth/) to act as a load balancer.
 See [inventory](../inventory_example/vlcluster-inventory) for example of inventory file.
 
-All three cluster components (vlstorage, vlinsert, vlselect) use the same `vlsingle` role since they share a single binary. The component role is determined by flags passed via `victorialogs_service_args`:
+All three cluster components (vlstorage, vlinsert, vlselect) use the same `vlsingle` role since they share a single binary. The component role is determined by flags passed via `vlsingle_service_args`:
 
 - **vlstorage** — uses role defaults (no extra flags needed)
 - **vlinsert** — sets `storageNode` and `select.disable: "true"`
