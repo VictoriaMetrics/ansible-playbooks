@@ -34,7 +34,7 @@ Installs `vmalert` as binary running with systemd
 
 ## Deprecated aliases
 
-The `vic_vm_alert_*` variable names are deprecated in favor of the unified `vmalert_*` prefix and will be removed in a future release. Old names still work (they are honored as fallbacks and take precedence when set), and the role emits a deprecation warning when it detects one. Migrate to the new names:
+The `vic_vm_alert_*` variable names are deprecated in favor of the unified `vmalert_*` prefix and will be removed in a future release. Old names still work (each is used as a fallback when the corresponding new name is unset), and the role emits a deprecation warning when it detects one. Migrate to the new names:
 
 | Deprecated                                 | Use instead                         |
 |--------------------------------------------|-------------------------------------|

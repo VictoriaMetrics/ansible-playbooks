@@ -30,12 +30,10 @@
   hosts: test_target
   become: yes
   vars:
-    victoriametrics_data_dir: "/tmp/victoria-logs/"
+    vlsingle_data_dir: "/tmp/victoria-logs/"
     vlsingle_install_download_to_control: false
     vm_proxy_http: "http://vlsingle-proxy-server:3128"
     vm_proxy_https: "http://vlsingle-proxy-server:3128"
-    victoriametrics_service_args:
-      storageDataPath: "{{ victoriametrics_data_dir }}"
   tasks:
     - name: "Include vlsingle"
       ansible.builtin.include_role:

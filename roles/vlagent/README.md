@@ -27,7 +27,7 @@ The following table lists the configurable parameters of the roles and their def
 
 ## Deprecated aliases
 
-The `vl_proxy_*` variable names are deprecated in favor of the unified `vm_proxy_*` prefix (shared with the other roles) and will be removed in a future release. Old names still work (they are honored as fallbacks and take precedence when set), and the role emits a deprecation warning when it detects one. Migrate to the new names:
+The `vl_proxy_*` variable names are deprecated in favor of the unified `vm_proxy_*` prefix (shared with the other roles) and will be removed in a future release. Old names still work (each is used as a fallback when the corresponding new name is unset), and the role emits a deprecation warning when it detects one. Migrate to the new names:
 
 | Deprecated    | Use instead   |
 |---------------|---------------|
