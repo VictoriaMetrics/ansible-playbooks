@@ -44,7 +44,7 @@ See full list at [defaults.yml](./defaults/main.yml)
 
 ## Deprecated aliases
 
-The `victoriametrics_*` variable names are deprecated in favor of the unified `vmsingle_*` prefix and will be removed in a future release. Old names still work (they are honored as fallbacks and take precedence when set), and the role emits a deprecation warning when it detects one. Migrate to the new names:
+The `victoriametrics_*` variable names are deprecated in favor of the unified `vmsingle_*` prefix and will be removed in a future release. Old names still work (each is used as a fallback when the corresponding new name is unset), and the role emits a deprecation warning when it detects one. Migrate to the new names:
 
 | Deprecated                                   | Use instead                            |
 |----------------------------------------------|----------------------------------------|
