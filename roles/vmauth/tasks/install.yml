@@ -52,19 +52,10 @@
     notify: Restart vmauth service
     ansible.builtin.copy:
       src: /tmp/vmauth-prod
-      dest: /tmp/vmauth-prod
+      dest: /usr/local/bin/vmauth-prod
       mode: "0751"
-      owner: "{{ vmauth_system_user }}"
+      owner: root
       group: "{{ vmauth_system_group }}"
-    when:
-    - not ansible_check_mode
-    - not vmauth_is_installed.stat.exists or
-      vmauth_version not in vmauth_current_version.stdout
-
-  - name: Replace vmauth binary at target dir # noqa: no-changed-when
-    notify: Restart vmauth service
-    ansible.builtin.shell: |
-      mv /tmp/vmauth-prod /usr/local/bin/vmauth-prod
     when:
     - not ansible_check_mode
     - not vmauth_is_installed.stat.exists or
@@ -88,12 +79,15 @@
     - not vmauth_is_installed.stat.exists or
       vmauth_version not in vmauth_current_version.stdout
 
-  - name: Replace vmauth binary at target dir # noqa: no-changed-when
+  - name: Replace vmauth binary at target dir
     notify: Restart vmauth service
-    ansible.builtin.shell: |
-      mv /tmp/vmauth-prod /usr/local/bin/vmauth-prod
-      chmod 0751 /usr/local/bin/vmauth-prod
-      chown {{ vmauth_system_user }}:{{ vmauth_system_group }} /usr/local/bin/vmauth-prod
+    ansible.builtin.copy:
+      src: /tmp/vmauth-prod
+      dest: /usr/local/bin/vmauth-prod
+      mode: "0751"
+      owner: root
+      group: "{{ vmauth_system_group }}"
+      remote_src: yes
     when:
     - not ansible_check_mode
     - not vmauth_is_installed.stat.exists or

@@ -74,12 +74,13 @@
         - not victorialogs_is_installed.stat.exists or
           victorialogs_version not in victorialogs_current_version.stdout
 
-    - name: Upload VictoriaLogs release binary # noqa: no-handler
+    - name: Upload VictoriaLogs release binary
+      notify: Restart VictoriaLogs service
       ansible.builtin.copy:
         src: /tmp/vl-single/victoria-logs-prod
         dest: /usr/local/bin
         mode: "0751"
-        owner: "{{ victorialogs_system_user }}"
+        owner: root
         group: "{{ victorialogs_system_group }}"
       when:
         - archive_downloaded is changed
@@ -116,10 +117,13 @@
 
     - name: Replace VictoriaLogs binary at target dir # noqa: no-changed-when
       notify: Restart VictoriaLogs service
-      ansible.builtin.shell: |
-        mv /tmp/victoria-logs-prod /usr/local/bin/victoria-logs-prod
-        chmod 0751 /usr/local/bin/victoria-logs-prod
-        chown {{ victorialogs_system_user }}:{{ victorialogs_system_group }} /usr/local/bin/victoria-logs-prod
+      ansible.builtin.copy:
+        src: /tmp/victoria-logs-prod
+        dest: /usr/local/bin
+        mode: "0751"
+        owner: root
+        group: "{{ victorialogs_system_group }}"
+        remote_src: true
       when:
         - not ansible_check_mode
         - not victorialogs_is_installed.stat.exists or
