@@ -52,19 +52,10 @@
     notify: Restart vmselect service
     ansible.builtin.copy:
       src: /tmp/vmselect-prod
-      dest: /tmp/vmselect-prod
+      dest: /usr/local/bin/vmselect-prod
       mode: "0751"
-      owner: "{{ vmselect_system_user }}"
+      owner: root
       group: "{{ vmselect_system_group }}"
-    when:
-    - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
-
-  - name: Replace vmselect binary at target dir # noqa: no-changed-when
-    notify: Restart vmselect service
-    ansible.builtin.shell: |
-      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
     when:
     - not ansible_check_mode
     - not vmselect_is_installed.stat.exists or
@@ -90,10 +81,13 @@
 
   - name: Replace vmselect binary at target dir # noqa: no-changed-when
     notify: Restart vmselect service
-    ansible.builtin.shell: |
-      mv /tmp/vmselect-prod /usr/local/bin/vmselect-prod
-      chmod 0751 /usr/local/bin/vmselect-prod
-      chown {{ vmselect_system_user }}:{{ vmselect_system_group }} /usr/local/bin/vmselect-prod
+    ansible.builtin.copy:
+      src: /tmp/vmselect-prod
+      dest: /usr/local/bin/vmselect-prod
+      mode: "0751"
+      owner: root
+      group: "{{ vmselect_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vmselect_is_installed.stat.exists or

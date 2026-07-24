@@ -52,19 +52,10 @@
     notify: Restart vminsert service
     ansible.builtin.copy:
       src: /tmp/vminsert-prod
-      dest: /tmp/vminsert-prod
+      dest: /usr/local/bin/vminsert-prod
       mode: "0751"
-      owner: "{{ vminsert_system_user }}"
+      owner: root
       group: "{{ vminsert_system_group }}"
-    when:
-    - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
-
-  - name: Replace vminsert binary at target dir # noqa: no-changed-when
-    notify: Restart vminsert service
-    ansible.builtin.shell: |
-      mv /tmp/vminsert-prod /usr/local/bin/vminsert-prod
     when:
     - not ansible_check_mode
     - not vminsert_is_installed.stat.exists or
@@ -90,10 +81,13 @@
 
   - name: Replace vminsert binary at target dir # noqa: no-changed-when
     notify: Restart vminsert service
-    ansible.builtin.shell: |
-      mv /tmp/vminsert-prod /usr/local/bin/vminsert-prod
-      chmod 0751 /usr/local/bin/vminsert-prod
-      chown {{ vminsert_system_user }}:{{ vminsert_system_group }} /usr/local/bin/vminsert-prod
+    ansible.builtin.copy:
+      src: /tmp/vminsert-prod
+      dest: /usr/local/bin/vminsert-prod
+      mode: "0751"
+      owner: root
+      group: "{{ vminsert_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vminsert_is_installed.stat.exists or

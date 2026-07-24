@@ -52,19 +52,10 @@
     notify: Restart VLagent service
     ansible.builtin.copy:
       src: /tmp/vlagent-prod
-      dest: /tmp/vlagent-prod
+      dest: /usr/local/bin/
       mode: "0751"
-      owner: "{{ vlagent_system_user }}"
+      owner: root
       group: "{{ vlagent_system_group }}"
-    when:
-    - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
-
-  - name: Replace vlagent binary at target dir # noqa: no-changed-when
-    notify: Restart VLagent service
-    ansible.builtin.shell: |
-      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
     when:
     - not ansible_check_mode
     - not vlagent_is_installed.stat.exists or
@@ -90,10 +81,13 @@
 
   - name: Replace vlagent binary at target dir # noqa: no-changed-when
     notify: Restart VLagent service
-    ansible.builtin.shell: |
-      mv /tmp/vlagent-prod /usr/local/bin/vlagent-prod
-      chmod 0751 /usr/local/bin/vlagent-prod
-      chown {{ vlagent_system_user }}:{{ vlagent_system_group }} /usr/local/bin/vlagent-prod
+    ansible.builtin.copy:
+      src: /tmp/vlagent-prod
+      dest: /usr/local/bin
+      mode: "0751"
+      owner: root
+      group: "{{ vlagent_system_group }}"
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vlagent_is_installed.stat.exists or

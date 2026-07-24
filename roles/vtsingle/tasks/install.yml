@@ -79,7 +79,7 @@
         src: /tmp/vt-single/victoria-traces-prod
         dest: /usr/local/bin
         mode: "0751"
-        owner: "{{ victoriatraces_system_user }}"
+        owner: root
         group: "{{ victoriatraces_system_group }}"
       when:
         - archive_downloaded is changed
@@ -116,10 +116,13 @@
 
     - name: Replace VictoriaTraces binary at target dir # noqa: no-changed-when
       notify: Restart VictoriaTraces service
-      ansible.builtin.shell: |
-        mv /tmp/victoria-traces-prod /usr/local/bin/victoria-traces-prod
-        chmod 0751 /usr/local/bin/victoria-traces-prod
-        chown {{ victoriatraces_system_user }}:{{ victoriatraces_system_group }} /usr/local/bin/victoria-traces-prod
+      ansible.builtin.copy:
+        src: /tmp/victoria-traces-prod
+        dest: /usr/local/bin
+        mode: "0751"
+        owner: root
+        group: "{{ victoriatraces_system_group }}"
+        remote_src: true
       when:
         - not ansible_check_mode
         - not victoriatraces_is_installed.stat.exists or
