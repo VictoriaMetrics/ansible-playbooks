@@ -3,10 +3,20 @@
   hosts: all
   become: yes
   vars:
-    victoriatraces_data_dir: "/tmp/victoria-traces/"
-    victoriatraces_service_args:
-      storageDataPath: "{{ victoriatraces_data_dir }}"
+    vtsingle_data_dir: "/tmp/victoria-traces/"
+    # Deprecated alias set on purpose to prove backward-compatible resolution.
+    # Distinct from the "12" default so the assert below is not vacuous.
+    victoriatraces_retention_period_months: "6"
   tasks:
     - name: "Include vtsingle"
       ansible.builtin.include_role:
         name: "vtsingle"
+        public: true
+
+    - name: "Assert deprecated alias resolves into service args"
+      ansible.builtin.assert:
+        that:
+          - vtsingle_service_args['retentionPeriod'] == '6'
+        fail_msg: >-
+          Deprecated alias victoriatraces_retention_period_months did not resolve
+          into vtsingle_service_args

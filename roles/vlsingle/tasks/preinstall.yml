@@ -12,34 +12,34 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    victorialogs_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
+    vlsingle_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
 
 - name: Check if VictoriaLogs is installed
   ansible.builtin.stat:
     path: /usr/local/bin/victoria-logs-prod
   changed_when: false
   check_mode: false
-  register: victorialogs_is_installed
+  register: vlsingle_is_installed
 
 - name: Check current VictoriaLogs version
   ansible.builtin.command: /usr/local/bin/victoria-logs-prod --version
   changed_when: false
   failed_when: false
   check_mode: false
-  register: victorialogs_current_version
-  when: victorialogs_is_installed.stat.exists | bool
+  register: vlsingle_current_version
+  when: vlsingle_is_installed.stat.exists | bool
 
 - name: Get latest VictoriaLogs version via GitHub redirect
   ansible.builtin.uri:
-    url: "{{ victorialogs_repo_url }}/releases/latest"
+    url: "{{ vlsingle_repo_url }}/releases/latest"
     method: HEAD
     return_content: false
     follow_redirects: false
     status_code: 302,200
   register: gh_redirect
-  when: victorialogs_version == "latest"
+  when: vlsingle_version == "latest"
 
 - name: Extract version from Location header
   ansible.builtin.set_fact:
-    victorialogs_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
-  when: victorialogs_version == "latest"
+    vlsingle_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vlsingle_version == "latest"

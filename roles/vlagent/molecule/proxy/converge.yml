@@ -42,3 +42,13 @@
           "remoteWrite.tmpDataPath": /tmp/vlagent
       ansible.builtin.include_role:
         name: "vlagent"
+        public: true
+
+    - name: "Assert deprecated proxy aliases resolve into the new names"
+      ansible.builtin.assert:
+        that:
+          - vm_proxy_http == 'http://vlagent-proxy-server:3128'
+          - vm_proxy_https == 'http://vlagent-proxy-server:3128'
+        fail_msg: >-
+          Deprecated aliases vl_proxy_http/vl_proxy_https did not resolve into
+          vm_proxy_http/vm_proxy_https

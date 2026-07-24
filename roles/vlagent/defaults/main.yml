@@ -17,8 +17,8 @@ vlagent_service_args:
 
 vlagent_install_download_to_control: false
 
-vl_proxy_http: ""
-vl_proxy_https: ""
+vm_proxy_http: "{{ vl_proxy_http | default('') }}"
+vm_proxy_https: "{{ vl_proxy_https | default('') }}"
 
 vlagent_exec_start_post: ""
 vlagent_exec_stop: ""

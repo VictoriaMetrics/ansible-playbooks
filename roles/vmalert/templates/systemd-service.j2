@@ -6,15 +6,15 @@ After=network.target
 
 [Service]
 Type=simple
-User={{ vic_vm_alert_system_user }}
-Group={{ vic_vm_alert_system_group }}
-ExecStart=/usr/local/bin/vmalert-prod {%- for flag, flag_values in _runtime_vic_vm_alert_service_args.items() -%}
+User={{ vmalert_system_user }}
+Group={{ vmalert_system_group }}
+ExecStart=/usr/local/bin/vmalert-prod {%- for flag, flag_values in _runtime_vmalert_service_args.items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value }} {% endfor %}
 {% else %} --{{ flag }}={{ flag_values }} {% endif %}
 {% endfor %}
 
-SyslogIdentifier={{ vic_vm_alert_service_name }}
+SyslogIdentifier={{ vmalert_service_name }}
 Restart=always
 
 PrivateTmp=yes
@@ -23,7 +23,7 @@ NoNewPrivileges=yes
 
 ProtectSystem=full
 
-{% if vic_vm_alert_systemd_version | int >= 232 %}
+{% if vmalert_systemd_version | int >= 232 %}
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=yes

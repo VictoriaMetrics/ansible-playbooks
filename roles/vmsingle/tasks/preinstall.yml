@@ -12,22 +12,22 @@
 
 - name: Set systemd version fact
   ansible.builtin.set_fact:
-    victoriametrics_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
+    vmsingle_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
 
 - name: Check if VictoriaMetrics is installed
   ansible.builtin.stat:
     path: /usr/local/bin/victoria-metrics-prod
   changed_when: false
   check_mode: false
-  register: victoriametrics_is_installed
+  register: vmsingle_is_installed
 
 - name: Check current VictoriaMetrics version
   ansible.builtin.command: /usr/local/bin/victoria-metrics-prod --version
   changed_when: false
   failed_when: false
   check_mode: false
-  register: victoriametrics_current_version
-  when: victoriametrics_is_installed.stat.exists | bool
+  register: vmsingle_current_version
+  when: vmsingle_is_installed.stat.exists | bool
 
 - name: Check if crontab is present
   ansible.builtin.raw: which crontab
@@ -38,15 +38,15 @@
 
 - name: Get latest VictoriaMetrics version via GitHub redirect
   ansible.builtin.uri:
-    url: "{{ victoriametrics_repo_url }}/releases/latest"
+    url: "{{ vmsingle_repo_url }}/releases/latest"
     method: HEAD
     return_content: false
     follow_redirects: false
     status_code: 302,200
   register: gh_redirect
-  when: victoriametrics_version == "latest"
+  when: vmsingle_version == "latest"
 
 - name: Extract version from Location header
   ansible.builtin.set_fact:
-    victoriametrics_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
-  when: victoriametrics_version == "latest"
+    vmsingle_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vmsingle_version == "latest"

@@ -9,7 +9,7 @@
   become: true
   hosts: vtinsert
   vars:
-    victoriatraces_service_args:
+    vtsingle_service_args:
       storageNode: "{{ groups['vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
       select.disable: "true"
   roles:
@@ -19,7 +19,7 @@
   become: true
   hosts: vtselect
   vars:
-    victoriatraces_service_args:
+    vtsingle_service_args:
       storageNode: "{{ groups['vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
       insert.disable: "true"
   roles:

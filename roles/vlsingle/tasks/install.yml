@@ -1,20 +1,20 @@
 ---
 - name: Create VictoriaLogs system group
   ansible.builtin.group:
-    name: "{{ victorialogs_system_group }}"
+    name: "{{ vlsingle_system_group }}"
     state: present
     system: true
-  when: victorialogs_system_group != "root"
+  when: vlsingle_system_group != "root"
 
 - name: Create VictoriaLogs system user
   ansible.builtin.user:
-    name: "{{ victorialogs_system_user }}"
-    groups: "{{ victorialogs_system_group }}"
+    name: "{{ vlsingle_system_user }}"
+    groups: "{{ vlsingle_system_group }}"
     append: true
     shell: /usr/sbin/nologin
     system: true
     createhome: false
-  when: victorialogs_system_user != "root"
+  when: vlsingle_system_user != "root"
 
 - name: Ensure existence of /usr/local/bin
   ansible.builtin.file:
@@ -24,22 +24,22 @@
 
 - name: Ensure existence of VictoriaLogs storage directory
   ansible.builtin.file:
-    path: "{{ victorialogs_data_dir }}"
+    path: "{{ vlsingle_data_dir }}"
     state: directory
     mode: "0755"
-    owner: "{{ victorialogs_system_user }}"
-    group: "{{ victorialogs_system_group }}"
+    owner: "{{ vlsingle_system_user }}"
+    group: "{{ vlsingle_system_group }}"
 
 - name: Delete existing VictoriaLogs version if it is different.
   ansible.builtin.file:
     path: /usr/local/bin/victoria-logs-prod
     state: absent
   when:
-    - victorialogs_is_installed.stat.exists | bool
-    - victorialogs_version not in victorialogs_current_version.stdout
+    - vlsingle_is_installed.stat.exists | bool
+    - vlsingle_version not in vlsingle_current_version.stdout
 
 - name: Install via control host
-  when: victorialogs_install_download_to_control
+  when: vlsingle_install_download_to_control
   block:
     - name: Prepare local download paths
       delegate_to: localhost
@@ -52,15 +52,15 @@
         - /tmp/vl-single/
       when:
         - not ansible_check_mode
-        - not victorialogs_is_installed.stat.exists or
-          victorialogs_version not in victorialogs_current_version.stdout
+        - not vlsingle_is_installed.stat.exists or
+          vlsingle_version not in vlsingle_current_version.stdout
 
     - name: Download and unarchive VictoriaLogs release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victorialogs_download_url }}"
+        src: "{{ vlsingle_download_url }}"
         dest: /tmp/vl-single/
         remote_src: yes
         extra_opts:
@@ -71,16 +71,16 @@
       delegate_to: localhost
       when:
         - not ansible_check_mode
-        - not victorialogs_is_installed.stat.exists or
-          victorialogs_version not in victorialogs_current_version.stdout
+        - not vlsingle_is_installed.stat.exists or
+          vlsingle_version not in vlsingle_current_version.stdout
 
     - name: Upload VictoriaLogs release binary # noqa: no-handler
       ansible.builtin.copy:
         src: /tmp/vl-single/victoria-logs-prod
         dest: /usr/local/bin
         mode: "0751"
-        owner: "{{ victorialogs_system_user }}"
-        group: "{{ victorialogs_system_group }}"
+        owner: "{{ vlsingle_system_user }}"
+        group: "{{ vlsingle_system_group }}"
       when:
         - archive_downloaded is changed
 
@@ -97,33 +97,33 @@
         - not ansible_check_mode
 
 - name: Install directly to target host
-  when: not victorialogs_install_download_to_control
+  when: not vlsingle_install_download_to_control
   block:
     - name: Download and unarchive VictoriaLogs release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victorialogs_download_url }}"
+        src: "{{ vlsingle_download_url }}"
         dest: /tmp
         remote_src: yes
         extra_opts:
           - --no-same-owner
       when:
         - not ansible_check_mode
-        - not victorialogs_is_installed.stat.exists or
-          victorialogs_version not in victorialogs_current_version.stdout
+        - not vlsingle_is_installed.stat.exists or
+          vlsingle_version not in vlsingle_current_version.stdout
 
     - name: Replace VictoriaLogs binary at target dir # noqa: no-changed-when
       notify: Restart VictoriaLogs service
       ansible.builtin.shell: |
         mv /tmp/victoria-logs-prod /usr/local/bin/victoria-logs-prod
         chmod 0751 /usr/local/bin/victoria-logs-prod
-        chown {{ victorialogs_system_user }}:{{ victorialogs_system_group }} /usr/local/bin/victoria-logs-prod
+        chown {{ vlsingle_system_user }}:{{ vlsingle_system_group }} /usr/local/bin/victoria-logs-prod
       when:
         - not ansible_check_mode
-        - not victorialogs_is_installed.stat.exists or
-          victorialogs_version not in victorialogs_current_version.stdout
+        - not vlsingle_is_installed.stat.exists or
+          vlsingle_version not in vlsingle_current_version.stdout
 
 - name: Restore SELinux context for VictoriaLogs binary
   ansible.builtin.command:

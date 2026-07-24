@@ -6,10 +6,10 @@ After=network.target
 
 [Service]
 Type=simple
-LimitNOFILE={{ victoriametrics_max_open_files }}
-User={{ victoriametrics_system_user }}
-Group={{ victoriametrics_system_group }}
-ExecStart=/usr/local/bin/victoria-metrics-prod {% if (victoriametrics_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in victoriametrics_service_args.items() %}-{{ flag }}={{ flag_value }} {% endfor %}
+LimitNOFILE={{ vmsingle_max_open_files }}
+User={{ vmsingle_system_user }}
+Group={{ vmsingle_system_group }}
+ExecStart=/usr/local/bin/victoria-metrics-prod {% if (vmsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vmsingle_service_args.items() %}-{{ flag }}={{ flag_value }} {% endfor %}
 
 SyslogIdentifier=victoriametrics
 Restart=always
@@ -20,18 +20,18 @@ NoNewPrivileges=yes
 
 ProtectSystem=full
 
-{% if victoriametrics_systemd_version | int >= 232 %}
+{% if vmsingle_systemd_version | int >= 232 %}
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=yes
 {% endif %}
 
-{% if victoriametrics_service_envflag_enabled | bool %}
-{% for v in victoriametrics_service_envflag_data %}
+{% if vmsingle_service_envflag_enabled | bool %}
+{% for v in vmsingle_service_envflag_data %}
 Environment="{{ v }}"
 {% endfor %}
 
-EnvironmentFile={{ victoriametrics_service_envflag_file }}
+EnvironmentFile={{ vmsingle_service_envflag_file }}
 {% endif %}
 
 [Install]
