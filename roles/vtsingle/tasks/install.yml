@@ -114,7 +114,7 @@
         - not victoriatraces_is_installed.stat.exists or
           victoriatraces_version not in victoriatraces_current_version.stdout
 
-    - name: Replace VictoriaTraces binary at target dir # noqa: no-changed-when
+    - name: Replace VictoriaTraces binary at target dir
       notify: Restart VictoriaTraces service
       ansible.builtin.copy:
         src: /tmp/victoria-traces-prod

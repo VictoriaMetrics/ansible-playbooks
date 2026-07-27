@@ -52,7 +52,7 @@
     notify: Restart vmselect service
     ansible.builtin.copy:
       src: /tmp/vmselect-prod
-      dest: /usr/local/bin/vmselect-prod
+      dest: "{{ vmselect_bin_dir }}/vmselect-prod"
       mode: "0751"
       owner: root
       group: "{{ vmselect_system_group }}"
@@ -83,7 +83,7 @@
     notify: Restart vmselect service
     ansible.builtin.copy:
       src: /tmp/vmselect-prod
-      dest: /usr/local/bin/vmselect-prod
+      dest: "{{ vmselect_bin_dir }}/vmselect-prod"
       mode: "0751"
       owner: root
       group: "{{ vmselect_system_group }}"
