@@ -9,7 +9,7 @@ Type=simple
 LimitNOFILE={{ vmsingle_max_open_files }}
 User={{ vmsingle_system_user }}
 Group={{ vmsingle_system_group }}
-ExecStart=/usr/local/bin/victoria-metrics-prod {% if (vmsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vmsingle_service_args.items() %}-{{ flag }}={{ flag_value | quoute }} {% endfor %}
+ExecStart=/usr/local/bin/victoria-metrics-prod {% if (vmsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vmsingle_service_args.items() %}-{{ flag }}={{ flag_value | quote }} {% endfor %}
 
 SyslogIdentifier=victoriametrics
 Restart=always
