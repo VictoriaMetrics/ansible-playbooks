@@ -62,14 +62,14 @@
       vmauth_version not in vmauth_current_version.stdout
 
   always:
-    - name: Clear download file
-      delegate_to: localhost
-      become: no
-      ansible.builtin.file:
-        path: /tmp/vmauth-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    delegate_to: localhost
+    become: no
+    ansible.builtin.file:
+      path: /tmp/vmauth-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vmauth_install_download_to_control
@@ -97,26 +97,26 @@
       mode: "0751"
       owner: root
       group: "{{ vmauth_system_group }}"
-      remote_src: yes
+      remote_src: true
     when:
     - not ansible_check_mode
     - not vmauth_is_installed.stat.exists or
       vmauth_version not in vmauth_current_version.stdout
 
   always:
-    - name: Clear download file
-      ansible.builtin.file:
-        path: /tmp/vmauth-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    ansible.builtin.file:
+      path: /tmp/vmauth-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Restore SELinux context for vmauth binary
   ansible.builtin.command:
-    argv: 
-      - restorecon 
-      - -v 
-      - "{{ vmauth_bin_dir }}/vmauth-prod"
+    argv:
+    - restorecon
+    - -v
+    - "{{ vmauth_bin_dir }}/vmauth-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

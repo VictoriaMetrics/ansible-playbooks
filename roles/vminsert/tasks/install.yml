@@ -62,14 +62,14 @@
       vminsert_version not in vminsert_current_version.stdout
 
   always:
-    - name: Clear download file
-      delegate_to: localhost
-      become: no
-      ansible.builtin.file:
-        path: /tmp/vminsert-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    delegate_to: localhost
+    become: no
+    ansible.builtin.file:
+      path: /tmp/vminsert-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vminsert_install_download_to_control
@@ -104,19 +104,19 @@
       vminsert_version not in vminsert_current_version.stdout
 
   always:
-    - name: Clear download file
-      ansible.builtin.file:
-        path: /tmp/vminsert-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    ansible.builtin.file:
+      path: /tmp/vminsert-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Restore SELinux context for vminsert binary
   ansible.builtin.command:
     argv:
-      - restorecon
-      - -v
-      - "{{ vminsert_bin_dir }}/vminsert-prod"
+    - restorecon
+    - -v
+    - "{{ vminsert_bin_dir }}/vminsert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

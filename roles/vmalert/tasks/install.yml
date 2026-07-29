@@ -113,9 +113,9 @@
 
 - name: Restore SELinux context for vmalert binary
   ansible.builtin.command:
-    argv: 
+    argv:
       - restorecon
-      - -v 
+      - -v
       - "{{ vmalert_bin_dir }}/vmalert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"

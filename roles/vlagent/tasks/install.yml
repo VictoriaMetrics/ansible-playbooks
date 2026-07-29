@@ -62,14 +62,14 @@
       vlagent_version not in vlagent_current_version.stdout
 
   always:
-    - name: Clear download file
-      become: no
-      delegate_to: localhost
-      ansible.builtin.file:
-        path: "/tmp/vlagent-prod"
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    become: no
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "/tmp/vlagent-prod"
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vlagent_install_download_to_control
@@ -104,9 +104,9 @@
       vlagent_version not in vlagent_current_version.stdout
 
   always:
-    - name: Clear download file
-      ansible.builtin.file:
-        path: "/tmp/vlagent-prod"
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    ansible.builtin.file:
+      path: "/tmp/vlagent-prod"
+      state: absent
+    when:
+    - not ansible_check_mode

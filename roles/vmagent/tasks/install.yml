@@ -62,14 +62,14 @@
       vmagent_version not in vmagent_current_version.stdout
 
   always:
-    - name: Clear download file
-      delegate_to: localhost
-      become: no
-      ansible.builtin.file:
-        path: /tmp/vmagent-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    delegate_to: localhost
+    become: no
+    ansible.builtin.file:
+      path: /tmp/vmagent-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Install directly to target host
   when: not vmagent_install_download_to_control
@@ -104,19 +104,19 @@
       vmagent_version not in vmagent_current_version.stdout
 
   always:
-    - name: Clear download file
-      ansible.builtin.file:
-        path: /tmp/vmagent-prod
-        state: absent
-      when:
-        - not ansible_check_mode
+  - name: Clear download file
+    ansible.builtin.file:
+      path: /tmp/vmagent-prod
+      state: absent
+    when:
+    - not ansible_check_mode
 
 - name: Restore SELinux context for vmagent binary
   ansible.builtin.command:
     argv:
-      - restorecon
-      - -v
-      - "{{ vmagent_bin_dir }}/vmagent-prod"
+    - restorecon
+    - -v
+    - "{{ vmagent_bin_dir }}/vmagent-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

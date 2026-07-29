@@ -134,15 +134,15 @@
         path: "{{ item }}"
         state: absent
       loop:
-        - /tmp/vt-single/
+        - /tmp/victoria-traces-prod
       when:
         - not ansible_check_mode
 
 - name: Restore SELinux context for VictoriaTraces binary
   ansible.builtin.command:
-    argv: 
-      - restorecon 
-      - -v 
+    argv:
+      - restorecon
+      - -v
       - "{{ vtsingle_bin_dir }}/victoria-traces-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"

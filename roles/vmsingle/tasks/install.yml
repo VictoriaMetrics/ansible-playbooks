@@ -131,7 +131,6 @@
   when: not vmsingle_install_download_to_control
   block:
     - name: Prepare remote download paths
-      become: no
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
@@ -202,7 +201,6 @@
 
   always:
     - name: Clear download paths
-      become: no
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
@@ -215,7 +213,7 @@
 - name: Restore SELinux context for VictoriaMetrics binaries
   ansible.builtin.command:
     argv:
-      - restorecon 
+      - restorecon
       - -v
       - "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
       - "{{ vmsingle_bin_dir }}/vmagent-prod"

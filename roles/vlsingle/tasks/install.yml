@@ -131,18 +131,20 @@
 
   always:
     - name: Clear download paths
-      become: no
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
-        - /tmp/vl-single/
+        - /tmp/victoria-logs-prod
       when:
         - not ansible_check_mode
 
 - name: Restore SELinux context for VictoriaLogs binary
   ansible.builtin.command:
-    cmd: "restorecon -v {{ vlsingle_bin_dir }}/victoria-logs-prod"
+    argv:
+      - restorecon
+      - -v
+      - "{{ vlsingle_bin_dir }}/victoria-logs-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:
