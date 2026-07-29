@@ -30,7 +30,7 @@
   hosts: test_target
   become: yes
   vars:
-    vic_vm_alert_install_download_to_control: false
+    vmalert_install_download_to_control: false
     vm_proxy_http: "http://vmalert-proxy-server:3128"
     vm_proxy_https: "http://vmalert-proxy-server:3128"
   tasks:

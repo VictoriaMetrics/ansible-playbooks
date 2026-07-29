@@ -9,7 +9,7 @@
   become: true
   hosts: vlinsert
   vars:
-    victorialogs_service_args:
+    vlsingle_service_args:
       storageNode: "{{ groups['vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
       select.disable: "true"
   roles:
@@ -19,7 +19,7 @@
   become: true
   hosts: vlselect
   vars:
-    victorialogs_service_args:
+    vlsingle_service_args:
       storageNode: "{{ groups['vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
       insert.disable: "true"
   roles:

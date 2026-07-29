@@ -1,45 +1,45 @@
 ---
 - name: Create VictoriaMetrics system group
   ansible.builtin.group:
-    name: "{{ victoriametrics_system_group }}"
+    name: "{{ vmsingle_system_group }}"
     state: present
     system: true
-  when: victoriametrics_system_group != "root"
+  when: vmsingle_system_group != "root"
 
 - name: Create VictoriaMetrics system user
   ansible.builtin.user:
-    name: "{{ victoriametrics_system_user }}"
-    groups: "{{ victoriametrics_system_group }}"
+    name: "{{ vmsingle_system_user }}"
+    groups: "{{ vmsingle_system_group }}"
     append: true
     shell: /usr/sbin/nologin
     system: true
     createhome: false
-  when: victoriametrics_system_user != "root"
+  when: vmsingle_system_user != "root"
 
 - name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: "{{ victoriametrics_bin_dir }}"
+    path: "{{ vmsingle_bin_dir }}"
     state: directory
     mode: "0755"
 
 - name: Ensure existence of VictoriaMetrics storage directory
   ansible.builtin.file:
-    path: "{{ victoriametrics_data_dir }}"
+    path: "{{ vmsingle_data_dir }}"
     state: directory
     mode: "0755"
-    owner: "{{ victoriametrics_system_user }}"
-    group: "{{ victoriametrics_system_group }}"
+    owner: "{{ vmsingle_system_user }}"
+    group: "{{ vmsingle_system_group }}"
 
 - name: Delete existing VictoriaMetrics version if it is different.
   ansible.builtin.file:
-    path: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
+    path: "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
     state: absent
   when:
-    - victoriametrics_is_installed.stat.exists | bool
-    - victoriametrics_version not in victoriametrics_current_version.stdout
+    - vmsingle_is_installed.stat.exists | bool
+    - vmsingle_version not in vmsingle_current_version.stdout
 
 - name: Install via control host
-  when: victoriametrics_install_download_to_control
+  when: vmsingle_install_download_to_control
   block:
     - name: Prepare local download paths
       delegate_to: localhost
@@ -53,15 +53,15 @@
         - /tmp/vic-utils/
       when:
         - not ansible_check_mode
-        - not victoriametrics_is_installed.stat.exists or
-          victoriametrics_version not in victoriametrics_current_version.stdout
+        - not vmsingle_is_installed.stat.exists or
+          vmsingle_version not in vmsingle_current_version.stdout
 
     - name: Download and unarchive VictoriaMetrics release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriametrics_download_url }}"
+        src: "{{ vmsingle_download_url }}"
         dest: /tmp/vic-single/
         remote_src: yes
         extra_opts:
@@ -71,16 +71,16 @@
       delegate_to: localhost
       when:
         - not ansible_check_mode
-        - not victoriametrics_is_installed.stat.exists or
-          victoriametrics_version not in victoriametrics_current_version.stdout
+        - not vmsingle_is_installed.stat.exists or
+          vmsingle_version not in vmsingle_current_version.stdout
 
     - name: Upload VictoriaMetrics release binary # noqa: no-handler
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
-        dest: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
+        dest: "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
         mode: "0751"
         owner: root
-        group: "{{ victoriametrics_system_group }}"
+        group: "{{ vmsingle_system_group }}"
       notify: Restart VictoriaMetrics service
       when:
         - archive_downloaded is changed
@@ -91,7 +91,7 @@
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriametrics_utils_download_url }}"
+        src: "{{ vmsingle_utils_download_url }}"
         dest: /tmp/vic-utils/
         remote_src: yes
       delegate_to: localhost
@@ -101,10 +101,10 @@
     - name: Upload VictoriaMetrics utils release binaries # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
-        dest: "{{ victoriametrics_bin_dir }}/{{ item }}"
+        dest: "{{ vmsingle_bin_dir }}/{{ item }}"
         mode: "0751"
         owner: root
-        group: "{{ victoriametrics_system_group }}"
+        group: "{{ vmsingle_system_group }}"
       when:
         - archive_downloaded is changed
       loop:
@@ -128,7 +128,7 @@
         - not ansible_check_mode
 
 - name: Install directly to target host
-  when: not victoriametrics_install_download_to_control
+  when: not vmsingle_install_download_to_control
   block:
     - name: Prepare remote download paths
       become: no
@@ -141,15 +141,15 @@
         - /tmp/vic-utils/
       when:
         - not ansible_check_mode
-        - not victoriametrics_is_installed.stat.exists or
-          victoriametrics_version not in victoriametrics_current_version.stdout
+        - not vmsingle_is_installed.stat.exists or
+          vmsingle_version not in vmsingle_current_version.stdout
 
     - name: Download and unarchive VictoriaMetrics release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriametrics_download_url }}"
+        src: "{{ vmsingle_download_url }}"
         dest: /tmp/vic-single/
         remote_src: yes
         extra_opts:
@@ -157,17 +157,17 @@
       register: archive_downloaded
       when:
         - not ansible_check_mode
-        - not victoriametrics_is_installed.stat.exists or
-          victoriametrics_version not in victoriametrics_current_version.stdout
+        - not vmsingle_is_installed.stat.exists or
+          vmsingle_version not in vmsingle_current_version.stdout
 
     - name: Replace VictoriaMetrics binary at target dir # noqa: no-handler
       notify: Restart VictoriaMetrics service
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
-        dest: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
+        dest: "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
         mode: "0751"
         owner: root
-        group: "{{ victoriametrics_system_group }}"
+        group: "{{ vmsingle_system_group }}"
         remote_src: true
       when:
         - archive_downloaded is changed
@@ -177,7 +177,7 @@
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
-        src: "{{ victoriametrics_utils_download_url }}"
+        src: "{{ vmsingle_utils_download_url }}"
         dest: /tmp/vic-utils/
         remote_src: yes
       when:
@@ -186,10 +186,10 @@
     - name: Replace VictoriaMetrics utils binaries at target dir # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
-        dest: "{{ victoriametrics_bin_dir }}/{{ item }}"
+        dest: "{{ vmsingle_bin_dir }}/{{ item }}"
         mode: "0751"
         owner: root
-        group: "{{ victoriametrics_system_group }}"
+        group: "{{ vmsingle_system_group }}"
         remote_src: true
       when:
         - archive_downloaded is changed
@@ -217,12 +217,12 @@
     argv:
       - restorecon 
       - -v
-      - "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
-      - "{{ victoriametrics_bin_dir }}/vmagent-prod"
-      - "{{ victoriametrics_bin_dir }}/vmalert-prod"
-      - "{{ victoriametrics_bin_dir }}/vmauth-prod"
-      - "{{ victoriametrics_bin_dir }}/vmbackup-prod"
-      - "{{ victoriametrics_bin_dir }}/vmrestore-prod"
+      - "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
+      - "{{ vmsingle_bin_dir }}/vmagent-prod"
+      - "{{ vmsingle_bin_dir }}/vmalert-prod"
+      - "{{ vmsingle_bin_dir }}/vmauth-prod"
+      - "{{ vmsingle_bin_dir }}/vmbackup-prod"
+      - "{{ vmsingle_bin_dir }}/vmrestore-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

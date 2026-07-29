@@ -1,16 +1,16 @@
 ---
 - name: Configure env
-  when: victoriatraces_service_envflag_enabled | bool
+  when: vtsingle_service_envflag_enabled | bool
   block:
     - name: Check envfile presence
       ansible.builtin.stat:
-        path: "{{ victoriatraces_service_envflag_file }}"
+        path: "{{ vtsingle_service_envflag_file }}"
       register: envfile_state
 
     - name: Setup envfile
       ansible.builtin.file:
         state: touch
-        path: "{{ victoriatraces_service_envflag_file }}"
+        path: "{{ vtsingle_service_envflag_file }}"
         owner: root
         group: root
         mode: "0644"
