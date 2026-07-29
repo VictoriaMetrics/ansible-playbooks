@@ -1,15 +1,13 @@
 ---
 go_arch_map:
-  i386: '386'
-  x86_64: 'amd64'
-  aarch64: 'arm64'
-  armv7l: 'arm'
-  armv6l: 'arm6vl'
+  i386: "386"
+  x86_64: "amd64"
+  aarch64: "arm64"
+  armv7l: "arm"
+  armv6l: "arm6vl"
 
 go_arch: "{{ go_arch_map[ansible_facts['architecture']] | default(ansible_facts['architecture']) }}"
 
-# Maps deprecated variable names to their canonical replacements. Consumed by
-# tasks/deprecations.yml to emit a warning when a user still sets an old name.
 _vtsingle_deprecated_vars:
   victoriatraces_version: vtsingle_version
   victoriatraces_platform: vtsingle_platform

@@ -4,7 +4,6 @@
   become: yes
   vars:
     # Deprecated alias set on purpose to prove backward-compatible resolution.
-    # Distinct from the 30s default so the assert below is not vacuous.
     vic_vm_alert_evaluation_interval: "45s"
   tasks:
     - name: "Include vmalert"
