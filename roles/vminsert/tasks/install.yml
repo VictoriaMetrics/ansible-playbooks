@@ -114,8 +114,8 @@
 - name: Restore SELinux context for vminsert binary
   ansible.builtin.command:
     argv:
-      - restorecon 
-      - -v 
+      - restorecon
+      - -v
       - "{{ vminsert_bin_dir }}/vminsert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"

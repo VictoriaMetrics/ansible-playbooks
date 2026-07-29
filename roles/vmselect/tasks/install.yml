@@ -114,8 +114,8 @@
 - name: Restore SELinux context for vmselect binary
   ansible.builtin.command:
     argv:
-      - restorecon 
-      - -v 
+      - restorecon
+      - -v
       - "{{ vmselect_bin_dir }}/vmselect-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"

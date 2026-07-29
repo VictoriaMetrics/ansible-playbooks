@@ -113,9 +113,9 @@
 
 - name: Restore SELinux context for vmagent binary
   ansible.builtin.command:
-    argv: 
-      - restorecon 
-      - -v 
+    argv:
+      - restorecon
+      - -v
       - "{{ vmagent_bin_dir }}/vmagent-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
