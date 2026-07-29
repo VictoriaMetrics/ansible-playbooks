@@ -16,6 +16,7 @@ vlagent_service_args:
   "remoteWrite.url": "{{ vlagent_remote_write_host }}/internal/insert"
 
 vlagent_install_download_to_control: false
+vlagent_bin_dir: /usr/local/bin
 
 vl_proxy_http: ""
 vl_proxy_https: ""

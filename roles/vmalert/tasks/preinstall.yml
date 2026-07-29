@@ -18,13 +18,13 @@
 
 - name: Check if VMalert is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/vmalert-prod
+    path: "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
   changed_when: false
   check_mode: false
   register: vic_vm_alert_is_installed
 
 - name: Check current VMalert version
-  ansible.builtin.command: /usr/local/bin/vmalert-prod --version
+  ansible.builtin.command: "{{ vic_vm_alert_bin_dir }}/vmalert-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

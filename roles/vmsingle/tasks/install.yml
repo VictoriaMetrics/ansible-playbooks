@@ -16,9 +16,9 @@
     createhome: false
   when: victoriametrics_system_user != "root"
 
-- name: Ensure existence of /usr/local/bin
+- name: Ensure existence of bin directory
   ansible.builtin.file:
-    path: /usr/local/bin
+    path: "{{ victoriametrics_bin_dir }}"
     state: directory
     mode: "0755"
 
@@ -32,7 +32,7 @@
 
 - name: Delete existing VictoriaMetrics version if it is different.
   ansible.builtin.file:
-    path: /usr/local/bin/victoria-metrics-prod
+    path: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
     state: absent
   when:
     - victoriametrics_is_installed.stat.exists | bool
@@ -77,7 +77,7 @@
     - name: Upload VictoriaMetrics release binary # noqa: no-handler
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
-        dest: /usr/local/bin
+        dest: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
         mode: "0751"
         owner: root
         group: "{{ victoriametrics_system_group }}"
@@ -101,7 +101,7 @@
     - name: Upload VictoriaMetrics utils release binaries # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
-        dest: /usr/local/bin
+        dest: "{{ victoriametrics_bin_dir }}/{{ item }}"
         mode: "0751"
         owner: root
         group: "{{ victoriametrics_system_group }}"
@@ -164,7 +164,7 @@
       notify: Restart VictoriaMetrics service
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
-        dest: /usr/local/bin
+        dest: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
         mode: "0751"
         owner: root
         group: "{{ victoriametrics_system_group }}"
@@ -186,7 +186,7 @@
     - name: Replace VictoriaMetrics utils binaries at target dir # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
-        dest: /usr/local/bin
+        dest: "{{ victoriametrics_bin_dir }}/{{ item }}"
         mode: "0751"
         owner: root
         group: "{{ victoriametrics_system_group }}"
@@ -200,16 +200,28 @@
         - vmbackup-prod
         - vmrestore-prod
 
+  always:
+    - name: Clear download paths
+      become: no
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/vic-single/
+        - /tmp/vic-utils/
+      when:
+        - not ansible_check_mode
+
 - name: Restore SELinux context for VictoriaMetrics binaries
   ansible.builtin.command:
     cmd: >
-      restorecon -v
-      /usr/local/bin/victoria-metrics-prod
-      /usr/local/bin/vmagent-prod
-      /usr/local/bin/vmalert-prod
-      /usr/local/bin/vmauth-prod
-      /usr/local/bin/vmbackup-prod
-      /usr/local/bin/vmrestore-prod
+      "restorecon -v
+      {{ victoriametrics_bin_dir }}/victoria-metrics-prod
+      {{ victoriametrics_bin_dir }}/vmagent-prod
+      {{ victoriametrics_bin_dir }}/vmalert-prod
+      {{ victoriametrics_bin_dir }}/vmauth-prod
+      {{ victoriametrics_bin_dir }}/vmbackup-prod
+      {{ victoriametrics_bin_dir }}/vmrestore-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

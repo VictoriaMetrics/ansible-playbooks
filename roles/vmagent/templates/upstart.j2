@@ -13,7 +13,7 @@
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/bin/vmagent-prod
+DAEMON={{ vmagent_bin_dir }}/vmagent-prod
 DAEMON_ARGS="{% for flag, flag_value in vmagent_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
 NAME=vic-vmagent
 DESC="VictoriaMetrics scrape agent"

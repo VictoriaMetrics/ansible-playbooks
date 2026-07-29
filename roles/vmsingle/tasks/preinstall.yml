@@ -16,13 +16,13 @@
 
 - name: Check if VictoriaMetrics is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/victoria-metrics-prod
+    path: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
   changed_when: false
   check_mode: false
   register: victoriametrics_is_installed
 
 - name: Check current VictoriaMetrics version
-  ansible.builtin.command: /usr/local/bin/victoria-metrics-prod --version
+  ansible.builtin.command: "{{ victoriametrics_bin_dir }}/victoria-metrics-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

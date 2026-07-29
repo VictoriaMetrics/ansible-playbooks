@@ -10,6 +10,7 @@ victorialogs_download_url: "{{ victorialogs_repo_url }}/releases/download/{{ vic
 
 victorialogs_system_user: "victorialogs"
 victorialogs_system_group: "{{ victorialogs_system_user }}"
+victorialogs_bin_dir: "/usr/local/bin"
 victorialogs_data_dir: "/var/lib/victoria-logs/"
 victorialogs_retention_period_months: "12"
 

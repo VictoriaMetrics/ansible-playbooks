@@ -4,7 +4,6 @@
     that: ansible_facts['service_mgr'] == 'systemd' or ansible_facts['service_mgr'] == "upstart"
     msg: "This role only works with systemd and upstart"
 
-
 - name: Get systemd version
   ansible.builtin.command: systemctl --version
   changed_when: false
@@ -19,13 +18,13 @@
 
 - name: Check if VLagent is installed
   ansible.builtin.stat:
-    path: /usr/local/bin/vlagent-prod
+    path: "{{ vlagent_bin_dir }}/vlagent-prod"
   changed_when: false
   check_mode: false
   register: vlagent_is_installed
 
 - name: Check current VLagent version
-  ansible.builtin.command: /usr/local/bin/vlagent-prod --version
+  ansible.builtin.command: "{{ vlagent_bin_dir }}/vlagent-prod --version"
   changed_when: false
   failed_when: false
   check_mode: false

@@ -13,7 +13,7 @@
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/bin/vlagent-prod
+DAEMON={{ vlagent_bin_dir }}/vlagent-prod
 DAEMON_ARGS="{% for flag, flag_value in vlagent_service_args.items() %}--{{ flag }}={{ flag_value }} {% endfor %}"
 NAME=vic-vlagent
 DESC="VictoriaLogs agent"
