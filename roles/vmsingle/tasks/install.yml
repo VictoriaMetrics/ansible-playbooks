@@ -160,7 +160,7 @@
         - not victoriametrics_is_installed.stat.exists or
           victoriametrics_version not in victoriametrics_current_version.stdout
 
-    - name: Replace VictoriaMetrics binary at target dir
+    - name: Replace VictoriaMetrics binary at target dir # noqa: no-handler
       notify: Restart VictoriaMetrics service
       ansible.builtin.copy:
         src: /tmp/vic-single/victoria-metrics-prod
@@ -172,7 +172,7 @@
       when:
         - archive_downloaded is changed
 
-    - name: Download and unarchive VictoriaMetrics utils
+    - name: Download and unarchive VictoriaMetrics utils # noqa: no-handler
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
@@ -183,7 +183,7 @@
       when:
         - archive_downloaded is changed
 
-    - name: Replace VictoriaMetrics utils binaries at target dir
+    - name: Replace VictoriaMetrics utils binaries at target dir # noqa: no-handler
       ansible.builtin.copy:
         src: "/tmp/vic-utils/{{ item }}"
         dest: /usr/local/bin
