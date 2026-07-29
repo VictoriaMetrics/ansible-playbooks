@@ -105,7 +105,6 @@
 
   always:
     - name: Clear download file
-      become: no
       ansible.builtin.file:
         path: "/tmp/vlagent-prod"
         state: absent

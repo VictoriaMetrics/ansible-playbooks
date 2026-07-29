@@ -105,7 +105,6 @@
 
   always:
     - name: Clear download file
-      become: no
       ansible.builtin.file:
         path: /tmp/vmalert-prod
         state: absent
@@ -114,7 +113,10 @@
 
 - name: Restore SELinux context for vmalert binary
   ansible.builtin.command:
-    cmd: "restorecon -v {{ vic_vm_alert_bin_dir }}/vmalert-prod"
+    argv: 
+      - restorecon
+      - -v 
+      - "{{ vic_vm_alert_bin_dir }}/vmalert-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:

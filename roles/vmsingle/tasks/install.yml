@@ -214,14 +214,15 @@
 
 - name: Restore SELinux context for VictoriaMetrics binaries
   ansible.builtin.command:
-    cmd: >
-      "restorecon -v
-      {{ victoriametrics_bin_dir }}/victoria-metrics-prod
-      {{ victoriametrics_bin_dir }}/vmagent-prod
-      {{ victoriametrics_bin_dir }}/vmalert-prod
-      {{ victoriametrics_bin_dir }}/vmauth-prod
-      {{ victoriametrics_bin_dir }}/vmbackup-prod
-      {{ victoriametrics_bin_dir }}/vmrestore-prod"
+    argv:
+      - restorecon 
+      - -v
+      - "{{ victoriametrics_bin_dir }}/victoria-metrics-prod"
+      - "{{ victoriametrics_bin_dir }}/vmagent-prod"
+      - "{{ victoriametrics_bin_dir }}/vmalert-prod"
+      - "{{ victoriametrics_bin_dir }}/vmauth-prod"
+      - "{{ victoriametrics_bin_dir }}/vmbackup-prod"
+      - "{{ victoriametrics_bin_dir }}/vmrestore-prod"
   register: restorecon_result
   changed_when: "'relabeled' in restorecon_result.stdout"
   when:
