@@ -1,50 +1,27 @@
 ---
-- name: Configure systemd
-  when: ansible_facts['service_mgr'] == "systemd"
-  block:
-  - name: "Systemd | Copy VMagent systemd unit file"
-    ansible.builtin.template:
-      src: vmagent.service.j2
-      dest: /etc/systemd/system/vic-vmagent.service
-      owner: root
-      group: root
-      mode: "0644"
-    register: config_template
-    no_log: True
-    notify: Restart VMagent service
+- name: Copy VMagent systemd unit file
+  ansible.builtin.template:
+    src: vmagent.service.j2
+    dest: /etc/systemd/system/vic-vmagent.service
+    owner: root
+    group: root
+    mode: "0644"
+  register: config_template
+  no_log: True
+  notify: Restart VMagent service
 
-  - name: "Systemd | daemon-reload VMagent service" # noqa: no-handler
-    become: true
-    ansible.builtin.systemd:
-      daemon_reload: true
-    when: config_template is changed
-    changed_when: config_template is changed
+- name: Daemon-reload VMagent service # noqa: no-handler
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: config_template is changed
+  changed_when: config_template is changed
 
-  - name: Ensure VMagent service is enabled on boot
-    become: true
-    ansible.builtin.systemd:
-      name: vic-vmagent
-      enabled: true
-
-- name: Configure upstart
-  when: ansible_facts['service_mgr'] == "upstart"
-  block:
-  - name: "Upstart |  Install vic-vmagent service file"
-    ansible.builtin.template:
-      src: "upstart.j2"
-      dest: "/etc/init.d/vic-vmagent"
-      mode: "0755"
-      owner: root
-      group: root
-    notify: Restart VMagent service
-    register: config_template
-
-  - name: "Upstart |  Enable vic-vmagent service" # noqa: no-handler
-    ansible.builtin.service:
-      name: "vic-vmagent"
-      enabled: "yes"
-    when:
-    - config_template is changed
+- name: Ensure VMagent service is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    name: vic-vmagent
+    enabled: true
 
 - name: Prepare configuration dir
   ansible.builtin.file:
