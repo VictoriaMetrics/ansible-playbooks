@@ -26,8 +26,8 @@
 - name: Check current VMalert version
   ansible.builtin.command:
     argv:
-    - "{{ vmalert_bin_dir }}/vmalert-prod"
-    - --version
+      - "{{ vmalert_bin_dir }}/vmalert-prod"
+      - --version
   changed_when: false
   failed_when: false
   check_mode: false
