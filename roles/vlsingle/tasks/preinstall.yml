@@ -22,7 +22,10 @@
   register: vlsingle_is_installed
 
 - name: Check current VictoriaLogs version
-  ansible.builtin.command: "{{ vlsingle_bin_dir }}/victoria-logs-prod --version"
+  ansible.builtin.command:
+    argv:
+    - "{{ vlsingle_bin_dir }}/victoria-logs-prod"
+    - --version
   changed_when: false
   failed_when: false
   check_mode: false

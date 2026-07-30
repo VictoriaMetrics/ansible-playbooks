@@ -24,7 +24,10 @@
   register: vmauth_is_installed
 
 - name: Check current vmauth version
-  ansible.builtin.command: "{{ vmauth_bin_dir }}/vmauth-prod --version"
+  ansible.builtin.command:
+    argv:
+    - "{{ vmauth_bin_dir }}/vmauth-prod"
+    - --version
   changed_when: false
   failed_when: false
   check_mode: false

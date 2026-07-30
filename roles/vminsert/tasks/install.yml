@@ -20,6 +20,8 @@
   ansible.builtin.file:
     path: "{{ vminsert_bin_dir }}"
     state: directory
+    owner: root
+    group: root
     mode: "0755"
 
 - name: Delete existing vminsert version if it's different.

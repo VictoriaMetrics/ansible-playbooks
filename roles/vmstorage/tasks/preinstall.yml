@@ -24,7 +24,10 @@
   register: vmstorage_is_installed
 
 - name: Check current vmstorage version
-  ansible.builtin.command: "{{ vmstorage_bin_dir }}/vmstorage-prod --version"
+  ansible.builtin.command:
+    argv:
+    - "{{ vmstorage_bin_dir }}/vmstorage-prod"
+    - --version
   changed_when: false
   failed_when: false
   check_mode: false

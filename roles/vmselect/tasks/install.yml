@@ -20,6 +20,8 @@
   ansible.builtin.file:
     path: "{{ vmselect_bin_dir }}"
     state: directory
+    owner: root
+    group: root
     mode: "0755"
 
 - name: Delete existing vmselect version if it's different.

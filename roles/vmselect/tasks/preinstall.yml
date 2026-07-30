@@ -24,7 +24,10 @@
   register: vmselect_is_installed
 
 - name: Check current vmselect version
-  ansible.builtin.command: "{{ vmselect_bin_dir }}/vmselect-prod --version"
+  ansible.builtin.command:
+    argv:
+    - "{{ vmselect_bin_dir }}/vmselect-prod"
+    - --version
   changed_when: false
   failed_when: false
   check_mode: false
