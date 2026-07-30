@@ -1,6 +1,6 @@
 ---
-- name: Ensure vic-vmagent service started
+- name: "Ensure VMagent service started {{ vmagent_service_name }}"
   ansible.builtin.service:
-    name: vic-vmagent
+    name: "{{ vmagent_service_name }}"
     state: started
     enabled: yes

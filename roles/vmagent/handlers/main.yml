@@ -3,5 +3,5 @@
 - name: Restart VMagent service
   become: true
   ansible.builtin.service:
-    name: vic-vmagent
+    name: "{{ vmagent_service_name }}"
     state: restarted

@@ -21,7 +21,7 @@
 - name: Copy VictoriaTraces systemd unit file
   ansible.builtin.template:
     src: victoriatraces.service.j2
-    dest: /etc/systemd/system/victoriatraces.service
+    dest: "/etc/systemd/system/{{ vtsingle_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -33,13 +33,13 @@
   notify: Restart VictoriaTraces service
   ansible.builtin.systemd:
     daemon_reload: true
-    name: victoriatraces
+    name: "{{ vtsingle_service_name }}"
   when: config_template is changed  # noqa: no-handler
   changed_when: config_template is changed
 
 - name: Ensure VictoriaTraces service is enabled on boot
   become: true
   ansible.builtin.systemd:
-    name: victoriatraces
+    name: "{{ vtsingle_service_name }}"
     enabled: true
     state: started

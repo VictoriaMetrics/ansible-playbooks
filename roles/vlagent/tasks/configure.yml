@@ -2,7 +2,7 @@
 - name: Copy VLagent systemd unit file
   ansible.builtin.template:
     src: vlagent.service.j2
-    dest: /etc/systemd/system/vic-vlagent.service
+    dest: "/etc/systemd/system/{{ vlagent_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -20,5 +20,5 @@
 - name: Ensure VLagent service is enabled on boot
   become: true
   ansible.builtin.systemd:
-    name: vic-vlagent
+    name: "{{ vlagent_service_name }}"
     enabled: true

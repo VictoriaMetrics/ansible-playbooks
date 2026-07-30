@@ -3,6 +3,7 @@ vminsert_version: "v1.148.0"
 vminsert_enterprise: false
 vminsert_license_key: ""
 vminsert_license_key_file: ""
+vminsert_service_name: "vminsert"
 
 vminsert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vminsert_platform: "{% if vminsert_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

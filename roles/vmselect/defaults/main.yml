@@ -3,6 +3,7 @@ vmselect_version: "v1.148.0"
 vmselect_enterprise: false
 vmselect_license_key: ""
 vmselect_license_key_file: ""
+vmselect_service_name: "vmselect"
 
 vmselect_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmselect_platform: "{% if vmselect_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

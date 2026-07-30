@@ -2,7 +2,7 @@
 - name: "Systemd | Copy vmstorage systemd unit file"
   ansible.builtin.template:
     src: vmstorage.service.j2
-    dest: /etc/systemd/system/vmstorage.service
+    dest: "/etc/systemd/system/{{ vmstorage_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -11,7 +11,7 @@
 - name: "Systemd | ensure vmstorage service is enabled" # noqa: no-handler
   become: true
   ansible.builtin.systemd:
-    name: vmstorage
+    name: "{{ vmstorage_service_name }}"
     enabled: true
 
 - name: Prepare configuration dir

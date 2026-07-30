@@ -14,7 +14,7 @@ ExecStart={{ vlagent_bin_dir }}/vlagent-prod {%- for flag, flag_values in vlagen
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
 {% endfor %}
 
-SyslogIdentifier=vic-vlagent
+SyslogIdentifier={{ vlagent_service_name }}
 Restart=always
 
 PrivateTmp=yes

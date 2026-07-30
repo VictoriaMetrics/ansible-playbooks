@@ -21,7 +21,7 @@
 - name: Copy VictoriaMetrics systemd unit file
   ansible.builtin.template:
     src: victoriametrics.service.j2
-    dest: /etc/systemd/system/victoriametrics.service
+    dest: "/etc/systemd/system/{{ vmsingle_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -33,14 +33,14 @@
   notify: Restart VictoriaMetrics service
   ansible.builtin.systemd:
     daemon_reload: true
-    name: victoriametrics
+    name: "{{ vmsingle_service_name }}"
   when: config_template is changed  # noqa: no-handler
   changed_when: config_template is changed
 
 - name: Ensure VictoriaMetrics service is enabled on boot
   become: true
   ansible.builtin.systemd:
-    name: victoriametrics
+    name: "{{ vmsingle_service_name }}"
     enabled: true
 
 - name: Configure credentials

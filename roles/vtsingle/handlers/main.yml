@@ -2,5 +2,5 @@
 ---
 - name: Restart VictoriaTraces service
   ansible.builtin.systemd:
-    name: victoriatraces
+    name: "{{ vtsingle_service_name }}"
     state: restarted

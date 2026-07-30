@@ -3,6 +3,7 @@ vmagent_version: "v1.148.0"
 vmagent_enterprise: false
 vmagent_license_key: ""
 vmagent_license_key_file: ""
+vmagent_service_name: "vic-vmagent"
 
 vmagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmagent_platform: "{% if vmagent_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

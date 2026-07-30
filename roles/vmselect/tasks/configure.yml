@@ -2,7 +2,7 @@
 - name: "Systemd | Copy vmselect systemd unit file"
   ansible.builtin.template:
     src: vmselect.service.j2
-    dest: /etc/systemd/system/vmselect.service
+    dest: "/etc/systemd/system/{{ vmselect_service_name }}.service"
     owner: root
     group: root
     mode: "0644"
@@ -11,7 +11,7 @@
 - name: "Systemd | ensure vmselect service is enabled" # noqa: no-handler
   become: true
   ansible.builtin.systemd:
-    name: vmselect
+    name: "{{ vmselect_service_name }}"
     enabled: true
 
 - name: Prepare configuration dir

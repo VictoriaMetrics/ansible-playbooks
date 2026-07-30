@@ -2,5 +2,5 @@
 - name: Restart vmstorage service
   ansible.builtin.systemd:
     daemon_reload: true
-    name: vmstorage
+    name: "{{ vmstorage_service_name }}"
     state: restarted

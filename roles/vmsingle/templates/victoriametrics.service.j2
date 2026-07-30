@@ -11,7 +11,7 @@ User={{ vmsingle_system_user }}
 Group={{ vmsingle_system_group }}
 ExecStart={{ vmsingle_bin_dir }}/victoria-metrics-prod {% if (vmsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vmsingle_service_args.items() %}-{{ flag }}={{ flag_value | quote }} {% endfor %}
 
-SyslogIdentifier=victoriametrics
+SyslogIdentifier={{ vmsingle_service_name }}
 Restart=always
 
 PrivateTmp=yes

@@ -3,6 +3,7 @@ vmsingle_version: "{{ victoriametrics_version | default('v1.148.0') }}"
 vmsingle_enterprise: "{{ victoriametrics_enterprise | default(false) }}"
 vmsingle_license_key: "{{ victoriametrics_license_key | default('') }}"
 vmsingle_license_key_file: "{{ victoriametrics_license_key_file | default('') }}"
+vmsingle_service_name: "victoriametrics"
 
 vmsingle_platform: "{{ victoriametrics_platform | default('-linux' if vmsingle_version.replace('v', '') is version('1.79.0', '>=') else '') }}"
 vmsingle_repo_url: "{{ victoriametrics_repo_url | default('https://github.com/VictoriaMetrics/VictoriaMetrics') }}"

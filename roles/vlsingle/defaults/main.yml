@@ -3,6 +3,7 @@ vlsingle_version: "{{ victorialogs_version | default('v1.52.0') }}"
 vlsingle_enterprise: "{{ victorialogs_enterprise | default(false) }}"
 vlsingle_license_key: "{{ victorialogs_license_key | default('') }}"
 vlsingle_license_key_file: "{{ victorialogs_license_key_file | default('') }}"
+vlsingle_service_name: "victorialogs"
 
 vlsingle_platform: "{{ victorialogs_platform | default('linux') }}"
 vlsingle_repo_url: "{{ victorialogs_repo_url | default('https://github.com/VictoriaMetrics/VictoriaLogs') }}"

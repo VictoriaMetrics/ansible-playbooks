@@ -11,7 +11,7 @@ User={{ vtsingle_system_user }}
 Group={{ vtsingle_system_group }}
 ExecStart={{ vtsingle_bin_dir }}/victoria-traces-prod {% if (vtsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vtsingle_service_args.items() %}-{{ flag }}={{ flag_value | quote }} {% endfor %}
 
-SyslogIdentifier=victoriatraces
+SyslogIdentifier={{ vtsingle_service_name }}
 Restart=always
 
 PrivateTmp=yes

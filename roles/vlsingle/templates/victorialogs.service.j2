@@ -11,7 +11,7 @@ User={{ vlsingle_system_user }}
 Group={{ vlsingle_system_group }}
 ExecStart={{ vlsingle_bin_dir }}/victoria-logs-prod {% if (vlsingle_service_envflag_enabled | bool) %} -envflag.enable {% endif %} {% for flag, flag_value in vlsingle_service_args.items() %}-{{ flag }}={{ flag_value | quote }} {% endfor %}
 
-SyslogIdentifier=victorialogs
+SyslogIdentifier={{ vlsingle_service_name }}
 Restart=always
 
 PrivateTmp=yes

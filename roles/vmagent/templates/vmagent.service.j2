@@ -14,7 +14,7 @@ ExecStart={{ vmagent_bin_dir }}/vmagent-prod {%- for flag, flag_values in vmagen
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
 {% endfor %}
 
-SyslogIdentifier=vic-vmagent
+SyslogIdentifier={{ vmagent_service_name }}
 Restart=always
 
 PrivateTmp=yes

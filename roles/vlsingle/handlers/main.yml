@@ -3,6 +3,6 @@
 - name: Restart VictoriaLogs service
   become: true
   ansible.builtin.systemd:
-    name: victorialogs
+    name: "{{ vlsingle_service_name }}"
     state: restarted
   when: not ansible_check_mode

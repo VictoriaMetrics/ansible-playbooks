@@ -1,5 +1,6 @@
 ---
 vtsingle_version: "{{ victoriatraces_version | default('v0.9.4') }}"
+vtsingle_service_name: "victoriatraces"
 
 vtsingle_platform: "{{ victoriatraces_platform | default('linux') }}"
 vtsingle_repo_url: "{{ victoriatraces_repo_url | default('https://github.com/VictoriaMetrics/VictoriaTraces') }}"

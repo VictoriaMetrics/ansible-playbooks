@@ -3,5 +3,5 @@
 - name: Restart VictoriaMetrics service
   become: true
   ansible.builtin.systemd:
-    name: victoriametrics
+    name: "{{ vmsingle_service_name }}"
     state: restarted

@@ -3,6 +3,7 @@ vmstorage_version: "v1.148.0"
 vmstorage_enterprise: false
 vmstorage_license_key: ""
 vmstorage_license_key_file: ""
+vmstorage_service_name: "vmstorage"
 
 vmstorage_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmstorage_platform: "{% if vmstorage_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"
