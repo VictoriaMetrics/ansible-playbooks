@@ -1,4 +1,13 @@
 ---
+- name: Assert envflag data is unset when envflag support is disabled
+  ansible.builtin.assert:
+    that: vmstorage_service_envflag_data | length == 0
+    msg: >-
+      vmstorage_service_envflag_enabled is disabled, so vmstorage_service_envflag_data
+      is not passed to vmstorage. Move these parameters to vmstorage_service_args or
+      enable envflag support.
+  when: not vmstorage_service_envflag_enabled | bool
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'

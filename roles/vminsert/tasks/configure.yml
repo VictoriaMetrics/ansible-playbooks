@@ -35,9 +35,10 @@
 
 - name: Setup environment file
   ansible.builtin.template:
-    dest: "{{ vminsert_config_dir }}/vminsert.conf"
+    dest: "{{ vminsert_service_envflag_file }}"
     src: "vminsert.conf.j2"
     owner: "{{ vminsert_system_user }}"
     group: "{{ vminsert_system_group }}"
     mode: "0644"
+  when: vminsert_service_envflag_enabled | bool
   notify: Restart vminsert service

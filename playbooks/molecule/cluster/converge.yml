@@ -10,6 +10,8 @@
   hosts: vmselect
   vars:
     vmselect_cache_dir: "/var/lib/vmselect"
+    # Deprecated name used on purpose: tests the fallback from vmselect_config
+    # to vmselect_service_envflag_data.
     vmselect_config:
       cacheDataPath: "/var/lib/vmselect"
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
@@ -20,6 +22,8 @@
   become: true
   hosts: vminsert
   vars:
+    # Deprecated name used on purpose: tests the fallback from vminsert_config
+    # to vminsert_service_envflag_data.
     vminsert_config:
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
   roles:

@@ -14,15 +14,21 @@ vminsert_system_group: "{{ vminsert_system_user }}"
 
 vminsert_service_state: started
 vminsert_service_enabled: true
+vminsert_service_args: {}
 vminsert_exec_start_post: ""
 vminsert_exec_stop: ""
 
 vminsert_config_dir: "/opt/victoriametrics-vminsert"
 vminsert_bin_dir: /usr/local/bin
 
-vminsert_config:
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vminsert_service_envflag_enabled: true
+vminsert_service_envflag_file: "{{ vminsert_config_dir }}/vminsert.conf"
+_vminsert_service_envflag_data_default:
   replicationFactor: 1
   storageNode: vmstorage1,vmstorage2,vmstorage3
+vminsert_service_envflag_data: "{{ vminsert_config | default(_vminsert_service_envflag_data_default) }}"
 
 vminsert_relabel_config: ""
 

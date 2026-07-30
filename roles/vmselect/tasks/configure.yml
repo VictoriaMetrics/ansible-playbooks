@@ -24,11 +24,12 @@
 
 - name: Setup environment file
   ansible.builtin.template:
-    dest: "{{ vmselect_config_dir }}/vmselect.conf"
+    dest: "{{ vmselect_service_envflag_file }}"
     src: "vmselect.conf.j2"
     owner: "{{ vmselect_system_user }}"
     group: "{{ vmselect_system_group }}"
     mode: "0644"
+  when: vmselect_service_envflag_enabled | bool
   notify: Restart vmselect service
 
 - name: Prepare cache dir

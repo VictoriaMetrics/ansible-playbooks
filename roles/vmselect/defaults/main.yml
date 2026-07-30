@@ -14,6 +14,7 @@ vmselect_system_group: "{{ vmselect_system_user }}"
 
 vmselect_service_state: started
 vmselect_service_enabled: true
+vmselect_service_args: {}
 vmselect_exec_start_post: ""
 vmselect_exec_stop: ""
 
@@ -21,9 +22,14 @@ vmselect_config_dir: "/opt/victoriametrics-vmselect"
 vmselect_cache_dir: "/var/lib/vmselect"
 vmselect_bin_dir: /usr/local/bin
 
-vmselect_config:
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vmselect_service_envflag_enabled: true
+vmselect_service_envflag_file: "{{ vmselect_config_dir }}/vmselect.conf"
+_vmselect_service_envflag_data_default:
   storageNode: vmstorage1,vmstorage2
   cacheDataPath: "{{ vmselect_cache_dir }}"
+vmselect_service_envflag_data: "{{ vmselect_config | default(_vmselect_service_envflag_data_default) }}"
 
 vmselect_install_download_to_control: false
 

@@ -1,4 +1,13 @@
 ---
+- name: Assert envflag data is unset when envflag support is disabled
+  ansible.builtin.assert:
+    that: vmselect_service_envflag_data | length == 0
+    msg: >-
+      vmselect_service_envflag_enabled is disabled, so vmselect_service_envflag_data
+      is not passed to vmselect. Move these parameters to vmselect_service_args or
+      enable envflag support.
+  when: not vmselect_service_envflag_enabled | bool
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'
