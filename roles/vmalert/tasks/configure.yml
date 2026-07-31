@@ -1,4 +1,36 @@
 ---
+- name: Configure env
+  when: vmalert_service_envflag_enabled | bool
+  block:
+    - name: Validate envflag data
+      vars:
+        envflag_entry_pattern: '^[A-Za-z_][A-Za-z0-9_]*=[^"\n]*\Z'
+        envflag_invalid_entries: "{{ vmalert_service_envflag_data | map('string') | reject('match', envflag_entry_pattern) | list }}"
+      ansible.builtin.assert:
+        that:
+          - envflag_invalid_entries | length == 0
+        fail_msg: >-
+          vmalert_service_envflag_data entries must be single-line KEY=value strings
+          containing no double quote. A newline in an entry closes the Environment=
+          line and injects the rest as systemd directives, which can override User=.
+          Invalid entries: {{ envflag_invalid_entries }}
+
+    - name: Check envfile presence
+      ansible.builtin.stat:
+        path: "{{ vmalert_service_envflag_file }}"
+      register: envfile_state
+
+    - name: Setup envfile
+      ansible.builtin.file:
+        state: touch
+        path: "{{ vmalert_service_envflag_file }}"
+        owner: root
+        group: root
+        mode: "0644"
+        access_time: preserve
+      notify: Restart VMalert service
+      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
+
 - name: Copy VMalert systemd unit file
   ansible.builtin.template:
     src: systemd-service.j2

@@ -14,3 +14,17 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^ExecStart=\\S*vlagent-prod -envflag\\.enable --/"
+      - 'Environment="http_pathPrefix=/vlagent"'
+      - "EnvironmentFile=/etc/default/vic-vlagent"
+  /etc/default/vic-vlagent:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# Proves the environment variable reached the binary: -http.pathPrefix is only
+# ever supplied through Environment=, so a 200 here means envflag took effect.
+http:
+  "http://127.0.0.1:9429/vlagent/health":
+    status: 200

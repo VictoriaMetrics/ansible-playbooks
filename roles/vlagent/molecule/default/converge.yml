@@ -9,5 +9,8 @@
           "remoteWrite.url":
             - "http://url1/internal/insert"
           "remoteWrite.tmpDataPath": /tmp/vlagent
+        vlagent_service_envflag_enabled: true
+        vlagent_service_envflag_data:
+          - "http_pathPrefix=/vlagent"
       ansible.builtin.include_role:
         name: "vlagent"

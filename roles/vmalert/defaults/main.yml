@@ -29,6 +29,16 @@ vmalert_service_args: "{{ vic_vm_alert_service_args | default(_vmalert_service_a
 
 vmalert_max_open_files: "{{ vic_vm_alert_max_open_files | default(2097152) }}"
 
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vmalert_service_envflag_enabled: "false"
+# Array of "KEY=value" strings rendered as Environment= lines in the unit file,
+# which is world-readable. For secrets use vmalert_service_envflag_file and
+# chmod it 0600 before writing to it - see the README.
+vmalert_service_envflag_data: []
+#  - "external_url=https://vmalert.example.com"
+vmalert_service_envflag_file: "/etc/default/{{ vmalert_service_name }}"
+
 vmalert_default_rules_enabled: "{{ vic_vm_alert_default_rules_enabled | default(true) }}"
 vmalert_rules_config_path: "{{ vic_vm_alert_rules_config_path | default(vmalert_config_dir ~ '/rules.yml') }}"
 # Great examples of alerts - https://awesome-prometheus-alerts.grep.to/rules.html

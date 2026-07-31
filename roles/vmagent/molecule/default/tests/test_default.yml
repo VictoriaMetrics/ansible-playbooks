@@ -15,3 +15,17 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^ExecStart=\\S*vmagent-prod -envflag\\.enable --/"
+      - 'Environment="http_pathPrefix=/vmagent"'
+      - "EnvironmentFile=/etc/default/vic-vmagent"
+  /etc/default/vic-vmagent:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# Proves the environment variable reached the binary: -http.pathPrefix is only
+# ever supplied through Environment=, so a 200 here means envflag took effect.
+http:
+  "http://127.0.0.1:8429/vmagent/health":
+    status: 200

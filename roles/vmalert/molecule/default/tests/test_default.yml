@@ -15,3 +15,17 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^ExecStart=\\S*vmalert-prod -envflag\\.enable --/"
+      - 'Environment="http_pathPrefix=/vmalert"'
+      - "EnvironmentFile=/etc/default/vic-vmalert"
+  /etc/default/vic-vmalert:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+
+# Proves the environment variable reached the binary: -http.pathPrefix is only
+# ever supplied through Environment=, so a 200 here means envflag took effect.
+http:
+  "http://127.0.0.1:9431/vmalert/health":
+    status: 200
