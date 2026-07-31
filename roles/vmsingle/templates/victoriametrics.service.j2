@@ -27,10 +27,7 @@ ProtectKernelTunables=yes
 {% endif %}
 
 {% if vmsingle_service_envflag_enabled | bool %}
-{% for v in vmsingle_service_envflag_data %}
-Environment="{{ v }}"
-{% endfor %}
-
+EnvironmentFile={{ vmsingle_service_envflag_data_file }}
 EnvironmentFile={{ vmsingle_service_envflag_file }}
 {% endif %}
 

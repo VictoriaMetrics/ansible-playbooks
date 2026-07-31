@@ -24,7 +24,11 @@ vminsert_bin_dir: /usr/local/bin
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
 vminsert_service_envflag_enabled: true
-vminsert_service_envflag_file: "{{ vminsert_config_dir }}/vminsert.conf"
+# Role-managed env file holding vminsert_service_envflag_data. Rewritten on every run.
+vminsert_service_envflag_data_file: "{{ vminsert_config_dir }}/vminsert.conf"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
+vminsert_service_envflag_file: "/etc/default/{{ vminsert_service_name }}"
 _vminsert_service_envflag_data_default:
   replicationFactor: 1
   storageNode: vmstorage1,vmstorage2,vmstorage3

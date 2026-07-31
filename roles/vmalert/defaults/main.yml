@@ -32,11 +32,13 @@ vmalert_max_open_files: "{{ vic_vm_alert_max_open_files | default(2097152) }}"
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
 vmalert_service_envflag_enabled: "false"
-# Array of "KEY=value" strings rendered as Environment= lines in the unit file,
-# which is world-readable. For secrets use vmalert_service_envflag_file and
-# chmod it 0600 before writing to it - see the README.
+# Array of "KEY=value" strings rendered into vmalert_service_envflag_data_file.
 vmalert_service_envflag_data: []
 #  - "external_url=https://vmalert.example.com"
+# Role-managed env file holding vmalert_service_envflag_data. Rewritten on every run.
+vmalert_service_envflag_data_file: "/etc/default/{{ vmalert_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
 vmalert_service_envflag_file: "/etc/default/{{ vmalert_service_name }}"
 
 vmalert_default_rules_enabled: "{{ vic_vm_alert_default_rules_enabled | default(true) }}"

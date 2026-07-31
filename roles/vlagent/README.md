@@ -51,7 +51,7 @@ vlagent_service_args:
 
 ## Configuration via environment variables
 
-When `vlagent_service_envflag_enabled` is set to `true`, the role adds `-envflag.enable` to the service command line, renders every `vlagent_service_envflag_data` entry as an `Environment=` line and includes `vlagent_service_envflag_file` as an `EnvironmentFile=`. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+When `vlagent_service_envflag_enabled` is set to `true`, the role adds `-envflag.enable` to the service command line and lists two `EnvironmentFile=` entries in the unit. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
 
 ```yaml
 vlagent_service_envflag_enabled: "true"
@@ -61,16 +61,28 @@ vlagent_service_envflag_data:
 
 Command-line flags win: the upstream `-envflag.enable` description states that "Command line flag values have priority over values from environment vars". Since the role renders every `vlagent_service_args` entry onto the command line, environment variables are only useful for flags that are not in `vlagent_service_args`.
 
-Each `vlagent_service_envflag_data` entry must be a single-line `KEY=value` string whose key matches `[A-Za-z_][A-Za-z0-9_]*` and which contains no `"`. The role asserts this and fails the play on any entry that does not match. The check exists because a newline inside an entry closes the generated `Environment=` line and the remainder is written into the unit file as further systemd directives - a smuggled `User=root` would override the `User=` the role renders above it and run the service as root. A `"` breaks the same line without needing a newline. Values are subject to systemd specifier expansion, so a literal `%` must be written as `%%`.
+### The two env files
 
-### The env file
+| Variable | Default | Managed by | Contents |
+|---|---|---|---|
+| `vlagent_service_envflag_data_file` | `/etc/default/{{ vlagent_service_name }}.env` | the role, rewritten on every run | `vlagent_service_envflag_data` |
+| `vlagent_service_envflag_file` | `/etc/default/{{ vlagent_service_name }}` | you | anything you put there |
 
-The env file path follows `vlagent_service_name`, so renamed instances get their own file. The role creates it empty at mode `0644` owned by `root:root` only if it does not exist yet, and never rewrites its contents or permissions afterwards. Its parent directory is not created for you: pointing `vlagent_service_envflag_file` at a path under a directory that does not exist fails the play with `Error, could not touch target: [Errno 2] No such file or directory`.
+The role renders `vlagent_service_envflag_data` into the first file and lists it before the second, so a key set in your file overrides the same key coming from `vlagent_service_envflag_data`: per `systemd.exec(5)`, when the same variable is set twice "the files will be read in the order they are specified and the later setting will override the earlier setting".
 
-`Environment=` values are stored in the unit file, which is world-readable at mode `0644`. Put secrets in `vlagent_service_envflag_file` instead - but the role creates that file world-readable too, so `chmod 0600` it **before** writing any secret into it. systemd reads `EnvironmentFile=` as PID 1, so `0600 root:root` does not prevent the service from picking the values up.
+Both paths follow `vlagent_service_name`, so renamed instances get their own files. Both are created at mode `0600` owned by `root:root`; systemd reads `EnvironmentFile=` as PID 1, so that does not prevent the service from picking the values up. Neither parent directory is created for you: pointing either variable at a path under a directory that does not exist fails the play with `Error, could not touch target: [Errno 2] No such file or directory`.
+
+Put secrets in `vlagent_service_envflag_file`. It is the file the role never reads or rewrites, so a secret written there survives every subsequent run. `vlagent_service_envflag_data` is regular inventory data - it ends up in the role-managed file at `0600`, but it also lives wherever your inventory lives.
+
+Each `vlagent_service_envflag_data` entry must be a single-line `KEY=value` string whose key matches `[A-Za-z_][A-Za-z0-9_]*` and whose value contains no `'`. The role asserts this and fails the play on any entry that does not match, reporting the 1-based positions of the offending entries rather than their contents, since values can hold secrets. Two reasons for the check:
+
+- The role writes each entry as `KEY='value'`. systemd recognizes no escape sequences inside single quotes, so a `'` in the value terminates it early and corrupts the rest of the line. Values needing a literal `'` go in `vlagent_service_envflag_file`, where you control the quoting.
+- systemd silently drops an assignment whose variable name it rejects - it logs `Ignoring invalid environment assignment` and starts the service anyway - so a `.` left in a key would never be applied and never reported as an error.
+
+Single-quoting is also what makes values literal: `%` needs no doubling, and `\` reaches the binary as written, which is what regex-valued flags need.
 
 Further caveats:
 
-- `EnvironmentFile=` is rendered without systemd's `-` prefix, so the unit fails to start if the file is deleted while envflag is enabled.
-- The role never reads the env file back, so editing it out of band does not notify the restart handler. Restart the service yourself after changing it.
-- A key set in the env file overrides the same key set through `vlagent_service_envflag_data`: per `systemd.exec(5)`, "Settings from these files override settings made with `Environment=`".
+- Both `EnvironmentFile=` entries are rendered without systemd's `-` prefix, so the unit fails to start if either file is deleted while envflag is enabled.
+- The role never reads `vlagent_service_envflag_file` back, so editing it out of band does not notify the restart handler. Restart the service yourself after changing it.
+- Flipping `vlagent_service_envflag_enabled` back to `false` leaves both files on disk; the unit simply stops referencing them.

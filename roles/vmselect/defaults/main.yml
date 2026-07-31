@@ -25,7 +25,11 @@ vmselect_bin_dir: /usr/local/bin
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
 vmselect_service_envflag_enabled: true
-vmselect_service_envflag_file: "{{ vmselect_config_dir }}/vmselect.conf"
+# Role-managed env file holding vmselect_service_envflag_data. Rewritten on every run.
+vmselect_service_envflag_data_file: "{{ vmselect_config_dir }}/vmselect.conf"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
+vmselect_service_envflag_file: "/etc/default/{{ vmselect_service_name }}"
 _vmselect_service_envflag_data_default:
   storageNode: vmstorage1,vmstorage2
   cacheDataPath: "{{ vmselect_cache_dir }}"

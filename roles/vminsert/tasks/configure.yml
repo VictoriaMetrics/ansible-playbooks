@@ -33,12 +33,32 @@
     - vminsert_relabel_config != ""
   notify: Restart vminsert service
 
-- name: Setup environment file
+- name: Configure envflag data file
   ansible.builtin.template:
-    dest: "{{ vminsert_service_envflag_file }}"
+    dest: "{{ vminsert_service_envflag_data_file }}"
     src: "vminsert.conf.j2"
-    owner: "{{ vminsert_system_user }}"
-    group: "{{ vminsert_system_group }}"
-    mode: "0644"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
   when: vminsert_service_envflag_enabled | bool
+  notify: Restart vminsert service
+
+- name: Check envfile presence
+  ansible.builtin.stat:
+    path: "{{ vminsert_service_envflag_file }}"
+  register: envfile_state
+  when: vminsert_service_envflag_enabled | bool
+
+- name: Setup envfile
+  ansible.builtin.file:
+    state: touch
+    path: "{{ vminsert_service_envflag_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    access_time: preserve
+  when:
+    - vminsert_service_envflag_enabled | bool
+    - envfile_state.stat.exists is defined and not envfile_state.stat.exists
   notify: Restart vminsert service

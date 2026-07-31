@@ -22,14 +22,34 @@
     owner: "{{ vmstorage_system_user }}"
     group: "{{ vmstorage_system_group }}"
 
-- name: Setup environment file
+- name: Configure envflag data file
   ansible.builtin.template:
-    dest: "{{ vmstorage_service_envflag_file }}"
+    dest: "{{ vmstorage_service_envflag_data_file }}"
     src: "vmstorage.conf.j2"
-    owner: "{{ vmstorage_system_user }}"
-    group: "{{ vmstorage_system_group }}"
-    mode: "0644"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
   when: vmstorage_service_envflag_enabled | bool
+  notify: Restart vmstorage service
+
+- name: Check envfile presence
+  ansible.builtin.stat:
+    path: "{{ vmstorage_service_envflag_file }}"
+  register: envfile_state
+  when: vmstorage_service_envflag_enabled | bool
+
+- name: Setup envfile
+  ansible.builtin.file:
+    state: touch
+    path: "{{ vmstorage_service_envflag_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+    access_time: preserve
+  when:
+    - vmstorage_service_envflag_enabled | bool
+    - envfile_state.stat.exists is defined and not envfile_state.stat.exists
   notify: Restart vmstorage service
 
 - name: Prepare data dir

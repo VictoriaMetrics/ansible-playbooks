@@ -16,16 +16,25 @@ file:
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
       - "/^ExecStart=\\S*vmagent-prod -envflag\\.enable --/"
-      - 'Environment="http_pathPrefix=/vmagent"'
-      - "EnvironmentFile=/etc/default/vic-vmagent"
+      # Role-managed file first, user-managed second: systemd reads EnvironmentFile
+      # in listed order and the later one wins, so user keys override the role's.
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmagent\\.env$/"
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmagent$/"
+  /etc/default/vic-vmagent.env:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    contains:
+      - "/^http_pathPrefix='\\/vmagent'$/"
   /etc/default/vic-vmagent:
     exists: true
-    mode: "0644"
+    mode: "0600"
     owner: root
     group: root
 
 # Proves the environment variable reached the binary: -http.pathPrefix is only
-# ever supplied through Environment=, so a 200 here means envflag took effect.
+# ever supplied through the env file, so a 200 here means envflag took effect.
 http:
   "http://127.0.0.1:8429/vmagent/health":
     status: 200

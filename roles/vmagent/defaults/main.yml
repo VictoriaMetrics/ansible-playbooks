@@ -51,9 +51,11 @@ vmagent_systemd_protect_home: "yes"
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
 vmagent_service_envflag_enabled: "false"
-# Array of "KEY=value" strings rendered as Environment= lines in the unit file,
-# which is world-readable. For secrets use vmagent_service_envflag_file and
-# chmod it 0600 before writing to it - see the README.
+# Array of "KEY=value" strings rendered into vmagent_service_envflag_data_file.
 vmagent_service_envflag_data: []
 #  - "remoteWrite_maxDiskUsagePerURL=1GB"
+# Role-managed env file holding vmagent_service_envflag_data. Rewritten on every run.
+vmagent_service_envflag_data_file: "/etc/default/{{ vmagent_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
 vmagent_service_envflag_file: "/etc/default/{{ vmagent_service_name }}"

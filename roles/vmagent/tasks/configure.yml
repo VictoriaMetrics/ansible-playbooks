@@ -4,16 +4,35 @@
   block:
     - name: Validate envflag data
       vars:
-        envflag_entry_pattern: '^[A-Za-z_][A-Za-z0-9_]*=[^"\n]*\Z'
-        envflag_invalid_entries: "{{ vmagent_service_envflag_data | map('string') | reject('match', envflag_entry_pattern) | list }}"
+        envflag_entry_pattern: '^[A-Za-z_][A-Za-z0-9_]*=[^''\n]*\Z'
+        envflag_invalid_positions: >-
+          {{ vmagent_service_envflag_data | map('string')
+             | zip(range(1, vmagent_service_envflag_data | length + 1))
+             | rejectattr('0', 'match', envflag_entry_pattern)
+             | map(attribute='1') | join(', ') }}
       ansible.builtin.assert:
         that:
-          - envflag_invalid_entries | length == 0
+          - vmagent_service_envflag_data | map('string') | reject('match', envflag_entry_pattern) | list | length == 0
         fail_msg: >-
-          vmagent_service_envflag_data entries must be single-line KEY=value strings
-          containing no double quote. A newline in an entry closes the Environment=
-          line and injects the rest as systemd directives, which can override User=.
-          Invalid entries: {{ envflag_invalid_entries }}
+          vmagent_service_envflag_data entries must be single-line KEY=value strings whose
+          key matches [A-Za-z_][A-Za-z0-9_]* and whose value contains no single quote.
+          Each '.' in a flag name must be replaced with '_'. The role renders every entry
+          into vmagent_service_envflag_data_file as KEY='value', and systemd recognizes no
+          escape sequences inside single quotes, so a single quote in a value terminates it
+          early. systemd also drops an assignment whose name it rejects, logging "Ignoring
+          invalid environment assignment" and starting the service anyway, so an invalid key
+          would never be applied. Entry values are not reported because they can hold
+          secrets - invalid entries are at 1-based positions: {{ envflag_invalid_positions }}
+
+    - name: Configure envflag data file
+      ansible.builtin.template:
+        src: envflag.env.j2
+        dest: "{{ vmagent_service_envflag_data_file }}"
+        owner: root
+        group: root
+        mode: "0600"
+      no_log: true
+      notify: Restart VMagent service
 
     - name: Check envfile presence
       ansible.builtin.stat:
@@ -26,7 +45,7 @@
         path: "{{ vmagent_service_envflag_file }}"
         owner: root
         group: root
-        mode: "0644"
+        mode: "0600"
         access_time: preserve
       notify: Restart VMagent service
       when: envfile_state.stat.exists is defined and not envfile_state.stat.exists

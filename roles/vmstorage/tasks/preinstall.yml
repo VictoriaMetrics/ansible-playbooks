@@ -13,6 +13,35 @@
       enable envflag support.
   when: not vmstorage_service_envflag_enabled | bool
 
+- name: Validate envflag data
+  vars:
+    envflag_key_pattern: '^[A-Za-z_][A-Za-z0-9_]*\Z'
+    envflag_value_pattern: '^[^''\n]*\Z'
+    envflag_invalid_keys: >-
+      {{ _runtime_vmstorage_service_envflag_data.keys() | map('string')
+         | reject('match', envflag_key_pattern) | join(', ') }}
+    envflag_invalid_value_keys: >-
+      {{ _runtime_vmstorage_service_envflag_data.keys()
+         | zip(_runtime_vmstorage_service_envflag_data.values() | map('string'))
+         | rejectattr('1', 'match', envflag_value_pattern)
+         | map(attribute='0') | join(', ') }}
+  ansible.builtin.assert:
+    that:
+    - _runtime_vmstorage_service_envflag_data.keys() | map('string') | reject('match', envflag_key_pattern) | list | length == 0
+    - _runtime_vmstorage_service_envflag_data.values() | map('string') | reject('match', envflag_value_pattern) | list | length == 0
+    fail_msg: >-
+      vmstorage_service_envflag_data keys must match [A-Za-z_][A-Za-z0-9_]* and values must be
+      single-line and contain no single quote. Each '.' in a flag name must be replaced
+      with '_'. The role renders every entry into vmstorage_service_envflag_data_file as
+      KEY='value', and systemd recognizes no escape sequences inside single quotes, so a
+      single quote in a value terminates it early. systemd also drops an EnvironmentFile
+      assignment whose name it rejects, logging "Ignoring invalid environment assignment"
+      and starting the service anyway, so an invalid key is never applied. Values are not
+      reported because they can hold secrets.
+      Invalid keys: [{{ envflag_invalid_keys }}].
+      Keys with invalid values: [{{ envflag_invalid_value_keys }}].
+  when: vmstorage_service_envflag_enabled | bool
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'

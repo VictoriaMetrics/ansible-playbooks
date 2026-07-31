@@ -30,10 +30,7 @@ ProtectKernelTunables=yes
 {% endif %}
 
 {% if vmalert_service_envflag_enabled | bool %}
-{% for v in vmalert_service_envflag_data %}
-Environment="{{ v }}"
-{% endfor %}
-
+EnvironmentFile={{ vmalert_service_envflag_data_file }}
 EnvironmentFile={{ vmalert_service_envflag_file }}
 {% endif %}
 [Install]

@@ -30,10 +30,7 @@ ProtectKernelTunables=yes
 {% endif %}
 
 {% if vmagent_service_envflag_enabled | bool %}
-{% for v in vmagent_service_envflag_data %}
-Environment="{{ v }}"
-{% endfor %}
-
+EnvironmentFile={{ vmagent_service_envflag_data_file }}
 EnvironmentFile={{ vmagent_service_envflag_file }}
 {% endif %}
 {% if vmagent_exec_start_post != "" %}
