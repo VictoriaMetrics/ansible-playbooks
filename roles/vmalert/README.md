@@ -65,7 +65,7 @@ The `vic_vm_alert_*` variable names are deprecated in favor of the unified `vmal
 
 ## Flag naming
 
-`vmalert_service_args` keys are passed directly as command-line flags:
+`vmalert_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vmalert_service_args:

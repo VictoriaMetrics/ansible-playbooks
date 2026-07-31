@@ -41,7 +41,7 @@ The `vl_proxy_*` variable names are deprecated in favor of the unified `vm_proxy
 
 ## Flag naming
 
-`vlagent_service_args` keys are passed directly as command-line flags:
+`vlagent_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vlagent_service_args:

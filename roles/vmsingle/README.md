@@ -85,7 +85,7 @@ The `victoriametrics_*` variable names are deprecated in favor of the unified `v
 
 ## Flag naming and environment variables
 
-`vmsingle_service_args` keys are passed directly as command-line flags:
+`vmsingle_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vmsingle_service_args:

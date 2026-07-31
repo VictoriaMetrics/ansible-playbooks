@@ -41,7 +41,7 @@ The following table lists the configurable parameters of the roles and their def
 
 ## Flag naming
 
-`vmagent_service_args` keys are passed directly as command-line flags:
+`vmagent_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vmagent_service_args:
