@@ -11,7 +11,7 @@ Restart=always
 {% if vmstorage_service_envflag_enabled | bool %}
 EnvironmentFile={{ vmstorage_service_envflag_file }}
 {% endif %}
-ExecStart={{ vmstorage_bin_dir }}/vmstorage-prod{% if vmstorage_service_envflag_enabled | bool %} -envflag.enable{% endif %}{%- for flag, flag_values in vmstorage_service_args.items() -%}
+ExecStart={{ vmstorage_bin_dir }}/vmstorage-prod{% if vmstorage_service_envflag_enabled | bool %} -envflag.enable{% endif %}{%- for flag, flag_values in _runtime_vmstorage_service_args.items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}

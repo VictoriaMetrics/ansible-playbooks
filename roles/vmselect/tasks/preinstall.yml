@@ -1,7 +1,12 @@
 ---
+- name: Setup runtime service parameters
+  ansible.builtin.set_fact:
+    _runtime_vmselect_service_args: "{{ vmselect_service_args | default({}, true) }}"
+    _runtime_vmselect_service_envflag_data: "{{ vmselect_service_envflag_data | default({}, true) }}"
+
 - name: Assert envflag data is unset when envflag support is disabled
   ansible.builtin.assert:
-    that: vmselect_service_envflag_data | length == 0
+    that: _runtime_vmselect_service_envflag_data | length == 0
     msg: >-
       vmselect_service_envflag_enabled is disabled, so vmselect_service_envflag_data
       is not passed to vmselect. Move these parameters to vmselect_service_args or

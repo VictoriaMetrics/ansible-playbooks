@@ -23,7 +23,7 @@
 
 - name: Add license key parameter to envflag data
   ansible.builtin.set_fact:
-    vminsert_service_envflag_data: "{{ vminsert_service_envflag_data | combine({'license': vminsert_license_key}) }}"
+    _runtime_vminsert_service_envflag_data: "{{ _runtime_vminsert_service_envflag_data | combine({'license': vminsert_license_key}) }}"
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key != ""
@@ -32,7 +32,7 @@
 
 - name: Add license key parameter to service args
   ansible.builtin.set_fact:
-    vminsert_service_args: "{{ vminsert_service_args | combine({'license': vminsert_license_key}) }}"
+    _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'license': vminsert_license_key}) }}"
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key != ""
@@ -41,7 +41,7 @@
 
 - name: Add license key file parameter to envflag data
   ansible.builtin.set_fact:
-    vminsert_service_envflag_data: "{{ vminsert_service_envflag_data | combine({'licenseFile': vminsert_license_key_file}) }}"
+    _runtime_vminsert_service_envflag_data: "{{ _runtime_vminsert_service_envflag_data | combine({'licenseFile': vminsert_license_key_file}) }}"
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key_file != ""
@@ -50,7 +50,7 @@
 
 - name: Add license key file parameter to service args
   ansible.builtin.set_fact:
-    vminsert_service_args: "{{ vminsert_service_args | combine({'licenseFile': vminsert_license_key_file}) }}"
+    _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'licenseFile': vminsert_license_key_file}) }}"
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key_file != ""
