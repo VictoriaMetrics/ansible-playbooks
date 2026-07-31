@@ -42,6 +42,18 @@
       Keys with invalid values: [{{ envflag_invalid_value_keys }}].
   when: vminsert_service_envflag_enabled | bool
 
+- name: Validate envflag file paths
+  ansible.builtin.assert:
+    that:
+    - vminsert_service_envflag_data_file != vminsert_service_envflag_file
+    fail_msg: >-
+      vminsert_service_envflag_data_file and vminsert_service_envflag_file must be
+      different paths, but both resolve to {{ vminsert_service_envflag_data_file }}.
+      The role rewrites vminsert_service_envflag_data_file on every run, so a shared
+      path discards whatever you keep in vminsert_service_envflag_file - including
+      secrets - and collapses the override the two-file layout provides.
+  when: vminsert_service_envflag_enabled | bool
+
 - name: Pass relabel config via service args when envflag support is disabled
   ansible.builtin.set_fact:
     _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'relabelConfig': vminsert_config_dir ~ '/relabel.yaml'}) }}"

@@ -33,12 +33,6 @@
   when: vmstorage_service_envflag_enabled | bool
   notify: Restart vmstorage service
 
-- name: Check envfile presence
-  ansible.builtin.stat:
-    path: "{{ vmstorage_service_envflag_file }}"
-  register: envfile_state
-  when: vmstorage_service_envflag_enabled | bool
-
 - name: Setup envfile
   ansible.builtin.file:
     state: touch
@@ -47,9 +41,8 @@
     group: root
     mode: "0600"
     access_time: preserve
-  when:
-    - vmstorage_service_envflag_enabled | bool
-    - envfile_state.stat.exists is defined and not envfile_state.stat.exists
+    modification_time: preserve
+  when: vmstorage_service_envflag_enabled | bool
   notify: Restart vmstorage service
 
 - name: Prepare data dir

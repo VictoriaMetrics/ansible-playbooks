@@ -24,6 +24,17 @@
           would never be applied. Entry values are not reported because they can hold
           secrets - invalid entries are at 1-based positions: {{ envflag_invalid_positions }}
 
+    - name: Validate envflag file paths
+      ansible.builtin.assert:
+        that:
+          - vmagent_service_envflag_data_file != vmagent_service_envflag_file
+        fail_msg: >-
+          vmagent_service_envflag_data_file and vmagent_service_envflag_file must be
+          different paths, but both resolve to {{ vmagent_service_envflag_data_file }}.
+          The role rewrites vmagent_service_envflag_data_file on every run, so a shared
+          path discards whatever you keep in vmagent_service_envflag_file - including
+          secrets - and collapses the override the two-file layout provides.
+
     - name: Configure envflag data file
       ansible.builtin.template:
         src: envflag.env.j2
@@ -34,11 +45,6 @@
       no_log: true
       notify: Restart VMagent service
 
-    - name: Check envfile presence
-      ansible.builtin.stat:
-        path: "{{ vmagent_service_envflag_file }}"
-      register: envfile_state
-
     - name: Setup envfile
       ansible.builtin.file:
         state: touch
@@ -47,8 +53,8 @@
         group: root
         mode: "0600"
         access_time: preserve
+        modification_time: preserve
       notify: Restart VMagent service
-      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
 
 - name: Copy VMagent systemd unit file
   ansible.builtin.template:

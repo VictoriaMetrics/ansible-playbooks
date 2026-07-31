@@ -42,6 +42,18 @@
       Keys with invalid values: [{{ envflag_invalid_value_keys }}].
   when: vmselect_service_envflag_enabled | bool
 
+- name: Validate envflag file paths
+  ansible.builtin.assert:
+    that:
+    - vmselect_service_envflag_data_file != vmselect_service_envflag_file
+    fail_msg: >-
+      vmselect_service_envflag_data_file and vmselect_service_envflag_file must be
+      different paths, but both resolve to {{ vmselect_service_envflag_data_file }}.
+      The role rewrites vmselect_service_envflag_data_file on every run, so a shared
+      path discards whatever you keep in vmselect_service_envflag_file - including
+      secrets - and collapses the override the two-file layout provides.
+  when: vmselect_service_envflag_enabled | bool
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'
