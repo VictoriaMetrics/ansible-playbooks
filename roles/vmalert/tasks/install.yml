@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing VMalert version if it's different.
-  ansible.builtin.file:
-    path: "{{ vmalert_bin_dir }}/vmalert-prod"
-    state: absent
-  when:
-    - vmalert_is_installed.stat.exists | bool
-    - vmalert_version not in vmalert_current_version.stdout
-
 - name: Install via control host
   when: vmalert_install_download_to_control
   block:

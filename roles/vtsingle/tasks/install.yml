@@ -32,14 +32,6 @@
     owner: "{{ vtsingle_system_user }}"
     group: "{{ vtsingle_system_group }}"
 
-- name: Delete existing VictoriaTraces version if it is different.
-  ansible.builtin.file:
-    path: "{{ vtsingle_bin_dir }}/victoria-traces-prod"
-    state: absent
-  when:
-    - vtsingle_is_installed.stat.exists | bool
-    - vtsingle_version not in vtsingle_current_version.stdout
-
 - name: Install via control host
   when: vtsingle_install_download_to_control
   block:

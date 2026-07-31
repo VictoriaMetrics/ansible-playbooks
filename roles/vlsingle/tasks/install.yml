@@ -32,14 +32,6 @@
     owner: "{{ vlsingle_system_user }}"
     group: "{{ vlsingle_system_group }}"
 
-- name: Delete existing VictoriaLogs version if it is different.
-  ansible.builtin.file:
-    path: "{{ vlsingle_bin_dir }}/victoria-logs-prod"
-    state: absent
-  when:
-    - vlsingle_is_installed.stat.exists | bool
-    - vlsingle_version not in vlsingle_current_version.stdout
-
 - name: Install via control host
   when: vlsingle_install_download_to_control
   block:

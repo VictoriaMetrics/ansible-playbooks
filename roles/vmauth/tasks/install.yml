@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing vmauth version if it's different.
-  ansible.builtin.file:
-    path: "{{ vmauth_bin_dir }}/vmauth-prod"
-    state: absent
-  when:
-  - vmauth_is_installed.stat.exists | bool
-  - vmauth_version not in vmauth_current_version.stdout
-
 - name: Install via control host
   when: vmauth_install_download_to_control
   block:

@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing vmstorage version if it's different.
-  ansible.builtin.file:
-    path: "{{ vmstorage_bin_dir }}/vmstorage-prod"
-    state: absent
-  when:
-  - vmstorage_is_installed.stat.exists | bool
-  - vmstorage_version not in vmstorage_current_version.stdout
-
 - name: Install via control host
   when: vmstorage_install_download_to_control
   block:

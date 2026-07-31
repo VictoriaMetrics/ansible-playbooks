@@ -32,14 +32,6 @@
     owner: "{{ vmsingle_system_user }}"
     group: "{{ vmsingle_system_group }}"
 
-- name: Delete existing VictoriaMetrics version if it is different.
-  ansible.builtin.file:
-    path: "{{ vmsingle_bin_dir }}/victoria-metrics-prod"
-    state: absent
-  when:
-    - vmsingle_is_installed.stat.exists | bool
-    - vmsingle_version not in vmsingle_current_version.stdout
-
 - name: Install via control host
   when: vmsingle_install_download_to_control
   block:

@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing vmselect version if it's different.
-  ansible.builtin.file:
-    path: "{{ vmselect_bin_dir }}/vmselect-prod"
-    state: absent
-  when:
-  - vmselect_is_installed.stat.exists | bool
-  - vmselect_version not in vmselect_current_version.stdout
-
 - name: Install via control host
   when: vmselect_install_download_to_control
   block:

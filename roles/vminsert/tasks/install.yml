@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing vminsert version if it's different.
-  ansible.builtin.file:
-    path: "{{ vminsert_bin_dir }}/vminsert-prod"
-    state: absent
-  when:
-  - vminsert_is_installed.stat.exists | bool
-  - vminsert_version not in vminsert_current_version.stdout
-
 - name: Install via control host
   when: vminsert_install_download_to_control
   block:

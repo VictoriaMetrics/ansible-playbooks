@@ -24,14 +24,6 @@
     group: root
     mode: "0755"
 
-- name: Delete existing VLagent version if it's different.
-  ansible.builtin.file:
-    path: "{{ vlagent_bin_dir }}/vlagent-prod"
-    state: absent
-  when:
-  - vlagent_is_installed.stat.exists | bool
-  - vlagent_version not in vlagent_current_version.stdout
-
 - name: Install via control host
   when: vlagent_install_download_to_control
   block:
