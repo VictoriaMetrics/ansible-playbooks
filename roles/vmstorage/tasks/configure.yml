@@ -1,4 +1,46 @@
 ---
+# Validated here rather than in preinstall.yml because preinstall_license.yml
+# appends the license entries to _runtime_vmstorage_service_envflag_data after
+# preinstall.yml has already run.
+- name: Validate envflag data
+  vars:
+    envflag_key_pattern: '^[A-Za-z_][A-Za-z0-9_]*\Z'
+    envflag_value_pattern: '^[^''\n]*\Z'
+    envflag_invalid_keys: >-
+      {{ _runtime_vmstorage_service_envflag_data.keys() | map('string')
+         | reject('match', envflag_key_pattern) | join(', ') }}
+    envflag_invalid_value_keys: >-
+      {{ _runtime_vmstorage_service_envflag_data.keys()
+         | zip(_runtime_vmstorage_service_envflag_data.values() | map('string'))
+         | rejectattr('1', 'match', envflag_value_pattern)
+         | map(attribute='0') | join(', ') }}
+  ansible.builtin.assert:
+    that:
+      - _runtime_vmstorage_service_envflag_data.keys() | map('string') | reject('match', envflag_key_pattern) | list | length == 0
+      - _runtime_vmstorage_service_envflag_data.values() | map('string') | reject('match', envflag_value_pattern) | list | length == 0
+    fail_msg: >-
+      vmstorage_service_envflag_data keys must match [A-Za-z_][A-Za-z0-9_]* and values must be
+      single-line and contain no single quote. Each '.' in a flag name must be replaced
+      with '_'. Entries are rendered into vmstorage_service_envflag_data_file as KEY='value',
+      and a single quote in a value terminates it early. Values are not reported because
+      they can hold secrets. This also covers vmstorage_license_key and
+      vmstorage_license_key_file, which are appended as license and licenseFile.
+      Invalid keys: [{{ envflag_invalid_keys }}].
+      Keys with invalid values: [{{ envflag_invalid_value_keys }}].
+  when: vmstorage_service_envflag_enabled | bool
+
+- name: Validate envflag file paths
+  ansible.builtin.assert:
+    that:
+      - vmstorage_service_envflag_data_file != vmstorage_service_envflag_file
+    fail_msg: >-
+      vmstorage_service_envflag_data_file and vmstorage_service_envflag_file must be
+      different paths, but both resolve to {{ vmstorage_service_envflag_data_file }}.
+      The role rewrites vmstorage_service_envflag_data_file on every run, so a shared
+      path discards whatever you keep in vmstorage_service_envflag_file - including
+      secrets - and collapses the override the two-file layout provides.
+  when: vmstorage_service_envflag_enabled | bool
+
 - name: "Systemd | Copy vmstorage systemd unit file"
   ansible.builtin.template:
     src: vmstorage.service.j2

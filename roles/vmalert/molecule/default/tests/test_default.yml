@@ -16,8 +16,9 @@ file:
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
       - "/^ExecStart=\\S*vmalert-prod -envflag\\.enable --/"
-      # Role-managed file first, user-managed second: systemd reads EnvironmentFile
-      # in listed order and the later one wins, so user keys override the role's.
+      # Presence only - goss checks these patterns as a set and cannot assert
+      # their relative order. The vlagent default scenario proves the ordering
+      # guarantee functionally.
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmalert\\.env$/"
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmalert$/"
   /etc/default/vic-vmalert.env:

@@ -15,8 +15,9 @@ file:
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
       - "/^ExecStart=\\S*vlagent-prod -envflag\\.enable --/"
-      # Role-managed file first, user-managed second: systemd reads EnvironmentFile
-      # in listed order and the later one wins, so user keys override the role's.
+      # Presence only - goss checks these patterns as a set and cannot assert
+      # their relative order. The ordering guarantee is proven by the http check
+      # at the bottom of this file instead.
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vlagent\\.env$/"
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vlagent$/"
   /etc/default/vic-vlagent.env:
@@ -31,9 +32,16 @@ file:
     mode: "0600"
     owner: root
     group: root
+    # Seeded by converge.yml before the role ran; still here, so the role's
+    # touch task preserved pre-existing content.
+    contains:
+      - "/^http_pathPrefix='\\/override'$/"
 
-# Proves the environment variable reached the binary: -http.pathPrefix is only
-# ever supplied through the env file, so a 200 here means envflag took effect.
+# Both files set http_pathPrefix: the role's to /vlagent, the user-managed one
+# to /override. The unit lists the role's file first, so systemd's later-wins
+# rule must leave /override in effect. -http.pathPrefix is only ever supplied
+# through these files, so a 200 on /override proves both that envflag took
+# effect and that the user-managed file overrode the role's.
 http:
-  "http://127.0.0.1:9429/vlagent/health":
+  "http://127.0.0.1:9429/override/health":
     status: 200
