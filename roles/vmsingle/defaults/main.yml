@@ -1,5 +1,5 @@
 ---
-vmsingle_version: "{{ victoriametrics_version | default('v1.148.0') }}"
+vmsingle_version: "{{ victoriametrics_version | default('v1.149.0') }}"
 vmsingle_enterprise: "{{ victoriametrics_enterprise | default(false) }}"
 vmsingle_license_key: "{{ victoriametrics_license_key | default('') }}"
 vmsingle_license_key_file: "{{ victoriametrics_license_key_file | default('') }}"
