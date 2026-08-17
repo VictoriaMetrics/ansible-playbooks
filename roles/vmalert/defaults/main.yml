@@ -1,5 +1,5 @@
 ---
-vmalert_version: "{{ vic_vm_alert_version | default('v1.149.0') }}"
+vmalert_version: "{{ vic_vm_alert_version | default('v1.150.0') }}"
 vmalert_enterprise: "{{ vic_vm_alert_enterprise | default(false) }}"
 vmalert_license_key: "{{ vic_vm_alert_license_key | default('') }}"
 vmalert_license_key_file: "{{ vic_vm_alert_license_key_file | default('') }}"
