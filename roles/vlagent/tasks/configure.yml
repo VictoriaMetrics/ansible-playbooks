@@ -22,3 +22,11 @@
   ansible.builtin.systemd:
     name: "{{ vlagent_service_name }}"
     enabled: true
+
+- name: Prepare tmp data dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vlagent_tmp_data_path }}"
+    mode: "0751"
+    owner: "{{ vlagent_system_user }}"
+    group: "{{ vlagent_system_group }}"

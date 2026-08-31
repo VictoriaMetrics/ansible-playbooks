@@ -1,0 +1,108 @@
+---
+# High-availability VictoriaLogs cluster setup.
+#
+# Two independent VictoriaLogs clusters (cluster_a and cluster_b), each with
+# its own vlstorage, vlinsert and vlselect layers. Every log entry is written
+# into both clusters, so either cluster can serve complete query results
+# while the other one is down or under maintenance:
+#
+#   - vlagent: accepts inserts (port 9429) and replicates them into both
+#     clusters by writing through vmauth on localhost
+#   - vmauth: single HTTP endpoint (port 8427); routes external inserts to
+#     the vlagents, load-balances each per-cluster replication stream over
+#     that cluster's vlinsert nodes, and serves selects from the first
+#     available vlselect node of either cluster
+#   - vlstorage/vlinsert/vlselect are deployed with the vlsingle role, same
+#     as in vlcluster.yml. Each component gets its own service name and
+#     listen port (vlstorage :9428, vlinsert :9430, vlselect :9431), so all
+#     three can share a host — this allows testing the whole setup on as few
+#     as two hosts, one per cluster
+#
+# The vl_cluster inventory variable ties every cluster member to its cluster
+# and must match a name from vl_ha_clusters. vlagent and vmauth run together
+# on the entrypoint hosts, since vlagent writes through vmauth on localhost.
+#
+# Send logs to and query logs from http://<any-entrypoint-node>:8427/
+
+- name: Setup vlstorage
+  become: true
+  hosts: vlstorage
+  vars:
+    vlsingle_service_name: vlstorage
+  roles:
+    - vlsingle
+
+- name: Setup vlinsert
+  become: true
+  hosts: vlinsert
+  vars:
+    vlsingle_service_name: vlinsert
+    vlsingle_service_args:
+      httpListenAddr: ":9430"
+      storageNode: "{{ groups[vl_cluster ~ '_vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      select.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vlselect
+  become: true
+  hosts: vlselect
+  vars:
+    vlsingle_service_name: vlselect
+    vlsingle_service_args:
+      httpListenAddr: ":9431"
+      storageNode: "{{ groups[vl_cluster ~ '_vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      insert.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vlagent
+  become: true
+  hosts: vlagent
+  vars:
+    vl_ha_clusters:
+      - cluster_a
+      - cluster_b
+    vlagent_service_args:
+      remoteWrite.url: "{{ vl_ha_clusters | map('regex_replace', '^(.+)$', 'http://127.0.0.1:8427/\\1/internal/insert') | list }}"
+      remoteWrite.tmpDataPath: "{{ vlagent_tmp_data_path }}"
+  roles:
+    - vlagent
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vl_ha_clusters:
+      - cluster_a
+      - cluster_b
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          # external log ingestion -> vlagents (each replicates into both clusters)
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for agent in groups['vlagent'] %}
+              - "http://{{ agent }}:9429/"
+      {% endfor %}
+          # per-cluster replication stream from vlagent -> that cluster's vlinsert nodes
+      {% for cluster in vl_ha_clusters %}
+          - src_paths:
+              - "/{{ cluster }}/internal/insert"
+            drop_src_path_prefix_parts: 1
+            url_prefix:
+      {% for insert in groups[cluster ~ '_vlinsert'] %}
+              - "http://{{ insert }}:9430/"
+      {% endfor %}
+      {% endfor %}
+          # queries -> first available vlselect node of either cluster
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vlselect'] %}
+              - "http://{{ select }}:9431/"
+      {% endfor %}
+            load_balancing_policy: first_available
+  roles:
+    - vmauth
