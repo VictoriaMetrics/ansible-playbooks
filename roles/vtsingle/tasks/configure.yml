@@ -2,10 +2,48 @@
 - name: Configure env
   when: vtsingle_service_envflag_enabled | bool
   block:
-    - name: Check envfile presence
-      ansible.builtin.stat:
-        path: "{{ vtsingle_service_envflag_file }}"
-      register: envfile_state
+    - name: Validate envflag data
+      vars:
+        envflag_entry_pattern: '^[A-Za-z_][A-Za-z0-9_]*=[^''\n]*\Z'
+        envflag_invalid_positions: >-
+          {{ vtsingle_service_envflag_data | map('string')
+             | zip(range(1, vtsingle_service_envflag_data | length + 1))
+             | rejectattr('0', 'match', envflag_entry_pattern)
+             | map(attribute='1') | join(', ') }}
+      ansible.builtin.assert:
+        that:
+          - vtsingle_service_envflag_data | map('string') | reject('match', envflag_entry_pattern) | list | length == 0
+        fail_msg: >-
+          vtsingle_service_envflag_data entries must be single-line KEY=value strings whose
+          key matches [A-Za-z_][A-Za-z0-9_]* and whose value contains no single quote.
+          Each '.' in a flag name must be replaced with '_'. The role renders every entry
+          into vtsingle_service_envflag_data_file as KEY='value', and systemd recognizes no
+          escape sequences inside single quotes, so a single quote in a value terminates it
+          early. systemd also drops an assignment whose name it rejects, logging "Ignoring
+          invalid environment assignment" and starting the service anyway, so an invalid key
+          would never be applied. Entry values are not reported because they can hold
+          secrets - invalid entries are at 1-based positions: {{ envflag_invalid_positions }}
+
+    - name: Validate envflag file paths
+      ansible.builtin.assert:
+        that:
+          - vtsingle_service_envflag_data_file != vtsingle_service_envflag_file
+        fail_msg: >-
+          vtsingle_service_envflag_data_file and vtsingle_service_envflag_file must be
+          different paths, but both resolve to {{ vtsingle_service_envflag_data_file }}.
+          The role rewrites vtsingle_service_envflag_data_file on every run, so a shared
+          path discards whatever you keep in vtsingle_service_envflag_file - including
+          secrets - and collapses the override the two-file layout provides.
+
+    - name: Configure envflag data file
+      ansible.builtin.template:
+        src: envflag.env.j2
+        dest: "{{ vtsingle_service_envflag_data_file }}"
+        owner: root
+        group: root
+        mode: "0600"
+      no_log: true
+      notify: Restart VictoriaTraces service
 
     - name: Setup envfile
       ansible.builtin.file:
@@ -13,10 +51,10 @@
         path: "{{ vtsingle_service_envflag_file }}"
         owner: root
         group: root
-        mode: "0644"
+        mode: "0600"
         access_time: preserve
+        modification_time: preserve
       notify: Restart VictoriaTraces service
-      when: envfile_state.stat.exists is defined and not envfile_state.stat.exists
 
 - name: Copy VictoriaTraces systemd unit file
   ansible.builtin.template:

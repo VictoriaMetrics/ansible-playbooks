@@ -24,6 +24,9 @@ The following table lists the configurable parameters of the roles and their def
 | vlagent_exec_start_post             | Post start hook for systemd unit.                                                                                         | `""`                                                                                                  |
 | vlagent_exec_stop                   | Stop command for systemd unit.                                                                                            | `""`                                                                                                  |
 | vlagent_systemd_protect_home        | Configure Systemd home protection. See See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome= | `"yes"`                                                                                               |
+| vlagent_service_envflag_enabled     | Enable usage of environment variables for configuration. Read more: [docs](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) | `"false"`                                                             |
+| vlagent_service_envflag_data        | Flags data to pass to service                                                                                              | `[]`                                                                                                  |
+| vlagent_service_envflag_file        | Location of env file to include for service.                                                                               | `/etc/default/{{ vlagent_service_name }}`                                                             |
 | vm_proxy_http                       | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
 | vm_proxy_https                      | Sets environment for downloading archive                                                                                   | `""`                                                                                                  |
 
@@ -38,10 +41,35 @@ The `vl_proxy_*` variable names are deprecated in favor of the unified `vm_proxy
 
 ## Flag naming
 
-`vlagent_service_args` keys are passed directly as command-line flags:
+`vlagent_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vlagent_service_args:
   remoteWrite.url: "http://localhost:9428/insert/jsonline"
   remoteWrite.tmpDataPath: "/var/lib/vlagent-remotewrite-data"
 ```
+
+## Configuration via environment variables
+
+When `vlagent_service_envflag_enabled` is set to `true`, the role adds `-envflag.enable` to the service command line and lists two `EnvironmentFile=` entries in the unit. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+```yaml
+vlagent_service_envflag_enabled: "true"
+vlagent_service_envflag_data:
+  - "remoteWrite_maxDiskUsagePerURL=1GB"  # corresponds to -remoteWrite.maxDiskUsagePerURL flag
+```
+
+Command-line flags win over environment variables, and the role renders every `vlagent_service_args` entry onto the command line, so environment variables only help for flags that are not in `vlagent_service_args`.
+
+### The two env files
+
+| Variable | Default | Managed by | Contents |
+|---|---|---|---|
+| `vlagent_service_envflag_data_file` | `/etc/default/{{ vlagent_service_name }}.env` | the role, rewritten on every run | `vlagent_service_envflag_data` |
+| `vlagent_service_envflag_file` | `/etc/default/{{ vlagent_service_name }}` | you | anything you put there |
+
+The role rewrites the first file on every run and lists it before the second, so a key set in your file overrides the same key coming from `vlagent_service_envflag_data`. Put secrets in `vlagent_service_envflag_file` - the role never reads or rewrites it. The two paths must differ, and the role asserts it. Both files are kept at mode `0600` owned by `root:root`; neither parent directory is created for you.
+
+Each `vlagent_service_envflag_data` entry must be a single-line `KEY=value` string whose key matches `[A-Za-z_][A-Za-z0-9_]*` and whose value contains no `'`. The role asserts this and reports the 1-based positions of the offending entries rather than their values, which can hold secrets.
+
+Editing `vlagent_service_envflag_file` out of band does not notify the restart handler - restart the service yourself after changing it.

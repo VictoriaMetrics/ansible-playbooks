@@ -24,7 +24,8 @@ See full list at [defaults.yml](./defaults/main.yml)
 | vlsingle_service_args                  | Passes options defined above to VictoriaLogs single.                                                                                | see [defaults.yml](./defaults/main.yml)                                                                                                                                                          |
 | vlsingle_service_envflag_enabled       | Enable usage of environment variables for configuration. Read more: [docs](https://docs.victoriametrics.com/#environment-variables) | `false`                                                                                                                                                                                          |
 | vlsingle_service_envflag_data          | Flags data to pass to service                                                                                                       | see [defaults.yml](./defaults/main.yml)                                                                                                                                                          |
-| vlsingle_service_envflag_file          | Location of env file to include for service.                                                                                        | see [defaults.yml](./defaults/main.yml)                                                                                                                                                          |
+| vlsingle_service_envflag_data_file     | Role-managed env file holding the entries above. Rewritten on every run. | see [defaults.yml](./defaults/main.yml) |
+| vlsingle_service_envflag_file          | User-managed env file, read after the role-managed one so its keys win. | see [defaults.yml](./defaults/main.yml)                                                                                                                                                          |
 | vlsingle_install_download_to_control   | Whether use control or remote host to download archive                                                                               | `false`                                                                                                                                                                                           |
 | vm_proxy_http                          | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
 | vm_proxy_https                         | Sets environment for downloading archive                                                                                             | `""`                                                                                                                                                                                            |
@@ -55,7 +56,7 @@ The `victorialogs_*` variable names are deprecated in favor of the unified `vlsi
 
 ## Flag naming and environment variables
 
-`vlsingle_service_args` keys are passed directly as command-line flags:
+`vlsingle_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vlsingle_service_args:
@@ -64,6 +65,10 @@ vlsingle_service_args:
 ```
 
 When `vlsingle_service_envflag_enabled` is set to `true`, the `vlsingle_service_envflag_data` entries are passed as environment variables. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+The role rewrites `vlsingle_service_envflag_data_file` (default `/etc/default/{{ vlsingle_service_name }}.env`) on every run and lists it in the unit ahead of `vlsingle_service_envflag_file`, which the role creates empty and never rewrites, so a key you set there overrides the same key coming from `vlsingle_service_envflag_data`. Put secrets in `vlsingle_service_envflag_file`. The two paths must differ, and the role asserts it. Both files are kept at mode `0600` owned by `root:root`.
+
+Each entry must be a single-line `KEY=value` string whose key matches `[A-Za-z_][A-Za-z0-9_]*` and whose value contains no `'`. The role asserts this and reports only the 1-based positions of the offending entries, because values can hold secrets.
 
 ```yaml
 vlsingle_service_envflag_enabled: "true"

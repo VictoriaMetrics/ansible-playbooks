@@ -22,7 +22,11 @@ The following table lists the configurable parameters of the roles and their def
 | vmstorage_retention_period            | Set retentionPeriod value                                         |                                                      `1`                                                                     |
 | vmstorage_config_dir                  | Location for config files                                                                                                  | `/opt/victoriametrics-vmstorage`                                                                            |
 | vmstorage_bin_dir                     | Location for binary file                                                                                                   | `/usr/local/bin`                                                                                            |
-| vmstorage_config                      | Config parameters to be passed via environment variables                                                                   | See [defaults.yml](./defaults/main.yml)                                                                     |
+| vmstorage_service_envflag_enabled     | Pass config parameters via environment variables using `-envflag.enable`                                                   | `true`                                                                                                      |
+| vmstorage_service_envflag_data        | Config parameters to be passed via environment variables                                                                   | See [defaults.yml](./defaults/main.yml)                                                                     |
+| vmstorage_service_envflag_data_file   | Role-managed env file holding the entries above. Rewritten on every run.                                                   | `{{ vmstorage_config_dir }}/vmstorage.conf`                                                                 |
+| vmstorage_service_envflag_file        | User-managed env file, read after the role-managed one so its keys win.                                                    | `/etc/default/{{ vmstorage_service_name }}`                                                                 |
+| vmstorage_service_args                | Extra command-line flags for vmstorage, passed as-is.                                                                      | `{}`                                                                                                        |
 | vmstorage_data_dir                    | Data directory to use for vmstorage                                                                                        | `"/var/lib/vmstorage"`                                                                                      |
 | vmstorage_exec_start_post             | Post start hook for systemd unit                                                                                           | `""`                                                                                                        |
 | vmstorage_exec_stop                   | Stop command for systemd unit                                                                                              | `""`                                                                                                        |
@@ -31,15 +35,45 @@ The following table lists the configurable parameters of the roles and their def
 | vm_proxy_http                         | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |
 | vm_proxy_https                        | Sets environment for downloading archive                                                                                   | `""`                                                                                                        |
 
+## Deprecated aliases
+
+`vmstorage_config` is deprecated in favor of `vmstorage_service_envflag_data`, which matches the naming used by the other roles, and will be removed in a future release. The old name still works (it is used as a fallback when the new name is unset), and the role emits a deprecation warning when it detects it. Migrate to the new name:
+
+| Deprecated       | Use instead                    |
+|------------------|--------------------------------|
+| vmstorage_config | vmstorage_service_envflag_data |
+
 ## Configuration via environment variables
 
-This role configures vmstorage using environment variables with `-envflag.enable`. Each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+By default this role configures vmstorage using environment variables via `vmstorage_service_envflag_data` with `-envflag.enable`. Additional flags can also be passed directly on the command line via `vmstorage_service_args`.
 
-For example, to set the `-storage.minFreeDiskSpaceBytes` flag, use `storage_minFreeDiskSpaceBytes` as the key in `vmstorage_config`:
+For `vmstorage_service_envflag_data` keys: each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+### The two env files
+
+| Variable | Default | Managed by | Contents |
+|---|---|---|---|
+| `vmstorage_service_envflag_data_file` | `{{ vmstorage_config_dir }}/vmstorage.conf` | the role, rewritten on every run | `vmstorage_service_envflag_data` |
+| `vmstorage_service_envflag_file` | `/etc/default/{{ vmstorage_service_name }}` | you | anything you put there |
+
+The role rewrites the first file on every run and lists it in the unit before the second, so a key set in your file overrides the same key coming from `vmstorage_service_envflag_data`. Put secrets in `vmstorage_service_envflag_file` - the role never reads or rewrites it. The two paths must differ, and the role asserts it. Both files are kept at mode `0600` owned by `root:root`.
+
+The role asserts that every `vmstorage_service_envflag_data` key matches `[A-Za-z_][A-Za-z0-9_]*` and that every value is single-line and free of `'`, reporting the offending keys but never the values, which can hold secrets.
+
+Entries are written as `KEY='value'`, so values reach the binary literally. Earlier releases wrote them unquoted and systemd applied shell backslash rules - if you were doubling backslashes in `vmstorage_service_envflag_data` to compensate, drop the doubling.
+
+For `vmstorage_service_args` keys: dots can be used as-is since these are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values.
 
 ```yaml
-vmstorage_config:
+vmstorage_service_envflag_data:
+  # envflag-based config: use _ instead of .
   retentionPeriod: 1
   storageDataPath: "/var/lib/vmstorage"
   storage_minFreeDiskSpaceBytes: "1GB"  # corresponds to -storage.minFreeDiskSpaceBytes flag
+
+vmstorage_service_args:
+  # CLI flags: dots work as-is
+  storage.minFreeDiskSpaceBytes: "1GB"  # passed directly as --storage.minFreeDiskSpaceBytes
 ```
+
+Setting `vmstorage_service_envflag_enabled: false` drops both `-envflag.enable` and the env file from the unit, so all configuration must go through `vmstorage_service_args`. The role fails if `vmstorage_service_envflag_data` is non-empty in that case, since those parameters would be silently ignored - set it to `{}` explicitly.
