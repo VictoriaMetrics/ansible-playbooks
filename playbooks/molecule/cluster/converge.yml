@@ -36,15 +36,15 @@
           - src_paths:
               - "/insert/.+"
             url_prefix:
-            {% for insert in groups['vminsert'] %}
-            - "http://{{ insert }}:8480/"
-            {% endfor %}
+      {% for insert in groups['vminsert'] %}
+              - "http://{{ insert }}:8480/"
+      {% endfor %}
           - src_paths:
               - "/select/.+"
             url_prefix:
-           {% for select in groups['vmselect'] %}
-           - "http://{{ select }}:8481/"
-           {% endfor %}
+      {% for select in groups['vmselect'] %}
+              - "http://{{ select }}:8481/"
+      {% endfor %}
 
   roles:
     - vmauth
