@@ -1,0 +1,49 @@
+---
+# High-availability VictoriaLogs setup based on vlsingle.
+#
+# Every host runs the full stack:
+#   - vlsingle: stores a complete copy of the logs (port 9428)
+#   - vlagent:  accepts inserts and replicates them to every vlsingle (port 9429)
+#   - vmauth:   single HTTP endpoint (port 8427) routing inserts to the
+#               vlagents and selects to the vlsingles
+#
+# Send logs to and query logs from http://<any-node>:8427/
+
+- name: Setup vlsingle
+  become: true
+  hosts: vlsingle
+  roles:
+    - vlsingle
+
+- name: Setup vlagent
+  become: true
+  hosts: vlagent
+  vars:
+    vlagent_service_args:
+      remoteWrite.url: "{{ groups['vlsingle'] | map('regex_replace', '^(.+)$', 'http://\\1:9428/internal/insert') | list }}"
+      remoteWrite.tmpDataPath: "{{ vlagent_tmp_data_path }}"
+  roles:
+    - vlagent
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for agent in groups['vlagent'] %}
+              - "http://{{ agent }}:9429/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for single in groups['vlsingle'] %}
+              - "http://{{ single }}:9428/"
+      {% endfor %}
+            load_balancing_policy: first_available
+  roles:
+    - vmauth
