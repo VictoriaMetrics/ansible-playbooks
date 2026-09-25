@@ -8,8 +8,15 @@ Type=simple
 User={{ vminsert_system_user }}
 Group={{ vminsert_system_group }}
 Restart=always
-EnvironmentFile={{ vminsert_config_dir }}/vminsert.conf
-ExecStart={{ vminsert_bin_dir }}/vminsert-prod -envflag.enable
+{% if vminsert_service_envflag_enabled | bool %}
+EnvironmentFile={{ vminsert_service_envflag_data_file }}
+EnvironmentFile={{ vminsert_service_envflag_file }}
+{% endif %}
+ExecStart={{ vminsert_bin_dir }}/vminsert-prod{% if vminsert_service_envflag_enabled | bool %} -envflag.enable{% endif %}{%- for flag, flag_values in _runtime_vminsert_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
+{% endfor %}
 
 PrivateTmp=yes
 ProtectHome={{ vminsert_systemd_protect_home }}

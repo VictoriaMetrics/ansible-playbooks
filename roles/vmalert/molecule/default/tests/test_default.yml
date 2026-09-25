@@ -15,3 +15,27 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^ExecStart=\\S*vmalert-prod -envflag\\.enable --/"
+      # Presence only - goss checks these patterns as a set and cannot assert
+      # their relative order. The vlagent default scenario proves the ordering
+      # guarantee functionally.
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmalert\\.env$/"
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmalert$/"
+  /etc/default/vic-vmalert.env:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    contains:
+      - "/^http_pathPrefix='\\/vmalert'$/"
+  /etc/default/vic-vmalert:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+# Proves the environment variable reached the binary: -http.pathPrefix is only
+# ever supplied through the env file, so a 200 here means envflag took effect.
+http:
+  "http://127.0.0.1:9431/vmalert/health":
+    status: 200

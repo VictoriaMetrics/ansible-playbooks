@@ -21,9 +21,13 @@ vlsingle_retention_period: "{{ victorialogs_retention_period_months | default('1
 # more on envflags usage
 # https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#environment-variables
 vlsingle_service_envflag_enabled: "{{ victorialogs_service_envflag_enabled | default('false') }}"
-# Array of strings to pass
+# Array of "KEY=value" strings rendered into vlsingle_service_envflag_data_file.
 vlsingle_service_envflag_data: "{{ victorialogs_service_envflag_data | default([]) }}"
 #  - "graphiteListenAddr=127.0.0.1:12345"
+# Role-managed env file holding vlsingle_service_envflag_data. Rewritten on every run.
+vlsingle_service_envflag_data_file: "/etc/default/{{ vlsingle_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
 vlsingle_service_envflag_file: "{{ victorialogs_service_envflag_file | default('/etc/default/victoriametrics') }}"
 
 # Download behavior

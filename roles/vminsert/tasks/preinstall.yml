@@ -1,4 +1,23 @@
 ---
+- name: Setup runtime service parameters
+  ansible.builtin.set_fact:
+    _runtime_vminsert_service_args: "{{ vminsert_service_args | default({}, true) }}"
+    _runtime_vminsert_service_envflag_data: "{{ vminsert_service_envflag_data | default({}, true) }}"
+
+- name: Assert envflag data is unset when envflag support is disabled
+  ansible.builtin.assert:
+    that: _runtime_vminsert_service_envflag_data | length == 0
+    msg: >-
+      vminsert_service_envflag_enabled is disabled, so vminsert_service_envflag_data
+      is not passed to vminsert. Move these parameters to vminsert_service_args or
+      enable envflag support.
+  when: not vminsert_service_envflag_enabled | bool
+
+- name: Pass relabel config via service args when envflag support is disabled
+  ansible.builtin.set_fact:
+    _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'relabelConfig': vminsert_config_dir ~ '/relabel.yaml'}) }}"
+  when: not vminsert_service_envflag_enabled | bool and vminsert_relabel_config != ""
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'

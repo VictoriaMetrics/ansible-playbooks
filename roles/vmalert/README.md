@@ -30,6 +30,9 @@ Installs `vmalert` as binary running with systemd
 | vmalert_rules                      | Rules                                                       | see [defaults.yml](./defaults/main.yml)                                                                                              |
 | vmalert_service_name               | Service name that will be created by systemd or init        | see [defaults.yml](./defaults/main.yml)                                                                                              |
 | vmalert_install_download_to_control | Whether use control or remote host to download archive     | `false`                                                                                                                              |
+| vmalert_service_envflag_enabled    | Enable usage of environment variables for configuration. Read more: [docs](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) | `"false"`                                             |
+| vmalert_service_envflag_data       | Flags data to pass to service                               | `[]`                                                                                                                                 |
+| vmalert_service_envflag_file       | Location of env file to include for service.                | `/etc/default/{{ vmalert_service_name }}`                                                                                            |
 | vm_proxy_http                      | Sets environment for downloading archive                    | `""`                                                                                                                                |
 | vm_proxy_https                     | Sets environment for downloading archive                    | `""`                                                                                                                                |
 
@@ -62,7 +65,7 @@ The `vic_vm_alert_*` variable names are deprecated in favor of the unified `vmal
 
 ## Flag naming
 
-`vmalert_service_args` keys are passed directly as command-line flags:
+`vmalert_service_args` keys are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values:
 
 ```yaml
 vmalert_service_args:
@@ -70,6 +73,33 @@ vmalert_service_args:
   notifier.url: "http://localhost:9093"
   rule: "/opt/vic-vmalert/rules.yml"
 ```
+
+## Configuration via environment variables
+
+When `vmalert_service_envflag_enabled` is set to `true`, the role adds `-envflag.enable` to the service command line and lists two `EnvironmentFile=` entries in the unit. Each `.` in a flag name must be replaced with `_` when using environment variables. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
+
+```yaml
+vmalert_service_envflag_enabled: "true"
+vmalert_service_envflag_data:
+  - "external_url=https://vmalert.example.com"  # corresponds to -external.url flag
+```
+
+Command-line flags win over environment variables, and the role renders every `vmalert_service_args` entry onto the command line, so environment variables only help for flags that are not in `vmalert_service_args`.
+
+`rule` is the exception to watch for. When `vmalert_default_rules_enabled` is `true` the role appends `-rule={{ vmalert_rules_config_path }}` to the command line even though `rule` never appears in `vmalert_service_args`, so setting `rule` through the environment is silently ignored. Set `vmalert_default_rules_enabled: false` if you want to supply it from the environment.
+
+### The two env files
+
+| Variable | Default | Managed by | Contents |
+|---|---|---|---|
+| `vmalert_service_envflag_data_file` | `/etc/default/{{ vmalert_service_name }}.env` | the role, rewritten on every run | `vmalert_service_envflag_data` |
+| `vmalert_service_envflag_file` | `/etc/default/{{ vmalert_service_name }}` | you | anything you put there |
+
+The role rewrites the first file on every run and lists it before the second, so a key set in your file overrides the same key coming from `vmalert_service_envflag_data`. Put secrets in `vmalert_service_envflag_file` - the role never reads or rewrites it. The two paths must differ, and the role asserts it. Both files are kept at mode `0600` owned by `root:root`; neither parent directory is created for you.
+
+Each `vmalert_service_envflag_data` entry must be a single-line `KEY=value` string whose key matches `[A-Za-z_][A-Za-z0-9_]*` and whose value contains no `'`. The role asserts this and reports the 1-based positions of the offending entries rather than their values, which can hold secrets.
+
+Editing `vmalert_service_envflag_file` out of band does not notify the restart handler - restart the service yourself after changing it.
 
 ## Supplying rules from external files
 

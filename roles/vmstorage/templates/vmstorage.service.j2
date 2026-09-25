@@ -8,8 +8,15 @@ Type=simple
 User={{ vmstorage_system_user }}
 Group={{ vmstorage_system_group }}
 Restart=always
-EnvironmentFile={{ vmstorage_config_dir }}/vmstorage.conf
-ExecStart={{ vmstorage_bin_dir }}/vmstorage-prod -envflag.enable
+{% if vmstorage_service_envflag_enabled | bool %}
+EnvironmentFile={{ vmstorage_service_envflag_data_file }}
+EnvironmentFile={{ vmstorage_service_envflag_file }}
+{% endif %}
+ExecStart={{ vmstorage_bin_dir }}/vmstorage-prod{% if vmstorage_service_envflag_enabled | bool %} -envflag.enable{% endif %}{%- for flag, flag_values in _runtime_vmstorage_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
+{% endfor %}
 
 PrivateTmp=yes
 ProtectHome={{ vmstorage_systemd_protect_home }}

@@ -24,9 +24,13 @@ vmsingle_search_max_unique_timeseries: "{{ victoriametrics_search_max_unique_tim
 # more on envflags usage
 # https://docs.victoriametrics.com/Single-server-VictoriaMetrics.html#environment-variables
 vmsingle_service_envflag_enabled: "{{ victoriametrics_service_envflag_enabled | default('false') }}"
-# Array of strings to pass
+# Array of "KEY=value" strings rendered into vmsingle_service_envflag_data_file.
 vmsingle_service_envflag_data: "{{ victoriametrics_service_envflag_data | default([]) }}"
 #  - "graphiteListenAddr=127.0.0.1:12345"
+# Role-managed env file holding vmsingle_service_envflag_data. Rewritten on every run.
+vmsingle_service_envflag_data_file: "/etc/default/{{ vmsingle_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
 vmsingle_service_envflag_file: "{{ victoriametrics_service_envflag_file | default('/etc/default/victoriametrics') }}"
 
 _vmsingle_service_args_default:
