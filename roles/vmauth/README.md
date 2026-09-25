@@ -48,3 +48,7 @@ vmauth_service_args:
   # CLI flags: dots work as-is
   http.pathPrefix: "/vm"  # passed directly as --http.pathPrefix
 ```
+
+## Config reload
+
+Changes to `auth.yaml` trigger a config reload (`systemctl reload vmauth`) via SIGHUP instead of a full service restart, as described in the [vmauth documentation](https://docs.victoriametrics.com/vmauth/#how-to-reload-the-config). Changes to the systemd unit file or environment file (`vmauth.conf`) still trigger a full service restart.

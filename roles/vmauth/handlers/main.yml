@@ -1,4 +1,9 @@
 ---
+- name: Reload vmauth config
+  ansible.builtin.systemd:
+    name: "{{ vmauth_service_name }}"
+    state: reloaded
+
 - name: Restart vmauth service
   ansible.builtin.systemd:
     daemon_reload: true
