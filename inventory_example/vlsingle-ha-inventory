@@ -1,0 +1,16 @@
+[vlsingle]
+krista.local.shiftsystems.net
+historia.local.shiftsystems.net
+
+[vlagent]
+krista.local.shiftsystems.net
+historia.local.shiftsystems.net
+
+[vmauth]
+krista.local.shiftsystems.net
+historia.local.shiftsystems.net
+
+[victorialogs_ha:children]
+vlsingle
+vlagent
+vmauth
