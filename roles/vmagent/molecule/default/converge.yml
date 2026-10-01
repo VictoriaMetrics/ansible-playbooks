@@ -12,5 +12,8 @@
           "remoteWrite.tmpDataPath": /tmp/vmagent
         vmagent_scrape_config_files_dir: "{{ playbook_dir }}/files/scrape_configs"
         vmagent_scrape_config_prune_stale: true
+        vmagent_service_envflag_enabled: true
+        vmagent_service_envflag_data:
+          - "http_pathPrefix=/vmagent"
       ansible.builtin.include_role:
         name: "vmagent"

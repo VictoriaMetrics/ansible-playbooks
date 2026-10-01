@@ -15,6 +15,12 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^ExecStart=\\S*vmagent-prod -envflag\\.enable --/"
+      # Presence only - goss checks these patterns as a set and cannot assert
+      # their relative order. The vlagent default scenario proves the ordering
+      # guarantee functionally.
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmagent\\.env$/"
+      - "/^EnvironmentFile=\\/etc\\/default\\/vic-vmagent$/"
   /opt/vic-vmagent/configs/extra.yml:
     exists: true
     contains:
@@ -27,3 +33,21 @@ file:
       - "scrape_config_files:"
       - "/opt/vic-vmagent/configs/*.yml"
       - "/opt/vic-vmagent/configs/*.yaml"
+  /etc/default/vic-vmagent.env:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    contains:
+      - "/^http_pathPrefix='\\/vmagent'$/"
+  /etc/default/vic-vmagent:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+
+# Proves the environment variable reached the binary: -http.pathPrefix is only
+# ever supplied through the env file, so a 200 here means envflag took effect.
+http:
+  "http://127.0.0.1:8429/vmagent/health":
+    status: 200
