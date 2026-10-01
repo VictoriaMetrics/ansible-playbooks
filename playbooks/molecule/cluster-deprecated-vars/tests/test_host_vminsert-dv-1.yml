@@ -15,4 +15,4 @@ file:
   /opt/victoriametrics-vminsert/vminsert.conf:
     exists: true
     contains:
-      - "storageNode=vmstorage-dv-1"
+      - "storageNode='vmstorage-dv-1'"

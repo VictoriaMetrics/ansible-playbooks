@@ -10,7 +10,7 @@
     vmstorage_config:
       retentionPeriod: "12"
       storageDataPath: "/var/lib/vmstorage"
-      dedup.minScrapeInterval: "1ms"
+      dedup_minScrapeInterval: "1ms"
   roles:
     - vmstorage
 
@@ -26,7 +26,7 @@
     vmselect_config:
       cacheDataPath: "/var/lib/vmselect"
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
-      dedup.minScrapeInterval: 1ms
+      dedup_minScrapeInterval: 1ms
   roles:
     - vmselect
 

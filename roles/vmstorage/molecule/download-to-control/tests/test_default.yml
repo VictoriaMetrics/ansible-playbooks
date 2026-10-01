@@ -21,3 +21,5 @@ file:
       - "!/-envflag\\.enable/"
       - "!/^EnvironmentFile=/"
       - "--storageDataPath=/var/lib/vmstorage"
+  /etc/default/vmstorage:
+    exists: false
