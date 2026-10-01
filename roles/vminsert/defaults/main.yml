@@ -20,9 +20,10 @@ vminsert_exec_stop: ""
 vminsert_config_dir: "/opt/victoriametrics-vminsert"
 vminsert_bin_dir: /usr/local/bin
 
-vminsert_config:
+_vminsert_service_envflag_data_default:
   replicationFactor: 1
   storageNode: vmstorage1,vmstorage2,vmstorage3
+vminsert_service_envflag_data: "{{ vminsert_config | default(_vminsert_service_envflag_data_default) }}"
 
 vminsert_relabel_config: ""
 

@@ -1,0 +1,34 @@
+---
+# Twin of the cluster scenario driven through the deprecated <role>_config
+# names, so the fallback to <role>_service_envflag_data keeps CI coverage
+# while the shipped playbooks/cluster.yml uses the current names.
+- name: Setup storage
+  become: true
+  hosts: vmstorage
+  vars:
+    vmstorage_config:
+      retentionPeriod: "12"
+      storageDataPath: "/var/lib/vmstorage"
+  roles:
+    - vmstorage
+
+- name: Setup vmselect
+  become: true
+  hosts: vmselect
+  vars:
+    vmselect_cache_dir: "/var/lib/vmselect"
+    vmselect_config:
+      cacheDataPath: "/var/lib/vmselect"
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+  roles:
+    - vmselect
+
+- name: Setup vminsert
+  become: true
+  hosts: vminsert
+  vars:
+    vminsert_config:
+      replicationFactor: 1
+      storageNode: "{{ groups['vmstorage'] | join(',') }}"
+  roles:
+    - vminsert

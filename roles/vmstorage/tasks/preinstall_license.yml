@@ -20,16 +20,18 @@
     - vmstorage_enterprise | bool
     - vmstorage_license_key_file != ""
 
-- name: Add license key parameter to service config
+- name: Add license key parameter to envflag data
   ansible.builtin.set_fact:
-    vmstorage_config: "{{ vmstorage_config | combine({'license': vmstorage_license_key}) }}"
+    _runtime_vmstorage_service_envflag_data: "{{ _runtime_vmstorage_service_envflag_data | combine({'license': vmstorage_license_key}) }}"
+  no_log: true
   when:
     - vmstorage_enterprise | bool
     - vmstorage_license_key != ""
 
-- name: Add license key parameter to service config
+- name: Add license key file parameter to envflag data
   ansible.builtin.set_fact:
-    vmstorage_config: "{{ vmstorage_config | combine({'licenseFile': vmstorage_license_key_file}) }}"
+    _runtime_vmstorage_service_envflag_data: "{{ _runtime_vmstorage_service_envflag_data | combine({'licenseFile': vmstorage_license_key_file}) }}"
+  no_log: true
   when:
     - vmstorage_enterprise | bool
     - vmstorage_license_key_file != ""

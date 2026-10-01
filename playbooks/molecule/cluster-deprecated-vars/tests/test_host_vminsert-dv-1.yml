@@ -1,0 +1,18 @@
+service:
+  vminsert:
+    enabled: true
+    running: true
+
+port:
+  tcp:8480:
+    listening: true
+
+file:
+  # Injected through the deprecated vminsert_config name and distinct from
+  # _vminsert_service_envflag_data_default.storageNode
+  # (vmstorage1,vmstorage2,vmstorage3), so this fails if the alias stops
+  # resolving.
+  /opt/victoriametrics-vminsert/vminsert.conf:
+    exists: true
+    contains:
+      - "storageNode=vmstorage-dv-1"
