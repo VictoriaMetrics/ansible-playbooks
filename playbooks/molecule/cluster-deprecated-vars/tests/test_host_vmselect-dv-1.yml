@@ -14,4 +14,4 @@ file:
   /opt/victoriametrics-vmselect/vmselect.conf:
     exists: true
     contains:
-      - "storageNode=vmstorage-dv-1"
+      - "storageNode='vmstorage-dv-1'"

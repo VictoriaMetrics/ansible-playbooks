@@ -19,3 +19,5 @@ file:
       - "--storageNode=vmstorage1"
       # relabelConfig moves from the env file to the command line here.
       - "--relabelConfig=/opt/victoriametrics-vminsert/relabel.yaml"
+  /etc/default/vminsert:
+    exists: false

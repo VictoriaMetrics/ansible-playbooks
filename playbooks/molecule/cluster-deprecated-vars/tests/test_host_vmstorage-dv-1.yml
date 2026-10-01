@@ -14,4 +14,4 @@ file:
   /opt/victoriametrics-vmstorage/vmstorage.conf:
     exists: true
     contains:
-      - "retentionPeriod=12"
+      - "retentionPeriod='12'"

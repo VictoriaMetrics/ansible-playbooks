@@ -17,3 +17,5 @@ file:
       - "!/-envflag\\.enable/"
       - "!/^EnvironmentFile=/"
       - "--storageNode=vmstorage1"
+  /etc/default/vmselect:
+    exists: false
