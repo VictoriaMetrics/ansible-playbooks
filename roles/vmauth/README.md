@@ -37,7 +37,7 @@ This role configures vmauth using environment variables via `vmauth_config` with
 
 For `vmauth_config` keys: each `.` in a flag name must be replaced with `_` when passed as an environment variable. See [VictoriaMetrics documentation](https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables) for details.
 
-For `vmauth_service_args` keys: dots can be used as-is since these are passed directly as command-line flags.
+For `vmauth_service_args` keys: dots can be used as-is since these are passed directly as command-line flags. A list value renders the flag once per item, which is required for flags accepting multiple values.
 
 ```yaml
 vmauth_config:
