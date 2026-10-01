@@ -9,6 +9,9 @@
       storageDataPath: "/var/lib/vmstorage"
   tasks:
     - name: "Include vmstorage"
+      vars:
+        vmstorage_service_args:
+          "storage.minFreeDiskSpaceBytes": "1GB"
       ansible.builtin.include_role:
         name: "vmstorage"
         public: true

@@ -28,6 +28,17 @@
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key != ""
+    - vminsert_service_envflag_enabled | bool
+
+
+- name: Add license key parameter to service args
+  ansible.builtin.set_fact:
+    _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'license': vminsert_license_key}) }}"
+  no_log: true
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key != ""
+    - not vminsert_service_envflag_enabled | bool
 
 
 - name: Add license key file parameter to envflag data
@@ -37,3 +48,14 @@
   when:
     - vminsert_enterprise | bool
     - vminsert_license_key_file != ""
+    - vminsert_service_envflag_enabled | bool
+
+
+- name: Add license key file parameter to service args
+  ansible.builtin.set_fact:
+    _runtime_vminsert_service_args: "{{ _runtime_vminsert_service_args | combine({'licenseFile': vminsert_license_key_file}) }}"
+  no_log: true
+  when:
+    - vminsert_enterprise | bool
+    - vminsert_license_key_file != ""
+    - not vminsert_service_envflag_enabled | bool

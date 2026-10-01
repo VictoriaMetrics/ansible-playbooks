@@ -29,6 +29,7 @@
     owner: "{{ vmselect_system_user }}"
     group: "{{ vmselect_system_group }}"
     mode: "0644"
+  when: vmselect_service_envflag_enabled | bool
   notify: Restart vmselect service
 
 - name: Prepare cache dir
