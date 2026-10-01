@@ -4,6 +4,12 @@
   become: yes
   vars:
     vlsingle_data_dir: "/tmp/victoria-logs/"
+    # Envflag enabled here so the Configure env block in tasks/configure.yml
+    # executes somewhere in CI. -http.pathPrefix is only ever supplied through
+    # the env file, so the http check in test_default.yml proves it took effect.
+    vlsingle_service_envflag_enabled: true
+    vlsingle_service_envflag_data:
+      - "http_pathPrefix=/vlsingle"
     # Deprecated alias set on purpose to prove backward-compatible resolution.
     victorialogs_retention_period_months: "6"
   tasks:
