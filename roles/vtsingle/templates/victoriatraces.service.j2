@@ -27,10 +27,7 @@ ProtectKernelTunables=yes
 {% endif %}
 
 {% if vtsingle_service_envflag_enabled | bool %}
-{% for v in vtsingle_service_envflag_data %}
-Environment="{{ v }}"
-{% endfor %}
-
+EnvironmentFile={{ vtsingle_service_envflag_data_file }}
 EnvironmentFile={{ vtsingle_service_envflag_file }}
 {% endif %}
 

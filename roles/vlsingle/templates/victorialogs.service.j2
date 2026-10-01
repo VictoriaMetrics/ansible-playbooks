@@ -27,10 +27,7 @@ ProtectKernelTunables=yes
 {% endif %}
 
 {% if vlsingle_service_envflag_enabled | bool %}
-{% for v in vlsingle_service_envflag_data %}
-Environment="{{ v }}"
-{% endfor %}
-
+EnvironmentFile={{ vlsingle_service_envflag_data_file }}
 EnvironmentFile={{ vlsingle_service_envflag_file }}
 {% endif %}
 
