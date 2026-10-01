@@ -6,3 +6,16 @@ service:
 port:
   tcp:8481:
     listening: true
+
+# envflag is off here, which makes this scenario the disabled-path regression
+# guard: no envflag artefacts in the unit, every flag on ExecStart.
+file:
+  /etc/systemd/system/vmselect.service:
+    exists: true
+    contains:
+      - "/^ExecStart=\\S*vmselect-prod --/"
+      - "!/-envflag\\.enable/"
+      - "!/^EnvironmentFile=/"
+      - "--storageNode=vmstorage1"
+  /etc/default/vmselect:
+    exists: false

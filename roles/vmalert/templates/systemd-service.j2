@@ -8,7 +8,7 @@ After=network.target
 Type=simple
 User={{ vmalert_system_user }}
 Group={{ vmalert_system_group }}
-ExecStart={{ vmalert_bin_dir }}/vmalert-prod {%- for flag, flag_values in _runtime_vmalert_service_args.items() -%}
+ExecStart={{ vmalert_bin_dir }}/vmalert-prod{% if vmalert_service_envflag_enabled | bool %} -envflag.enable{% endif %} {%- for flag, flag_values in _runtime_vmalert_service_args.items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
@@ -29,5 +29,9 @@ ProtectKernelModules=true
 ProtectKernelTunables=yes
 {% endif %}
 
+{% if vmalert_service_envflag_enabled | bool %}
+EnvironmentFile={{ vmalert_service_envflag_data_file }}
+EnvironmentFile={{ vmalert_service_envflag_file }}
+{% endif %}
 [Install]
 WantedBy=multi-user.target

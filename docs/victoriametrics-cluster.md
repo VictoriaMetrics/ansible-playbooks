@@ -54,3 +54,14 @@ It's also possible to use molecule scenario to create a local cluster for testin
 See [molecule](../playbooks/molecule/cluster) directory for details. The scenario uses docker as a driver and
 sets up a container for each component. The scenario can be deployed by
 using `make molecule-converge-cluster-integration` command.
+
+## Overriding vmselect and vminsert parameters
+
+The playbook sets `vmselect_service_envflag_data` and `vminsert_service_envflag_data` as play vars, so inventory values for them are ignored. Override them with extra vars, which replace the whole dict:
+
+```shell
+ansible-playbook -i inventory playbooks/cluster.yml \
+  -e '{"vmselect_service_envflag_data": {"cacheDataPath": "/var/lib/vmselect", "storageNode": "vmstorage-1,vmstorage-2"}}'
+```
+
+Earlier releases set `vmselect_config` and `vminsert_config` in this playbook. Extra vars under those deprecated names no longer have any effect here.

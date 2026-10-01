@@ -8,8 +8,15 @@ Type=simple
 User={{ vmselect_system_user }}
 Group={{ vmselect_system_group }}
 Restart=always
-EnvironmentFile={{ vmselect_config_dir }}/vmselect.conf
-ExecStart={{ vmselect_bin_dir }}/vmselect-prod -envflag.enable
+{% if vmselect_service_envflag_enabled | bool %}
+EnvironmentFile={{ vmselect_service_envflag_data_file }}
+EnvironmentFile={{ vmselect_service_envflag_file }}
+{% endif %}
+ExecStart={{ vmselect_bin_dir }}/vmselect-prod{% if vmselect_service_envflag_enabled | bool %} -envflag.enable{% endif %}{%- for flag, flag_values in _runtime_vmselect_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
+{% endfor %}
 
 PrivateTmp=yes
 ProtectHome={{ vmselect_systemd_protect_home }}

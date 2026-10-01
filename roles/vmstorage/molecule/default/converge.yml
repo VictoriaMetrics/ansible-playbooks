@@ -2,7 +2,24 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    # Deprecated alias set on purpose to prove backward-compatible resolution.
+    vmstorage_config:
+      retentionPeriod: "3"
+      storageDataPath: "/var/lib/vmstorage"
   tasks:
     - name: "Include vmstorage"
+      vars:
+        vmstorage_service_args:
+          "storage.minFreeDiskSpaceBytes": "1GB"
       ansible.builtin.include_role:
         name: "vmstorage"
+        public: true
+
+    - name: "Assert deprecated alias resolves into envflag data"
+      ansible.builtin.assert:
+        that:
+          - vmstorage_service_envflag_data['retentionPeriod'] == '3'
+        fail_msg: >-
+          Deprecated alias vmstorage_config did not resolve into
+          vmstorage_service_envflag_data

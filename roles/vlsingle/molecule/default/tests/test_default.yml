@@ -15,3 +15,18 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+      - "/^EnvironmentFile=\\/etc\\/default\\/victorialogs\\.env$/"
+  /etc/default/victorialogs.env:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    contains:
+      - "/^http_pathPrefix='\\/vlsingle'$/"
+
+# -http.pathPrefix is supplied only through the role-managed env file, so a 200
+# on the prefixed path proves the envflag block rendered and the value reached
+# the binary.
+http:
+  "http://127.0.0.1:9428/vlsingle/health":
+    status: 200

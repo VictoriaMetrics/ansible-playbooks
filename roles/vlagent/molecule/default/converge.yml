@@ -2,6 +2,17 @@
 - name: Converge
   hosts: all
   become: yes
+  pre_tasks:
+    # Seeded before the role runs. The role touches this file without truncating
+    # it, and lists it after its own env file, so this value must win at runtime.
+    # test_default.yml asserts that by hitting /override instead of /vlagent.
+    - name: "Seed user-managed envfile with a key that overrides the role's"
+      ansible.builtin.copy:
+        dest: /etc/default/vic-vlagent
+        content: "http_pathPrefix='/override'\n"
+        owner: root
+        group: root
+        mode: "0600"
   tasks:
     - name: "Include vlagent"
       vars:
@@ -9,5 +20,8 @@
           "remoteWrite.url":
             - "http://url1/internal/insert"
           "remoteWrite.tmpDataPath": /tmp/vlagent
+        vlagent_service_envflag_enabled: true
+        vlagent_service_envflag_data:
+          - "http_pathPrefix=/vlagent"
       ansible.builtin.include_role:
         name: "vlagent"
