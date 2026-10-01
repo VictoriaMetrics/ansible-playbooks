@@ -2,6 +2,11 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    # Deprecated alias set on purpose to prove backward-compatible resolution.
+    vminsert_config:
+      replicationFactor: 1
+      storageNode: vmstorage1
   tasks:
     - name: "Include vminsert"
       vars:
@@ -12,3 +17,12 @@
             replacement: '${1}'
       ansible.builtin.include_role:
         name: "vminsert"
+        public: true
+
+    - name: "Assert deprecated alias resolves into envflag data"
+      ansible.builtin.assert:
+        that:
+          - vminsert_service_envflag_data['storageNode'] == 'vmstorage1'
+        fail_msg: >-
+          Deprecated alias vminsert_config did not resolve into
+          vminsert_service_envflag_data

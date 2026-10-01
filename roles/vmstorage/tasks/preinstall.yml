@@ -1,4 +1,9 @@
 ---
+- name: Setup runtime service parameters
+  ansible.builtin.set_fact:
+    _runtime_vmstorage_service_envflag_data: "{{ vmstorage_service_envflag_data | default({}, true) }}"
+  no_log: true
+
 - name: Assert usage of systemd as an init system
   ansible.builtin.assert:
     that: ansible_facts['service_mgr'] == 'systemd'

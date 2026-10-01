@@ -5,6 +5,8 @@
   vars:
     vmstorage_enterprise: "true"
     vmstorage_license_key: "fake"
+    # Deprecated name used on purpose: tests the fallback from vmstorage_config
+    # to vmstorage_service_envflag_data.
     vmstorage_config:
       retentionPeriod: "12"
       storageDataPath: "/var/lib/vmstorage"
@@ -19,6 +21,8 @@
     vmselect_enterprise: "true"
     vmselect_license_key: "fake"
     vmselect_cache_dir: "/var/lib/vmselect"
+    # Deprecated name used on purpose: tests the fallback from vmselect_config
+    # to vmselect_service_envflag_data.
     vmselect_config:
       cacheDataPath: "/var/lib/vmselect"
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
@@ -32,6 +36,8 @@
   vars:
     vminsert_enterprise: "true"
     vminsert_license_key: "fake"
+    # Deprecated name used on purpose: tests the fallback from vminsert_config
+    # to vminsert_service_envflag_data.
     vminsert_config:
       replicationFactor: 1
       storageNode: "{{ groups['vmstorage'] | join(',') }}"

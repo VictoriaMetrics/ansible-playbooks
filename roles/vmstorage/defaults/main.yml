@@ -25,9 +25,10 @@ vmstorage_bin_dir: /usr/local/bin
 # https://docs.victoriametrics.com/#retention
 vmstorage_retention_period: 1
 
-vmstorage_config:
+_vmstorage_service_envflag_data_default:
   retentionPeriod: "{{ vmstorage_retention_period }}"
   storageDataPath: "{{ vmstorage_data_dir }}"
+vmstorage_service_envflag_data: "{{ vmstorage_config | default(_vmstorage_service_envflag_data_default) }}"
 
 vmstorage_install_download_to_control: false
 
