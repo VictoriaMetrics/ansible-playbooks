@@ -9,6 +9,9 @@
       cacheDataPath: "/var/lib/vmselect"
   tasks:
     - name: "Include vmselect"
+      vars:
+        vmselect_service_args:
+          "search.maxUniqueTimeseries": 500000
       ansible.builtin.include_role:
         name: "vmselect"
         public: true

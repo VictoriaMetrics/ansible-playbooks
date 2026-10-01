@@ -28,6 +28,17 @@
   when:
     - vmselect_enterprise | bool
     - vmselect_license_key != ""
+    - vmselect_service_envflag_enabled | bool
+
+
+- name: Add license key parameter to service args
+  ansible.builtin.set_fact:
+    _runtime_vmselect_service_args: "{{ _runtime_vmselect_service_args | combine({'license': vmselect_license_key}) }}"
+  no_log: true
+  when:
+    - vmselect_enterprise | bool
+    - vmselect_license_key != ""
+    - not vmselect_service_envflag_enabled | bool
 
 
 - name: Add license key file parameter to envflag data
@@ -37,3 +48,14 @@
   when:
     - vmselect_enterprise | bool
     - vmselect_license_key_file != ""
+    - vmselect_service_envflag_enabled | bool
+
+
+- name: Add license key file parameter to service args
+  ansible.builtin.set_fact:
+    _runtime_vmselect_service_args: "{{ _runtime_vmselect_service_args | combine({'licenseFile': vmselect_license_key_file}) }}"
+  no_log: true
+  when:
+    - vmselect_enterprise | bool
+    - vmselect_license_key_file != ""
+    - not vmselect_service_envflag_enabled | bool
