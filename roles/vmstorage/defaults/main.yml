@@ -14,6 +14,7 @@ vmstorage_system_group: "{{ vmstorage_system_user }}"
 
 vmstorage_service_state: started
 vmstorage_service_enabled: true
+vmstorage_service_args: {}
 vmstorage_exec_start_post: ""
 vmstorage_exec_stop: ""
 
@@ -25,9 +26,18 @@ vmstorage_bin_dir: /usr/local/bin
 # https://docs.victoriametrics.com/#retention
 vmstorage_retention_period: 1
 
-vmstorage_config:
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vmstorage_service_envflag_enabled: true
+# Role-managed env file holding vmstorage_service_envflag_data. Rewritten on every run.
+vmstorage_service_envflag_data_file: "{{ vmstorage_config_dir }}/vmstorage.conf"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
+vmstorage_service_envflag_file: "/etc/default/{{ vmstorage_service_name }}"
+_vmstorage_service_envflag_data_default:
   retentionPeriod: "{{ vmstorage_retention_period }}"
   storageDataPath: "{{ vmstorage_data_dir }}"
+vmstorage_service_envflag_data: "{{ vmstorage_config | default(_vmstorage_service_envflag_data_default) }}"
 
 vmstorage_install_download_to_control: false
 

@@ -1,0 +1,17 @@
+service:
+  vmstorage:
+    enabled: true
+    running: true
+
+port:
+  tcp:8482:
+    listening: true
+
+file:
+  # Injected through the deprecated vmstorage_config name and distinct from
+  # _vmstorage_service_envflag_data_default.retentionPeriod (1), so this fails
+  # if the alias stops resolving.
+  /opt/victoriametrics-vmstorage/vmstorage.conf:
+    exists: true
+    contains:
+      - "retentionPeriod='12'"

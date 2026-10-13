@@ -5,6 +5,11 @@
   vars:
     # Deprecated alias set on purpose to prove backward-compatible resolution.
     vic_vm_alert_evaluation_interval: "45s"
+    # String form on purpose - the vmagent and vlagent converges cover the
+    # boolean form, so this one exercises the string form the README uses.
+    vmalert_service_envflag_enabled: "true"
+    vmalert_service_envflag_data:
+      - "http_pathPrefix=/vmalert"
   tasks:
     - name: "Include vmalert"
       ansible.builtin.include_role:
