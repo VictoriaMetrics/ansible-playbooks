@@ -27,13 +27,25 @@
 - name: Install via control host
   when: vmstorage_install_download_to_control
   block:
+  - name: Create download dir on control host
+    ansible.builtin.tempfile:
+      state: directory
+      suffix: -vmstorage
+    register: vmstorage_download_dir
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vmstorage_is_installed.stat.exists or
+      vmstorage_version not in vmstorage_current_version.stdout
+
   - name: Download and unarchive vmstorage release binary
     environment:
       http_proxy: "{{ vm_proxy_http }}"
       https_proxy: "{{ vm_proxy_https }}"
     ansible.builtin.unarchive:
       src: "{{ vmstorage_download_url }}"
-      dest: /tmp
+      dest: "{{ vmstorage_download_dir.path }}"
       remote_src: yes
     delegate_to: localhost
     become: no
@@ -44,7 +56,7 @@
   - name: Copy vmstorage binary to target host
     notify: Restart vmstorage service
     ansible.builtin.copy:
-      src: /tmp/vmstorage-prod
+      src: "{{ vmstorage_download_dir.path }}/vmstorage-prod"
       dest: "{{ vmstorage_bin_dir }}/vmstorage-prod"
       mode: "0751"
       owner: root
@@ -54,14 +66,14 @@
     - vmstorage_needs_install | bool
 
   always:
-  - name: Clear download file
+  - name: Clear download dir
     delegate_to: localhost
     become: no
     ansible.builtin.file:
-      path: /tmp/vmstorage-prod
+      path: "{{ vmstorage_download_dir.path }}"
       state: absent
     when:
-    - not ansible_check_mode
+    - vmstorage_download_dir.path is defined
 
 - name: Install directly to target host
   when: not vmstorage_install_download_to_control

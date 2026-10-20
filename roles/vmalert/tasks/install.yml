@@ -27,13 +27,25 @@
 - name: Install via control host
   when: vmalert_install_download_to_control
   block:
+    - name: Create download dir on control host
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: -vmalert
+      register: vmalert_download_dir
+      delegate_to: localhost
+      become: no
+      when:
+        - not ansible_check_mode
+        - not vmalert_is_installed.stat.exists or
+          vmalert_version not in vmalert_current_version.stdout
+
     - name: Download and unarchive VMalert release binary
       environment:
         http_proxy: "{{ vm_proxy_http }}"
         https_proxy: "{{ vm_proxy_https }}"
       ansible.builtin.unarchive:
         src: "{{ vmalert_download_url }}"
-        dest: /tmp
+        dest: "{{ vmalert_download_dir.path }}"
         remote_src: yes
       delegate_to: localhost
       become: no
@@ -44,7 +56,7 @@
     - name: Copy VMalert binary to target host
       notify: Restart VMalert service
       ansible.builtin.copy:
-        src: /tmp/vmalert-prod
+        src: "{{ vmalert_download_dir.path }}/vmalert-prod"
         dest: "{{ vmalert_bin_dir }}/vmalert-prod"
         mode: "0751"
         owner: root
@@ -54,14 +66,14 @@
         - vmalert_needs_install | bool
 
   always:
-    - name: Clear download file
+    - name: Clear download dir
       delegate_to: localhost
       become: no
       ansible.builtin.file:
-        path: /tmp/vmalert-prod
+        path: "{{ vmalert_download_dir.path }}"
         state: absent
       when:
-        - not ansible_check_mode
+        - vmalert_download_dir.path is defined
 
 - name: Install directly to target host
   when: not vmalert_install_download_to_control

@@ -27,13 +27,25 @@
 - name: Install via control host
   when: vminsert_install_download_to_control
   block:
+  - name: Create download dir on control host
+    ansible.builtin.tempfile:
+      state: directory
+      suffix: -vminsert
+    register: vminsert_download_dir
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - not vminsert_is_installed.stat.exists or
+      vminsert_version not in vminsert_current_version.stdout
+
   - name: Download and unarchive vminsert release binary
     environment:
       http_proxy: "{{ vm_proxy_http }}"
       https_proxy: "{{ vm_proxy_https }}"
     ansible.builtin.unarchive:
       src: "{{ vminsert_download_url }}"
-      dest: /tmp
+      dest: "{{ vminsert_download_dir.path }}"
       remote_src: yes
     delegate_to: localhost
     become: no
@@ -44,7 +56,7 @@
   - name: Copy vminsert binary to target host
     notify: Restart vminsert service
     ansible.builtin.copy:
-      src: /tmp/vminsert-prod
+      src: "{{ vminsert_download_dir.path }}/vminsert-prod"
       dest: "{{ vminsert_bin_dir }}/vminsert-prod"
       mode: "0751"
       owner: root
@@ -54,14 +66,14 @@
     - vminsert_needs_install | bool
 
   always:
-  - name: Clear download file
+  - name: Clear download dir
     delegate_to: localhost
     become: no
     ansible.builtin.file:
-      path: /tmp/vminsert-prod
+      path: "{{ vminsert_download_dir.path }}"
       state: absent
     when:
-    - not ansible_check_mode
+    - vminsert_download_dir.path is defined
 
 - name: Install directly to target host
   when: not vminsert_install_download_to_control
