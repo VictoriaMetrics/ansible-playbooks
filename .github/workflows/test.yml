@@ -13,18 +13,23 @@ on:
 jobs:
   test-debian:
     name: 'Test - debian'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
 
       - name: Cache .venv directory
-        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c  # v3.5.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
         with:
           path: .venv
           key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+
+      # ubuntu-26.04 no longer applies the image's /etc/sysctl.conf, leaving
+      # the kernel default of 128 instances, which concurrent converge exausts
+      - name: Raise inotify limits
+        run: sudo sysctl -w fs.inotify.max_user_instances=1280 fs.inotify.max_user_watches=655360
 
       - name: Converge
         run: |
