@@ -39,8 +39,7 @@
     become: no
     when:
     - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
+    - vmselect_needs_install | bool
 
   - name: Copy vmselect binary to target host
     notify: Restart vmselect service
@@ -52,8 +51,7 @@
       group: "{{ vmselect_system_group }}"
     when:
     - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
+    - vmselect_needs_install | bool
 
   always:
   - name: Clear download file
@@ -80,8 +78,7 @@
       - --no-same-owner
     when:
     - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
+    - vmselect_needs_install | bool
 
   - name: Replace vmselect binary at target dir # noqa: no-changed-when
     notify: Restart vmselect service
@@ -94,8 +91,7 @@
       remote_src: true
     when:
     - not ansible_check_mode
-    - not vmselect_is_installed.stat.exists or
-      vmselect_version not in vmselect_current_version.stdout
+    - vmselect_needs_install | bool
 
   always:
   - name: Clear download file

@@ -39,8 +39,7 @@
       become: no
       when:
         - not ansible_check_mode
-        - not vmalert_is_installed.stat.exists or
-          vmalert_version not in vmalert_current_version.stdout
+        - vmalert_needs_install | bool
 
     - name: Copy VMalert binary to target host
       notify: Restart VMalert service
@@ -52,8 +51,7 @@
         group: "{{ vmalert_system_group }}"
       when:
         - not ansible_check_mode
-        - not vmalert_is_installed.stat.exists or
-          vmalert_version not in vmalert_current_version.stdout
+        - vmalert_needs_install | bool
 
   always:
     - name: Clear download file
@@ -80,8 +78,7 @@
           - --no-same-owner
       when:
         - not ansible_check_mode
-        - not vmalert_is_installed.stat.exists or
-          vmalert_version not in vmalert_current_version.stdout
+        - vmalert_needs_install | bool
 
     - name: Replace VMalert binary at target dir
       notify: Restart VMalert service
@@ -94,8 +91,7 @@
         remote_src: true
       when:
         - not ansible_check_mode
-        - not vmalert_is_installed.stat.exists or
-          vmalert_version not in vmalert_current_version.stdout
+        - vmalert_needs_install | bool
 
   always:
     - name: Clear download file

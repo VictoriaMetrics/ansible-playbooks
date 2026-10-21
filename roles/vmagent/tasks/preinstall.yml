@@ -46,3 +46,12 @@
   ansible.builtin.set_fact:
     vmagent_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
   when: vmagent_version == "latest"
+
+# --version reports e.g. "tags-v1.154.0-enterprise-0-g<sha>", so the version
+# substring alone does not detect an OSS <-> enterprise switch.
+- name: Check if vmagent binary needs to be installed
+  ansible.builtin.set_fact:
+    vmagent_needs_install: >-
+      {{ not vmagent_is_installed.stat.exists
+         or vmagent_version not in vmagent_current_version.stdout
+         or (vmagent_enterprise | bool) != ('-enterprise' in vmagent_current_version.stdout) }}

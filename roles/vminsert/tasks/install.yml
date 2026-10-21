@@ -39,8 +39,7 @@
     become: no
     when:
     - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
+    - vminsert_needs_install | bool
 
   - name: Copy vminsert binary to target host
     notify: Restart vminsert service
@@ -52,8 +51,7 @@
       group: "{{ vminsert_system_group }}"
     when:
     - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
+    - vminsert_needs_install | bool
 
   always:
   - name: Clear download file
@@ -80,8 +78,7 @@
       - --no-same-owner
     when:
     - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
+    - vminsert_needs_install | bool
 
   - name: Replace vminsert binary at target dir # noqa: no-changed-when
     notify: Restart vminsert service
@@ -94,8 +91,7 @@
       remote_src: true
     when:
     - not ansible_check_mode
-    - not vminsert_is_installed.stat.exists or
-      vminsert_version not in vminsert_current_version.stdout
+    - vminsert_needs_install | bool
 
   always:
   - name: Clear download file

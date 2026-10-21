@@ -46,8 +46,7 @@
         - /tmp/vl-single/
       when:
         - not ansible_check_mode
-        - not vlsingle_is_installed.stat.exists or
-          vlsingle_version not in vlsingle_current_version.stdout
+        - vlsingle_needs_install | bool
 
     - name: Download and unarchive VictoriaLogs release binary
       environment:
@@ -65,8 +64,7 @@
       delegate_to: localhost
       when:
         - not ansible_check_mode
-        - not vlsingle_is_installed.stat.exists or
-          vlsingle_version not in vlsingle_current_version.stdout
+        - vlsingle_needs_install | bool
 
     - name: Upload VictoriaLogs release binary # noqa: no-handler
       notify: Restart VictoriaLogs service
@@ -106,8 +104,7 @@
           - --no-same-owner
       when:
         - not ansible_check_mode
-        - not vlsingle_is_installed.stat.exists or
-          vlsingle_version not in vlsingle_current_version.stdout
+        - vlsingle_needs_install | bool
 
     - name: Replace VictoriaLogs binary at target dir
       notify: Restart VictoriaLogs service
@@ -120,8 +117,7 @@
         remote_src: true
       when:
         - not ansible_check_mode
-        - not vlsingle_is_installed.stat.exists or
-          vlsingle_version not in vlsingle_current_version.stdout
+        - vlsingle_needs_install | bool
 
   always:
     - name: Clear download paths

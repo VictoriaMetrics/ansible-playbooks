@@ -46,3 +46,12 @@
   ansible.builtin.set_fact:
     vmstorage_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
   when: vmstorage_version == "latest"
+
+# --version reports e.g. "tags-v1.154.0-enterprise-0-g<sha>", so the version
+# substring alone does not detect an OSS <-> enterprise switch.
+- name: Check if vmstorage binary needs to be installed
+  ansible.builtin.set_fact:
+    vmstorage_needs_install: >-
+      {{ not vmstorage_is_installed.stat.exists
+         or vmstorage_version not in vmstorage_current_version.stdout
+         or (vmstorage_enterprise | bool) != ('-enterprise' in vmstorage_current_version.stdout) }}

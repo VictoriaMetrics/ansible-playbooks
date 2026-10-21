@@ -46,3 +46,12 @@
   ansible.builtin.set_fact:
     vlagent_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
   when: vlagent_version == "latest"
+
+# --version reports e.g. "tags-v1.154.0-enterprise-0-g<sha>", so the version
+# substring alone does not detect an OSS <-> enterprise switch.
+- name: Check if vlagent binary needs to be installed
+  ansible.builtin.set_fact:
+    vlagent_needs_install: >-
+      {{ not vlagent_is_installed.stat.exists
+         or vlagent_version not in vlagent_current_version.stdout
+         or (vlagent_enterprise | bool) != ('-enterprise' in vlagent_current_version.stdout) }}

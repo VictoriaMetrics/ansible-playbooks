@@ -39,8 +39,7 @@
     become: no
     when:
     - not ansible_check_mode
-    - not vmauth_is_installed.stat.exists or
-      vmauth_version not in vmauth_current_version.stdout
+    - vmauth_needs_install | bool
 
   - name: Copy vmauth binary to target host
     notify: Restart vmauth service
@@ -52,8 +51,7 @@
       group: "{{ vmauth_system_group }}"
     when:
     - not ansible_check_mode
-    - not vmauth_is_installed.stat.exists or
-      vmauth_version not in vmauth_current_version.stdout
+    - vmauth_needs_install | bool
 
   always:
   - name: Clear download file
@@ -80,8 +78,7 @@
       - --no-same-owner
     when:
     - not ansible_check_mode
-    - not vmauth_is_installed.stat.exists or
-      vmauth_version not in vmauth_current_version.stdout
+    - vmauth_needs_install | bool
 
   - name: Replace vmauth binary at target dir
     notify: Restart vmauth service
@@ -94,8 +91,7 @@
       remote_src: true
     when:
     - not ansible_check_mode
-    - not vmauth_is_installed.stat.exists or
-      vmauth_version not in vmauth_current_version.stdout
+    - vmauth_needs_install | bool
 
   always:
   - name: Clear download file

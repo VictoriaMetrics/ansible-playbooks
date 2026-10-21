@@ -39,8 +39,7 @@
     become: no
     when:
     - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
+    - vlagent_needs_install | bool
 
   - name: Copy vlagent binary to target host
     notify: Restart VLagent service
@@ -52,8 +51,7 @@
       group: "{{ vlagent_system_group }}"
     when:
     - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
+    - vlagent_needs_install | bool
 
   always:
   - name: Clear download file
@@ -80,8 +78,7 @@
       - --no-same-owner
     when:
     - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
+    - vlagent_needs_install | bool
 
   - name: Replace vlagent binary at target dir
     notify: Restart VLagent service
@@ -94,8 +91,7 @@
       remote_src: true
     when:
     - not ansible_check_mode
-    - not vlagent_is_installed.stat.exists or
-      vlagent_version not in vlagent_current_version.stdout
+    - vlagent_needs_install | bool
 
   always:
   - name: Clear download file

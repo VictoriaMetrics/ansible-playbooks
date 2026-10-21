@@ -57,3 +57,12 @@
   ansible.builtin.set_fact:
     vmalert_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
   when: vmalert_version == "latest"
+
+# --version reports e.g. "tags-v1.154.0-enterprise-0-g<sha>", so the version
+# substring alone does not detect an OSS <-> enterprise switch.
+- name: Check if vmalert binary needs to be installed
+  ansible.builtin.set_fact:
+    vmalert_needs_install: >-
+      {{ not vmalert_is_installed.stat.exists
+         or vmalert_version not in vmalert_current_version.stdout
+         or (vmalert_enterprise | bool) != ('-enterprise' in vmalert_current_version.stdout) }}
