@@ -53,3 +53,12 @@
   ansible.builtin.set_fact:
     vmsingle_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
   when: vmsingle_version == "latest"
+
+# --version reports e.g. "tags-v1.154.0-enterprise-0-g<sha>", so the version
+# substring alone does not detect an OSS <-> enterprise switch.
+- name: Check if vmsingle binary needs to be installed
+  ansible.builtin.set_fact:
+    vmsingle_needs_install: >-
+      {{ not vmsingle_is_installed.stat.exists
+         or vmsingle_version not in vmsingle_current_version.stdout
+         or (vmsingle_enterprise | bool) != ('-enterprise' in vmsingle_current_version.stdout) }}

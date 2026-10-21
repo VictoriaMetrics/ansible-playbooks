@@ -39,8 +39,7 @@
     become: no
     when:
     - not ansible_check_mode
-    - not vmstorage_is_installed.stat.exists or
-      vmstorage_version not in vmstorage_current_version.stdout
+    - vmstorage_needs_install | bool
 
   - name: Copy vmstorage binary to target host
     notify: Restart vmstorage service
@@ -52,8 +51,7 @@
       group: "{{ vmstorage_system_group }}"
     when:
     - not ansible_check_mode
-    - not vmstorage_is_installed.stat.exists or
-      vmstorage_version not in vmstorage_current_version.stdout
+    - vmstorage_needs_install | bool
 
   always:
   - name: Clear download file
@@ -80,8 +78,7 @@
       - --no-same-owner
     when:
     - not ansible_check_mode
-    - not vmstorage_is_installed.stat.exists or
-      vmstorage_version not in vmstorage_current_version.stdout
+    - vmstorage_needs_install | bool
 
   - name: Replace vmstorage binary at target dir
     notify: Restart vmstorage service
@@ -94,8 +91,7 @@
       remote_src: true
     when:
     - not ansible_check_mode
-    - not vmstorage_is_installed.stat.exists or
-      vmstorage_version not in vmstorage_current_version.stdout
+    - vmstorage_needs_install | bool
 
   always:
   - name: Clear download file
