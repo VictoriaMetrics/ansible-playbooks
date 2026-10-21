@@ -76,6 +76,10 @@ roles.
 - [VictoriaLogs cluster deployment](./docs/victorialogs-cluster.md) — logs cluster with vlinsert, vlstorage, vlselect and vmauth
 - [VictoriaTraces cluster deployment](./docs/victoriatraces-cluster.md) — traces cluster with vtinsert, vtstorage, vtselect and vmauth
 
+## Enterprise
+
+See [Enterprise installation](./enterprise.md) for installing VictoriaMetrics and VictoriaLogs Enterprise binaries, passing the license and offline license verification.
+
 # Development
 
 In order to set up development environment, you need to have `docker`, `python` and `make` installed.
