@@ -12,9 +12,12 @@ vlagent_download_url: "{{ vlagent_repo_url }}/releases/download/{{ vlagent_versi
 vlagent_system_user: "vic_vl_agent"
 vlagent_system_group: "{{ vlagent_system_user }}"
 
+vlagent_tmp_data_path: "/tmp/vlagent"
+
 vlagent_remote_write_host: "http://localhost:9428"
 vlagent_service_args:
   "remoteWrite.url": "{{ vlagent_remote_write_host }}/internal/insert"
+  "remoteWrite.tmpDataPath": "{{ vlagent_tmp_data_path }}"
 
 vlagent_install_download_to_control: false
 vlagent_bin_dir: /usr/local/bin
