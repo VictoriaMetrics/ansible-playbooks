@@ -8,7 +8,7 @@ After=network.target
 Type=simple
 User={{ vlagent_system_user }}
 Group={{ vlagent_system_group }}
-ExecStart={{ vlagent_bin_dir }}/vlagent-prod {%- for flag, flag_values in vlagent_service_args.items() -%}
+ExecStart={{ vlagent_bin_dir }}/vlagent-prod{% if vlagent_service_envflag_enabled | bool %} -envflag.enable{% endif %} {%- for flag, flag_values in vlagent_service_args.items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
@@ -29,6 +29,10 @@ ProtectKernelModules=true
 ProtectKernelTunables=yes
 {% endif %}
 
+{% if vlagent_service_envflag_enabled | bool %}
+EnvironmentFile={{ vlagent_service_envflag_data_file }}
+EnvironmentFile={{ vlagent_service_envflag_file }}
+{% endif %}
 {% if vlagent_exec_start_post != "" %}
 ExecStartPost={{ vlagent_exec_start_post }}
 {% endif %}

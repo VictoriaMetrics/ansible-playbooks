@@ -2,7 +2,24 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    # Deprecated alias set on purpose to prove backward-compatible resolution.
+    vmselect_config:
+      storageNode: vmstorage1
+      cacheDataPath: "/var/lib/vmselect"
   tasks:
     - name: "Include vmselect"
+      vars:
+        vmselect_service_args:
+          "search.maxUniqueTimeseries": 500000
       ansible.builtin.include_role:
         name: "vmselect"
+        public: true
+
+    - name: "Assert deprecated alias resolves into envflag data"
+      ansible.builtin.assert:
+        that:
+          - vmselect_service_envflag_data['storageNode'] == 'vmstorage1'
+        fail_msg: >-
+          Deprecated alias vmselect_config did not resolve into
+          vmselect_service_envflag_data
