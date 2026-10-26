@@ -1,0 +1,4 @@
+---
+# The shared playbook already runs its play with become: true.
+- name: Verify
+  ansible.builtin.import_playbook: "../../testing/goss.yml"

@@ -4,6 +4,13 @@
   become: yes
   vars:
     vmselect_install_download_to_control: true
+    # envflag off makes this scenario the disabled-path regression guard; the
+    # default scenario covers the enabled path.
+    vmselect_service_envflag_enabled: false
+    vmselect_service_envflag_data: {}
+    vmselect_service_args:
+      storageNode: vmstorage1
+      cacheDataPath: /var/lib/vmselect
   tasks:
     - name: "Include vmselect"
       ansible.builtin.include_role:

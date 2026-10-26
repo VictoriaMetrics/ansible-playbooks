@@ -28,3 +28,15 @@ vlagent_exec_stop: ""
 # See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
 # Available options: 'yes', 'read-only', 'tmpfs'
 vlagent_systemd_protect_home: "yes"
+
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vlagent_service_envflag_enabled: "false"
+# Array of "KEY=value" strings rendered into vlagent_service_envflag_data_file.
+vlagent_service_envflag_data: []
+#  - "remoteWrite_maxDiskUsagePerURL=1GB"
+# Role-managed env file holding vlagent_service_envflag_data. Rewritten on every run.
+vlagent_service_envflag_data_file: "/etc/default/{{ vlagent_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
+vlagent_service_envflag_file: "/etc/default/{{ vlagent_service_name }}"
