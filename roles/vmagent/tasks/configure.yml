@@ -93,7 +93,6 @@
       with_fileglob:
         - "{{ vmagent_scrape_config_files_dir }}/*.yml"
         - "{{ vmagent_scrape_config_files_dir }}/*.yaml"
-      register: vmagent_scrape_config_files_copy
       notify: Restart VMagent service
 
     - name: Remove stale scrape config files
@@ -146,10 +145,14 @@
   no_log: true
   notify: Restart VMagent service
 
+# The template task above only runs `validate:` when config.yml itself changes,
+# since Ansible skips validation when the destination checksum is unchanged.
+# Copied scrape config files can change on their own, so validate on every run
+# to also catch files left on the target by a previously failed validation.
 - name: Validate promscrape config with additional scrape config files
-  when: vmagent_scrape_config_files_copy is defined and vmagent_scrape_config_files_copy is changed
+  when: vmagent_scrape_config_files_enabled | bool
   ansible.builtin.command:
-    cmd: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config {{ vmagent_config_dir }}/config.yml -dryRun"
+    cmd: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config {{ (vmagent_config_dir ~ '/config.yml') | quote }} -dryRun"
   changed_when: false
   no_log: true
 

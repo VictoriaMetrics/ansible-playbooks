@@ -19,8 +19,11 @@ file:
     exists: true
     contains:
       - "job_name: molecule-extra"
+  /opt/vic-vmagent/configs/stale.yml:
+    exists: false
   /opt/vic-vmagent/config.yml:
     exists: true
     contains:
       - "scrape_config_files:"
-      - '/configs/\*\.yml'
+      - "/opt/vic-vmagent/configs/*.yml"
+      - "/opt/vic-vmagent/configs/*.yaml"
