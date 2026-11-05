@@ -34,6 +34,13 @@ vmagent_scrape_config:
         - targets: []
 #          - "127.0.0.1:9100"
 
+# Absolute path to a local directory on the control node with additional scrape
+# config files. Top-level `*.yml` and `*.yaml` files are copied to `configs/`
+# and loaded via the `scrape_config_files` section of the promscrape config.
+vmagent_scrape_config_files_dir: ""
+# Remove files from the target `configs` dir when they no longer exist locally.
+vmagent_scrape_config_prune_stale: false
+
 vmagent_aggregation_config: []
 
 vmagent_install_download_to_control: false
