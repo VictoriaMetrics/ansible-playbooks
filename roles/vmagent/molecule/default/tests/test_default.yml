@@ -15,3 +15,15 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+  /opt/vic-vmagent/configs/extra.yml:
+    exists: true
+    contains:
+      - "job_name: molecule-extra"
+  /opt/vic-vmagent/configs/stale.yml:
+    exists: false
+  /opt/vic-vmagent/config.yml:
+    exists: true
+    contains:
+      - "scrape_config_files:"
+      - "/opt/vic-vmagent/configs/*.yml"
+      - "/opt/vic-vmagent/configs/*.yaml"

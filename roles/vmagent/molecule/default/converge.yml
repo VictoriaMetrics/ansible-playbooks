@@ -10,5 +10,7 @@
             - "http://url1/api/v1/write"
             - "http://url2/api/v1/write"
           "remoteWrite.tmpDataPath": /tmp/vmagent
+        vmagent_scrape_config_files_dir: "{{ playbook_dir }}/files/scrape_configs"
+        vmagent_scrape_config_prune_stale: true
       ansible.builtin.include_role:
         name: "vmagent"

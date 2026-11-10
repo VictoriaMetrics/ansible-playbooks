@@ -39,6 +39,101 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
 
+- name: Check for local scrape config files dir
+  ansible.builtin.stat:
+    path: "{{ vmagent_scrape_config_files_dir }}"
+    follow: true
+  delegate_to: localhost
+  become: false
+  register: vmagent_scrape_config_files_dir_stat
+  when: vmagent_scrape_config_files_dir | length > 0
+
+- name: Warn about missing local scrape config files dir
+  ansible.builtin.debug:
+    msg: >-
+      vmagent_scrape_config_files_dir={{ vmagent_scrape_config_files_dir }} does not exist
+      or is not a directory on the control node; additional scrape config files will not be used
+  when:
+    - vmagent_scrape_config_files_dir | length > 0
+    - not (vmagent_scrape_config_files_dir_stat.stat.isdir | default(false))
+
+- name: Set scrape config files flag
+  ansible.builtin.set_fact:
+    vmagent_scrape_config_files_enabled: "{{ vmagent_scrape_config_files_dir_stat.stat.isdir | default(false) }}"
+
+- name: Configure local scrape config files
+  when: vmagent_scrape_config_files_enabled | bool
+  block:
+    - name: Ensure vmagent_scrape_config does not define scrape_config_files
+      ansible.builtin.assert:
+        that:
+          - vmagent_scrape_config is mapping
+          - "'scrape_config_files' not in vmagent_scrape_config"
+        fail_msg: >-
+          vmagent_scrape_config must not contain scrape_config_files when
+          vmagent_scrape_config_files_dir is set; use vmagent_scrape_config_files_dir to
+          load additional scrape config files
+        quiet: true
+
+    - name: Prepare scrape config files dir
+      ansible.builtin.file:
+        state: directory
+        path: "{{ vmagent_config_dir }}/configs"
+        mode: "0750"
+        owner: "{{ vmagent_system_user }}"
+        group: "{{ vmagent_system_group }}"
+
+    - name: Copy local scrape config files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ vmagent_config_dir }}/configs/"
+        mode: "0640"
+        owner: "{{ vmagent_system_user }}"
+        group: "{{ vmagent_system_group }}"
+      with_fileglob:
+        - "{{ vmagent_scrape_config_files_dir }}/*.yml"
+        - "{{ vmagent_scrape_config_files_dir }}/*.yaml"
+      notify: Restart VMagent service
+
+    - name: Remove stale scrape config files
+      when: vmagent_scrape_config_prune_stale | bool
+      block:
+        - name: Find local scrape config files
+          ansible.builtin.find:
+            paths: "{{ vmagent_scrape_config_files_dir }}"
+            patterns:
+              - "*.yml"
+              - "*.yaml"
+            file_type: file
+            recurse: false
+            follow: true
+          delegate_to: localhost
+          become: false
+          register: vmagent_scrape_config_files_local
+
+        - name: Find remote scrape config files
+          ansible.builtin.find:
+            paths: "{{ vmagent_config_dir }}/configs"
+            patterns:
+              - "*.yml"
+              - "*.yaml"
+            file_type: file
+            recurse: false
+            follow: true
+          register: vmagent_scrape_config_files_remote
+
+        - name: Set local scrape config file names
+          ansible.builtin.set_fact:
+            vmagent_scrape_config_files_local_names: "{{ vmagent_scrape_config_files_local.files | default([]) | map(attribute='path') | map('basename') | list }}"
+
+        - name: Remove stale remote scrape config files
+          ansible.builtin.file:
+            path: "{{ item.path }}"
+            state: absent
+          loop: "{{ vmagent_scrape_config_files_remote.files | default([]) }}"
+          when: item.path | basename not in vmagent_scrape_config_files_local_names
+          notify: Restart VMagent service
+
 - name: Configure promscrape config
   ansible.builtin.template:
     src: prometheus_scrape.yml.j2
@@ -49,6 +144,17 @@
     validate: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config %s -dryRun"
   no_log: true
   notify: Restart VMagent service
+
+# The template task above only runs `validate:` when config.yml itself changes,
+# since Ansible skips validation when the destination checksum is unchanged.
+# Copied scrape config files can change on their own, so validate on every run
+# to also catch files left on the target by a previously failed validation.
+- name: Validate promscrape config with additional scrape config files
+  when: vmagent_scrape_config_files_enabled | bool
+  ansible.builtin.command:
+    cmd: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config {{ (vmagent_config_dir ~ '/config.yml') | quote }} -dryRun"
+  changed_when: false
+  no_log: true
 
 - name: Configure stream aggregation config
   ansible.builtin.template:
