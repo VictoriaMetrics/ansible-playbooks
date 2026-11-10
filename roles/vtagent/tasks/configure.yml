@@ -1,0 +1,89 @@
+---
+- name: Configure env
+  when: vtagent_service_envflag_enabled | bool
+  block:
+    - name: Validate envflag data
+      vars:
+        envflag_entry_pattern: '^[A-Za-z_][A-Za-z0-9_]*=[^''\n]*\Z'
+        envflag_invalid_positions: >-
+          {{ vtagent_service_envflag_data | map('string')
+             | zip(range(1, vtagent_service_envflag_data | length + 1))
+             | rejectattr('0', 'match', envflag_entry_pattern)
+             | map(attribute='1') | join(', ') }}
+      ansible.builtin.assert:
+        that:
+          - vtagent_service_envflag_data | map('string') | reject('match', envflag_entry_pattern) | list | length == 0
+        fail_msg: >-
+          vtagent_service_envflag_data entries must be single-line KEY=value strings whose
+          key matches [A-Za-z_][A-Za-z0-9_]* and whose value contains no single quote.
+          Each '.' in a flag name must be replaced with '_'. The role renders every entry
+          into vtagent_service_envflag_data_file as KEY='value', and systemd recognizes no
+          escape sequences inside single quotes, so a single quote in a value terminates it
+          early. systemd also drops an assignment whose name it rejects, logging "Ignoring
+          invalid environment assignment" and starting the service anyway, so an invalid key
+          would never be applied. Entry values are not reported because they can hold
+          secrets - invalid entries are at 1-based positions: {{ envflag_invalid_positions }}
+
+    - name: Validate envflag file paths
+      ansible.builtin.assert:
+        that:
+          - vtagent_service_envflag_data_file != vtagent_service_envflag_file
+        fail_msg: >-
+          vtagent_service_envflag_data_file and vtagent_service_envflag_file must be
+          different paths, but both resolve to {{ vtagent_service_envflag_data_file }}.
+          The role rewrites vtagent_service_envflag_data_file on every run, so a shared
+          path discards whatever you keep in vtagent_service_envflag_file - including
+          secrets - and collapses the override the two-file layout provides.
+
+    - name: Configure envflag data file
+      ansible.builtin.template:
+        src: envflag.env.j2
+        dest: "{{ vtagent_service_envflag_data_file }}"
+        owner: root
+        group: root
+        mode: "0600"
+      no_log: true
+      notify: Restart VTagent service
+
+    - name: Setup envfile
+      ansible.builtin.file:
+        state: touch
+        path: "{{ vtagent_service_envflag_file }}"
+        owner: root
+        group: root
+        mode: "0600"
+        access_time: preserve
+        modification_time: preserve
+      notify: Restart VTagent service
+
+- name: Prepare tmp data dir
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vtagent_tmp_data_path }}"
+    mode: "0751"
+    owner: "{{ vtagent_system_user }}"
+    group: "{{ vtagent_system_group }}"
+
+- name: Copy VTagent systemd unit file
+  ansible.builtin.template:
+    src: vtagent.service.j2
+    dest: "/etc/systemd/system/{{ vtagent_service_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  register: config_template
+  no_log: True
+  notify: Restart VTagent service
+
+- name: Daemon-reload VTagent service # noqa: no-handler
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: config_template is changed
+  changed_when: config_template is changed
+
+- name: Ensure VTagent service is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ vtagent_service_name }}"
+    enabled: true

@@ -1,0 +1,54 @@
+---
+- name: Assert usage of systemd as an init system
+  ansible.builtin.assert:
+    that: ansible_facts['service_mgr'] == 'systemd'
+    msg: "This role only works with systemd"
+
+- name: Get systemd version
+  ansible.builtin.command: systemctl --version
+  changed_when: false
+  check_mode: false
+  register: __systemd_version
+
+- name: Set systemd version fact
+  ansible.builtin.set_fact:
+    vtagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[1] }}"
+
+- name: Check if VTagent is installed
+  ansible.builtin.stat:
+    path: "{{ vtagent_bin_dir }}/vtagent-prod"
+  changed_when: false
+  check_mode: false
+  register: vtagent_is_installed
+
+- name: Check current VTagent version
+  ansible.builtin.command:
+    argv:
+    - "{{ vtagent_bin_dir }}/vtagent-prod"
+    - --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: vtagent_current_version
+  when: vtagent_is_installed.stat.exists | bool
+
+- name: Get latest VTagent version via GitHub redirect
+  ansible.builtin.uri:
+    url: "{{ vtagent_repo_url }}/releases/latest"
+    method: HEAD
+    return_content: false
+    follow_redirects: false
+    status_code: 302,200
+  register: gh_redirect
+  when: vtagent_version == "latest"
+
+- name: Extract version from Location header
+  ansible.builtin.set_fact:
+    vtagent_version: "{{ (gh_redirect.location | regex_search('/releases/tag/(v[0-9].*)', '\\1'))[0] }}"
+  when: vtagent_version == "latest"
+
+- name: Check if vtagent binary needs to be installed
+  ansible.builtin.set_fact:
+    vtagent_needs_install: >-
+      {{ not vtagent_is_installed.stat.exists
+         or vtagent_version not in vtagent_current_version.stdout }}

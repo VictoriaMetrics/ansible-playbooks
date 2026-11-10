@@ -1,6 +1,6 @@
-ROLES := vmsingle vmagent vmalert vminsert vmstorage vmselect vmauth vlsingle vlagent vtsingle
+ROLES := vmsingle vmagent vmalert vminsert vmstorage vmselect vmauth vlsingle vlagent vtsingle vtagent
 
-# Roles that have enterprise scenarios (vtsingle doesn't)
+# Roles that have enterprise scenarios (vtsingle and vtagent don't)
 ENTERPRISE_ROLES := vmsingle vmagent vmalert vminsert vmstorage vmselect vmauth vlsingle vlagent
 
 # License key for enterprise tests (pass via: make molecule-converge-vmsingle-enterprise VM_LICENSE_KEY=xxx)

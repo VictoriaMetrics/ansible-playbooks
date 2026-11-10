@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vtagent_install_download_to_control: true
+  tasks:
+    - name: "Include vtagent"
+      vars:
+        vtagent_service_args:
+          "remoteWrite.url":
+            - "http://url1/insert/opentelemetry/v1/traces"
+          "remoteWrite.tmpDataPath": /tmp/vtagent
+      ansible.builtin.include_role:
+        name: "vtagent"

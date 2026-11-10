@@ -1,0 +1,102 @@
+---
+- name: Create VTagent system group
+  ansible.builtin.group:
+    name: "{{ vtagent_system_group }}"
+    state: present
+    system: true
+  when: vtagent_system_group != "root"
+
+- name: Create VTagent system user
+  ansible.builtin.user:
+    name: "{{ vtagent_system_user }}"
+    groups: "{{ vtagent_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+  when: vtagent_system_user != "root"
+
+- name: Ensure existence of bin directory
+  ansible.builtin.file:
+    path: "{{ vtagent_bin_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install via control host
+  when: vtagent_install_download_to_control
+  block:
+  - name: Download and unarchive VTagent release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vtagent_download_url }}"
+      dest: /tmp
+      remote_src: yes
+    delegate_to: localhost
+    become: no
+    when:
+    - not ansible_check_mode
+    - vtagent_needs_install | bool
+
+  - name: Copy vtagent binary to target host
+    notify: Restart VTagent service
+    ansible.builtin.copy:
+      src: /tmp/vtagent-prod
+      dest: "{{ vtagent_bin_dir }}/vtagent-prod"
+      mode: "0751"
+      owner: root
+      group: "{{ vtagent_system_group }}"
+    when:
+    - not ansible_check_mode
+    - vtagent_needs_install | bool
+
+  always:
+  - name: Clear download file
+    become: no
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "/tmp/vtagent-prod"
+      state: absent
+    when:
+    - not ansible_check_mode
+
+- name: Install directly to target host
+  when: not vtagent_install_download_to_control
+  block:
+  - name: Download and unarchive VTagent release binary
+    environment:
+      http_proxy: "{{ vm_proxy_http }}"
+      https_proxy: "{{ vm_proxy_https }}"
+    ansible.builtin.unarchive:
+      src: "{{ vtagent_download_url }}"
+      dest: /tmp
+      remote_src: yes
+      extra_opts:
+      - --no-same-owner
+    when:
+    - not ansible_check_mode
+    - vtagent_needs_install | bool
+
+  - name: Replace vtagent binary at target dir
+    notify: Restart VTagent service
+    ansible.builtin.copy:
+      src: /tmp/vtagent-prod
+      dest: "{{ vtagent_bin_dir }}/vtagent-prod"
+      mode: "0751"
+      owner: root
+      group: "{{ vtagent_system_group }}"
+      remote_src: true
+    when:
+    - not ansible_check_mode
+    - vtagent_needs_install | bool
+
+  always:
+  - name: Clear download file
+    ansible.builtin.file:
+      path: "/tmp/vtagent-prod"
+      state: absent
+    when:
+    - not ansible_check_mode

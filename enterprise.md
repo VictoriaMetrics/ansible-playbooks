@@ -18,7 +18,7 @@ To get a license, [request a trial](https://victoriametrics.com/products/enterpr
 | vlsingle  | `victorialogs`       | command line                              | `vlsingle_service_args`    |
 | vlagent   | `vic_vl_agent`       | command line                              | `vlagent_service_args`     |
 
-The `vtsingle` role has no Enterprise version as VictoriaTraces does not have one.
+The `vtsingle` and `vtagent` roles have no Enterprise version as VictoriaTraces does not have one.
 
 ## Enable Enterprise
 

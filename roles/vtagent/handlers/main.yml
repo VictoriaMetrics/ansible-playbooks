@@ -1,0 +1,7 @@
+# handlers file for VictoriaTraces
+---
+- name: Restart VTagent service
+  become: true
+  ansible.builtin.service:
+    name: "{{ vtagent_service_name }}"
+    state: restarted

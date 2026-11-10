@@ -1,0 +1,23 @@
+service:
+  "vic-vtagent":
+    enabled: true
+    running: true
+
+port:
+  tcp:10429:
+    listening: true
+
+# envflag is off here, which makes this scenario the disabled-path regression
+# guard. goss matches line by line, so what is pinned below is: no envflag
+# artefacts anywhere in the unit, and exactly one space between the binary path
+# and the first flag on ExecStart.
+file:
+  /etc/systemd/system/vic-vtagent.service:
+    exists: true
+    contains:
+      - "/^ExecStart=\\S*vtagent-prod --/"
+      - "!/-envflag\\.enable/"
+      - "!/^Environment=/"
+      - "!/^EnvironmentFile=/"
+  /etc/default/vic-vtagent:
+    exists: false

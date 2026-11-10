@@ -66,6 +66,7 @@ Collection includes the following roles:
 - [vlsingle](./roles/vlsingle) - installs and configures [VictoriaLogs single node](https://docs.victoriametrics.com/victorialogs/)
 - [vlagent](./roles/vlagent) - installs and configures [`vlagent`](https://docs.victoriametrics.com/victorialogs/vlagent/)
 - [vtsingle](./roles/vtsingle) - installs and configures [VictoriaTraces single node](https://docs.victoriametrics.com/victoriatraces/)
+- [vtagent](./roles/vtagent) - installs and configures [`vtagent`](https://docs.victoriametrics.com/victoriatraces/vtagent/)
 
 See [cluster](playbooks/cluster.yml), [vlcluster](playbooks/vlcluster.yml), [vtcluster](playbooks/vtcluster.yml) and [vmsingle](playbooks/vmsingle.yml) playbooks for examples of how to use these
 roles.

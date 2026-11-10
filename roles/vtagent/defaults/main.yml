@@ -1,0 +1,42 @@
+---
+vtagent_version: "v0.13.0"
+vtagent_service_name: "vic-vtagent"
+
+vtagent_repo_url: "https://github.com/VictoriaMetrics/VictoriaTraces"
+vtagent_platform: "-linux"
+vtagent_download_url: "{{ vtagent_repo_url }}/releases/download/{{ vtagent_version }}/vtutils{{ vtagent_platform }}-{{ go_arch }}-{{ vtagent_version }}.tar.gz"
+
+vtagent_system_user: "vic_vt_agent"
+vtagent_system_group: "{{ vtagent_system_user }}"
+
+vtagent_tmp_data_path: "/tmp/vtagent"
+
+vtagent_remote_write_host: "http://localhost:10428"
+vtagent_service_args:
+  "remoteWrite.url": "{{ vtagent_remote_write_host }}/insert/opentelemetry/v1/traces"
+  "remoteWrite.tmpDataPath": "{{ vtagent_tmp_data_path }}"
+
+vtagent_install_download_to_control: false
+vtagent_bin_dir: /usr/local/bin
+
+vm_proxy_http: ""
+vm_proxy_https: ""
+
+vtagent_exec_start_post: ""
+vtagent_exec_stop: ""
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
+# Available options: 'yes', 'read-only', 'tmpfs'
+vtagent_systemd_protect_home: "yes"
+
+# more on envflags usage
+# https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
+vtagent_service_envflag_enabled: "false"
+# Array of "KEY=value" strings rendered into vtagent_service_envflag_data_file.
+vtagent_service_envflag_data: []
+#  - "remoteWrite_maxDiskUsagePerURL=1GB"
+# Role-managed env file holding vtagent_service_envflag_data. Rewritten on every run.
+vtagent_service_envflag_data_file: "/etc/default/{{ vtagent_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
+vtagent_service_envflag_file: "/etc/default/{{ vtagent_service_name }}"

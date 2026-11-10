@@ -1,0 +1,6 @@
+---
+- name: "Ensure VTagent service started {{ vtagent_service_name }}"
+  ansible.builtin.service:
+    name: "{{ vtagent_service_name }}"
+    state: started
+    enabled: yes

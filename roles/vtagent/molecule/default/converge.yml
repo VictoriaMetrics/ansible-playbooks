@@ -1,0 +1,27 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  pre_tasks:
+    # Seeded before the role runs. The role touches this file without truncating
+    # it, and lists it after its own env file, so this value must win at runtime.
+    # test_default.yml asserts that by hitting /override instead of /vtagent.
+    - name: "Seed user-managed envfile with a key that overrides the role's"
+      ansible.builtin.copy:
+        dest: /etc/default/vic-vtagent
+        content: "http_pathPrefix='/override'\n"
+        owner: root
+        group: root
+        mode: "0600"
+  tasks:
+    - name: "Include vtagent"
+      vars:
+        vtagent_service_args:
+          "remoteWrite.url":
+            - "http://url1/insert/opentelemetry/v1/traces"
+          "remoteWrite.tmpDataPath": /tmp/vtagent
+        vtagent_service_envflag_enabled: true
+        vtagent_service_envflag_data:
+          - "http_pathPrefix=/vtagent"
+      ansible.builtin.include_role:
+        name: "vtagent"

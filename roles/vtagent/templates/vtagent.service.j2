@@ -1,0 +1,45 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=VictoriaTraces agent service
+After=network.target
+
+[Service]
+Type=simple
+User={{ vtagent_system_user }}
+Group={{ vtagent_system_group }}
+ExecStart={{ vtagent_bin_dir }}/vtagent-prod{% if vtagent_service_envflag_enabled | bool %} -envflag.enable{% endif %} {%- for flag, flag_values in vtagent_service_args.items() -%}
+{%- if flag_values | type_debug == "list" -%}
+{% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
+{% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}
+{% endfor %}
+
+SyslogIdentifier={{ vtagent_service_name }}
+Restart=always
+
+PrivateTmp=yes
+ProtectHome={{ vtagent_systemd_protect_home }}
+NoNewPrivileges=yes
+
+ProtectSystem=full
+
+{% if vtagent_systemd_version | int >= 232 %}
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=yes
+{% endif %}
+
+{% if vtagent_service_envflag_enabled | bool %}
+EnvironmentFile={{ vtagent_service_envflag_data_file }}
+EnvironmentFile={{ vtagent_service_envflag_file }}
+{% endif %}
+{% if vtagent_exec_start_post != "" %}
+ExecStartPost={{ vtagent_exec_start_post }}
+{% endif %}
+
+{% if vtagent_exec_stop != "" %}
+ExecStop={{ vtagent_exec_stop }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

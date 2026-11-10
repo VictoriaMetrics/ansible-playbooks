@@ -1,0 +1,20 @@
+service:
+  "vic-vtagent":
+    enabled: true
+    running: true
+
+port:
+  tcp:10429:
+    listening: true
+
+file:
+  /tmp/vtagent:
+    exists: true
+    filetype: directory
+    owner: vic_vt_agent
+    group: vic_vt_agent
+    mode: "0751"
+  /etc/systemd/system/vic-vtagent.service:
+    exists: true
+    contains:
+      - "/--remoteWrite\\.tmpDataPath=\\/tmp\\/vtagent( |$)/"
