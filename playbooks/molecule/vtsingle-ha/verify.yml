@@ -1,0 +1,3 @@
+---
+- name: Verify
+  ansible.builtin.import_playbook: ../vtcluster-ha/verify.yml

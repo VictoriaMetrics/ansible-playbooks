@@ -1,0 +1,103 @@
+---
+# High-availability VictoriaTraces setup based on independent clusters.
+# See https://docs.victoriametrics.com/victoriatraces/cluster/#high-availability
+# Deployment guide: https://github.com/VictoriaMetrics/ansible-playbooks/blob/master/docs/victoriatraces-ha.md
+#
+# Every cluster has its own vtstorage, vtinsert and vtselect nodes and stores
+# a complete copy of the spans. The vt_cluster inventory variable assigns a host
+# to its cluster, and the cluster members are looked up in the
+# <vt_cluster>_vtstorage and <vt_cluster>_vtinsert inventory groups.
+#
+# The vtagent hosts replicate the spans and run two services:
+#   - vtagent: accepts spans (port 10429), replicates them to every cluster
+#     and buffers spans on disk for clusters which are unavailable
+#   - vmauth: listens on 127.0.0.1:8427 only and balances every replication
+#     stream of the local vtagent among vtinsert nodes of the corresponding
+#     cluster, since vtagent accepts a single -remoteWrite.url per cluster
+#
+# The vmauth hosts are the entrypoint (port 8427). vmauth routes inserts to
+# the vtagent hosts and selects to the first available cluster.
+# The vtagent and vmauth groups must not share hosts.
+#
+# Send spans to and query traces from http://<any-vmauth-node>:8427/
+
+- name: Setup vtstorage
+  become: true
+  hosts: vtstorage
+  roles:
+    - vtsingle
+
+- name: Setup vtinsert
+  become: true
+  hosts: vtinsert
+  vars:
+    vtsingle_service_args:
+      storageNode: "{{ groups[vt_cluster ~ '_vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
+      select.disable: "true"
+  roles:
+    - vtsingle
+
+- name: Setup vtselect
+  become: true
+  hosts: vtselect
+  vars:
+    vtsingle_service_args:
+      storageNode: "{{ groups[vt_cluster ~ '_vtstorage'] | map('regex_replace', '$', ':10428') | join(',') }}"
+      insert.disable: "true"
+  roles:
+    - vtsingle
+
+- name: Setup vtagent
+  become: true
+  hosts: vtagent
+  vars:
+    vt_clusters: "{{ groups['vtinsert'] | map('extract', hostvars, 'vt_cluster') | unique | list }}"
+    # The buffer must survive restarts, so keep it out of /tmp.
+    vtagent_tmp_data_path: /var/lib/vtagent
+    vtagent_service_args:
+      remoteWrite.url: "{{ vt_clusters | map('regex_replace', '^(.+)$', 'http://127.0.0.1:8427/\\1/insert/opentelemetry/v1/traces') | list }}"
+      remoteWrite.tmpDataPath: "{{ vtagent_tmp_data_path }}"
+    vmauth_service_args:
+      httpListenAddr: "127.0.0.1:8427"
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+      {% for cluster in vt_clusters %}
+          - src_paths:
+              - "/{{ cluster }}/insert/opentelemetry/v1/traces"
+            drop_src_path_prefix_parts: 1
+            url_prefix:
+      {% for insert in groups[cluster ~ '_vtinsert'] %}
+              - "http://{{ insert }}:10428/"
+      {% endfor %}
+      {% endfor %}
+  roles:
+    # vmauth goes first, so the route for a new cluster exists before vtagent
+    # starts sending data to it. vtagent drops data on 400 responses.
+    - vmauth
+    - vtagent
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for agent in groups['vtagent'] %}
+              - "http://{{ agent }}:10429/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vtselect'] %}
+              - "http://{{ select }}:10428/"
+      {% endfor %}
+            load_balancing_policy: first_available
+            # vtselect responds with an error when some of its vtstorage nodes are unavailable
+            retry_status_codes: [502, 503]
+  roles:
+    - vmauth

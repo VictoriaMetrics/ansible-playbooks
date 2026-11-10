@@ -1,0 +1,60 @@
+---
+# Shared with the vtsingle-ha scenario.
+# Sends a span through the entrypoint and expects its service
+# in every replica and through the entrypoint itself.
+
+- name: Send a span through vmauth
+  hosts: vmauth[0]
+  gather_facts: false
+  tasks:
+    - name: Get current time
+      ansible.builtin.setup:
+        filter: ansible_date_time
+
+    - name: Send a span
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:8427/insert/opentelemetry/v1/traces"
+        method: POST
+        body_format: json
+        body:
+          resourceSpans:
+            - resource:
+                attributes:
+                  - key: service.name
+                    value:
+                      stringValue: molecule_ha_test
+              scopeSpans:
+                - scope:
+                    name: molecule
+                  spans:
+                    - traceId: 5b8efff798038103d269b633813fc60c
+                      spanId: eee19b7ec3c1b174
+                      name: ha-test
+                      kind: 1
+                      startTimeUnixNano: "{{ ansible_facts['date_time']['epoch'] }}000000000"
+                      endTimeUnixNano: "{{ ansible_facts['date_time']['epoch'] }}500000000"
+        status_code: 200
+
+- name: Verify replication
+  hosts: vtsingle:vtselect
+  gather_facts: false
+  tasks:
+    - name: Wait for the service in the replica
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:10428/select/jaeger/api/services"
+        return_content: true
+      register: replica_query
+      until: "'molecule_ha_test' in replica_query.content"
+      retries: 30
+      delay: 2
+
+- name: Verify querying through vmauth
+  hosts: vmauth
+  gather_facts: false
+  tasks:
+    - name: Query the service
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:8427/select/jaeger/api/services"
+        return_content: true
+      register: entrypoint_query
+      failed_when: "'molecule_ha_test' not in entrypoint_query.content"

@@ -68,7 +68,7 @@ Collection includes the following roles:
 - [vtsingle](./roles/vtsingle) - installs and configures [VictoriaTraces single node](https://docs.victoriametrics.com/victoriatraces/)
 - [vtagent](./roles/vtagent) - installs and configures [`vtagent`](https://docs.victoriametrics.com/victoriatraces/vtagent/)
 
-See [cluster](playbooks/cluster.yml), [vlcluster](playbooks/vlcluster.yml), [vtcluster](playbooks/vtcluster.yml) and [vmsingle](playbooks/vmsingle.yml) playbooks for examples of how to use these
+See [cluster](playbooks/cluster.yml), [vlcluster](playbooks/vlcluster.yml), [vtcluster](playbooks/vtcluster.yml), [vmsingle](playbooks/vmsingle.yml) and the high availability ([vlsingle-ha](playbooks/vlsingle-ha.yml), [vlcluster-ha](playbooks/vlcluster-ha.yml), [vtsingle-ha](playbooks/vtsingle-ha.yml), [vtcluster-ha](playbooks/vtcluster-ha.yml)) playbooks for examples of how to use these
 roles.
 
 ## Cluster deployment
@@ -76,6 +76,11 @@ roles.
 - [VictoriaMetrics cluster deployment](./docs/victoriametrics-cluster.md) — metrics cluster with vminsert, vmstorage, vmselect and vmauth
 - [VictoriaLogs cluster deployment](./docs/victorialogs-cluster.md) — logs cluster with vlinsert, vlstorage, vlselect and vmauth
 - [VictoriaTraces cluster deployment](./docs/victoriatraces-cluster.md) — traces cluster with vtinsert, vtstorage, vtselect and vmauth
+
+## High availability deployment
+
+- [VictoriaLogs high availability deployment](./docs/victorialogs-ha.md) - replicated single-node instances or clusters with vlagent and vmauth
+- [VictoriaTraces high availability deployment](./docs/victoriatraces-ha.md) - replicated single-node instances or clusters with vtagent and vmauth
 
 ## Enterprise
 
@@ -91,6 +96,7 @@ The following commands are useful for development:
 - `make lint` - runs ansible-lint on all roles and playbooks
 - `make molecule-converge` - runs molecule converge for default scenario of all roles
 - `make molecule-converge-integration` - runs molecule converge for integration scenario of all roles
+- `make molecule-converge-ha-integration` - runs molecule converge for high availability scenarios, not included in `molecule-converge-integration`
 - `make molecule-destroy` - destroys all molecule instances created during testing
 
 Refer to [Makefile](./Makefile) for the full list of commands.

@@ -1,0 +1,83 @@
+---
+dependency:
+  name: galaxy
+  enabled: false
+driver:
+  name: docker
+
+platforms:
+  - &host
+    name: vt-ha-a-storage
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    networks:
+      - name: vtcluster-ha
+    groups:
+      - cluster_a
+      - cluster_a_vtstorage
+      - vtstorage
+  - <<: *host
+    name: vt-ha-a-insert
+    groups:
+      - cluster_a
+      - cluster_a_vtinsert
+      - vtinsert
+  - <<: *host
+    name: vt-ha-a-select
+    groups:
+      - cluster_a
+      - cluster_a_vtselect
+      - vtselect
+  - <<: *host
+    name: vt-ha-b-storage
+    groups:
+      - cluster_b
+      - cluster_b_vtstorage
+      - vtstorage
+  - <<: *host
+    name: vt-ha-b-insert
+    groups:
+      - cluster_b
+      - cluster_b_vtinsert
+      - vtinsert
+  - <<: *host
+    name: vt-ha-b-select
+    groups:
+      - cluster_b
+      - cluster_b_vtselect
+      - vtselect
+  - <<: *host
+    name: vt-ha-agent-1
+    groups:
+      - vtagent
+  - <<: *host
+    name: vt-ha-agent-2
+    groups:
+      - vtagent
+  - <<: *host
+    name: vt-ha-entry-1
+    groups:
+      - vmauth
+  - <<: *host
+    name: vt-ha-entry-2
+    groups:
+      - vmauth
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "../../../roles"
+    ANSIBLE_CONFIG: ../../../ansible.cfg
+  inventory:
+    group_vars:
+      cluster_a:
+        vt_cluster: cluster_a
+      cluster_b:
+        vt_cluster: cluster_b
+verifier:
+  name: ansible

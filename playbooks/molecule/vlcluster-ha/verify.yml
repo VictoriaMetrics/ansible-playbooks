@@ -1,0 +1,57 @@
+---
+# Shared with the vlsingle-ha scenario.
+# Sends a log entry for a non-default tenant through the entrypoint
+# and expects it in every replica and through the entrypoint itself.
+
+- name: Send a log entry through vmauth
+  hosts: vmauth[0]
+  gather_facts: false
+  tasks:
+    - name: Send a log entry
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:8427/insert/jsonline?_stream_fields=app"
+        method: POST
+        headers:
+          AccountID: "12"
+        # A body without body_format is sent as application/x-www-form-urlencoded,
+        # which VictoriaLogs reads as form values instead of log lines.
+        body_format: json
+        body:
+          _msg: molecule_ha_test
+          app: molecule
+        status_code: 200
+
+- name: Verify replication
+  hosts: vlsingle:vlselect
+  gather_facts: false
+  tasks:
+    - name: Wait for the log entry in the replica
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:9428/select/logsql/query?query=molecule_ha_test"
+        headers:
+          AccountID: "12"
+        return_content: true
+      register: replica_query
+      until: "'molecule_ha_test' in replica_query.content"
+      retries: 30
+      delay: 2
+
+    - name: Query the default tenant
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:9428/select/logsql/query?query=molecule_ha_test"
+        return_content: true
+      register: default_tenant_query
+      failed_when: "'molecule_ha_test' in default_tenant_query.content"
+
+- name: Verify querying through vmauth
+  hosts: vmauth
+  gather_facts: false
+  tasks:
+    - name: Query the log entry
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:8427/select/logsql/query?query=molecule_ha_test"
+        headers:
+          AccountID: "12"
+        return_content: true
+      register: entrypoint_query
+      failed_when: "'molecule_ha_test' not in entrypoint_query.content"

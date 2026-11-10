@@ -1,0 +1,103 @@
+---
+# High-availability VictoriaLogs setup based on independent clusters.
+# See https://docs.victoriametrics.com/victorialogs/cluster/#high-availability
+# Deployment guide: https://github.com/VictoriaMetrics/ansible-playbooks/blob/master/docs/victorialogs-ha.md
+#
+# Every cluster has its own vlstorage, vlinsert and vlselect nodes and stores
+# a complete copy of the logs. The vl_cluster inventory variable assigns a host
+# to its cluster, and the cluster members are looked up in the
+# <vl_cluster>_vlstorage and <vl_cluster>_vlinsert inventory groups.
+#
+# The vlagent hosts replicate the logs and run two services:
+#   - vlagent: accepts logs (port 9429), replicates them to every cluster
+#     and buffers logs on disk for clusters which are unavailable
+#   - vmauth: listens on 127.0.0.1:8427 only and balances every replication
+#     stream of the local vlagent among vlinsert nodes of the corresponding
+#     cluster, since vlagent accepts a single -remoteWrite.url per cluster
+#
+# The vmauth hosts are the entrypoint (port 8427). vmauth routes inserts to
+# the vlagent hosts and selects to the first available cluster.
+# The vlagent and vmauth groups must not share hosts.
+#
+# Send logs to and query logs from http://<any-vmauth-node>:8427/
+
+- name: Setup vlstorage
+  become: true
+  hosts: vlstorage
+  roles:
+    - vlsingle
+
+- name: Setup vlinsert
+  become: true
+  hosts: vlinsert
+  vars:
+    vlsingle_service_args:
+      storageNode: "{{ groups[vl_cluster ~ '_vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      select.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vlselect
+  become: true
+  hosts: vlselect
+  vars:
+    vlsingle_service_args:
+      storageNode: "{{ groups[vl_cluster ~ '_vlstorage'] | map('regex_replace', '$', ':9428') | join(',') }}"
+      insert.disable: "true"
+  roles:
+    - vlsingle
+
+- name: Setup vlagent
+  become: true
+  hosts: vlagent
+  vars:
+    vl_clusters: "{{ groups['vlinsert'] | map('extract', hostvars, 'vl_cluster') | unique | list }}"
+    # The buffer must survive restarts, so keep it out of /tmp.
+    vlagent_tmp_data_path: /var/lib/vlagent
+    vlagent_service_args:
+      remoteWrite.url: "{{ vl_clusters | map('regex_replace', '^(.+)$', 'http://127.0.0.1:8427/\\1/insert/multitenant/native') | list }}"
+      remoteWrite.tmpDataPath: "{{ vlagent_tmp_data_path }}"
+    vmauth_service_args:
+      httpListenAddr: "127.0.0.1:8427"
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+      {% for cluster in vl_clusters %}
+          - src_paths:
+              - "/{{ cluster }}/insert/multitenant/native"
+            drop_src_path_prefix_parts: 1
+            url_prefix:
+      {% for insert in groups[cluster ~ '_vlinsert'] %}
+              - "http://{{ insert }}:9428/"
+      {% endfor %}
+      {% endfor %}
+  roles:
+    # vmauth goes first, so the route for a new cluster exists before vlagent
+    # starts sending data to it. vlagent drops data on 400 responses.
+    - vmauth
+    - vlagent
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for agent in groups['vlagent'] %}
+              - "http://{{ agent }}:9429/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for select in groups['vlselect'] %}
+              - "http://{{ select }}:9428/"
+      {% endfor %}
+            load_balancing_policy: first_available
+            # vlselect responds with 502 when some of its vlstorage nodes are unavailable
+            retry_status_codes: [502, 503]
+  roles:
+    - vmauth

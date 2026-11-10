@@ -1,0 +1,53 @@
+---
+# High-availability VictoriaTraces setup based on single-node instances.
+# See https://docs.victoriametrics.com/victoriatraces/#high-availability
+# Deployment guide: https://github.com/VictoriaMetrics/ansible-playbooks/blob/master/docs/victoriatraces-ha.md
+#
+#   - vtsingle: every instance stores a complete copy of the spans (port 10428)
+#   - vtagent: accepts spans (port 10429), replicates them to every vtsingle
+#     and buffers spans on disk for instances which are unavailable
+#   - vmauth: single HTTP entrypoint (port 8427), routes inserts to vtagent
+#     and selects to the first available vtsingle
+#
+# Send spans to and query traces from http://<any-vmauth-node>:8427/
+
+- name: Setup vtsingle
+  become: true
+  hosts: vtsingle
+  roles:
+    - vtsingle
+
+- name: Setup vtagent
+  become: true
+  hosts: vtagent
+  vars:
+    # The buffer must survive restarts, so keep it out of /tmp.
+    vtagent_tmp_data_path: /var/lib/vtagent
+    vtagent_service_args:
+      remoteWrite.url: "{{ groups['vtsingle'] | map('regex_replace', '^(.+)$', 'http://\\1:10428/insert/opentelemetry/v1/traces') | list }}"
+      remoteWrite.tmpDataPath: "{{ vtagent_tmp_data_path }}"
+  roles:
+    - vtagent
+
+- name: Setup vmauth
+  become: true
+  hosts: vmauth
+  vars:
+    vmauth_auth_config: |-
+      unauthorized_user:
+        url_map:
+          - src_paths:
+              - "/insert/.+"
+            url_prefix:
+      {% for agent in groups['vtagent'] %}
+              - "http://{{ agent }}:10429/"
+      {% endfor %}
+          - src_paths:
+              - "/select/.+"
+            url_prefix:
+      {% for single in groups['vtsingle'] %}
+              - "http://{{ single }}:10428/"
+      {% endfor %}
+            load_balancing_policy: first_available
+  roles:
+    - vmauth
