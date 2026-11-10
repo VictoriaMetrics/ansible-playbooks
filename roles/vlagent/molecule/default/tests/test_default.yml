@@ -14,3 +14,9 @@ file:
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"
+  /tmp/vlagent:
+    exists: true
+    filetype: directory
+    owner: vic_vl_agent
+    group: vic_vl_agent
+    mode: "0751"
