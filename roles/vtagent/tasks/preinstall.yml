@@ -4,6 +4,15 @@
     that: ansible_facts['service_mgr'] == 'systemd'
     msg: "This role only works with systemd"
 
+- name: Assert envflag data is unset when envflag support is disabled
+  ansible.builtin.assert:
+    that: vtagent_service_envflag_data | default([], true) | length == 0
+    msg: >-
+      vtagent_service_envflag_enabled is disabled, so vtagent_service_envflag_data
+      is not passed to vtagent. Move these parameters to vtagent_service_args or
+      enable envflag support.
+  when: not vtagent_service_envflag_enabled | bool
+
 - name: Get systemd version
   ansible.builtin.command: systemctl --version
   changed_when: false

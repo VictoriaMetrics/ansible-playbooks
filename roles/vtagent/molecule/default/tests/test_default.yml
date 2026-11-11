@@ -20,6 +20,12 @@ file:
       # at the bottom of this file instead.
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vtagent\\.env$/"
       - "/^EnvironmentFile=\\/etc\\/default\\/vic-vtagent$/"
+  /tmp/vtagent:
+    exists: true
+    filetype: directory
+    owner: vic_vt_agent
+    group: vic_vt_agent
+    mode: "0751"
   /etc/default/vic-vtagent.env:
     exists: true
     mode: "0600"
