@@ -4,6 +4,12 @@
   become: yes
   vars:
     vtsingle_data_dir: "/tmp/victoria-traces/"
+    # Envflag enabled here so the Configure env block in tasks/configure.yml
+    # executes somewhere in CI. -http.pathPrefix is only ever supplied through
+    # the env file, so the http check in test_default.yml proves it took effect.
+    vtsingle_service_envflag_enabled: true
+    vtsingle_service_envflag_data:
+      - "http_pathPrefix=/vtsingle"
     # Deprecated alias set on purpose to prove backward-compatible resolution.
     victoriatraces_retention_period_months: "6"
   tasks:

@@ -1,0 +1,17 @@
+service:
+  vmselect:
+    enabled: true
+    running: true
+
+port:
+  tcp:8481:
+    listening: true
+
+file:
+  # Injected through the deprecated vmselect_config name and distinct from
+  # _vmselect_service_envflag_data_default.storageNode (vmstorage1,vmstorage2),
+  # so this fails if the alias stops resolving.
+  /opt/victoriametrics-vmselect/vmselect.conf:
+    exists: true
+    contains:
+      - "storageNode='vmstorage-dv-1'"
