@@ -42,7 +42,7 @@
         owner: root
         group: root
         mode: "0600"
-      no_log: true
+      no_log: "{{ vmagent_ansible_no_log }}"
       notify: Restart VMagent service
 
     - name: Setup envfile
@@ -64,7 +64,7 @@
     group: root
     mode: "0644"
   register: config_template
-  no_log: True
+  no_log: "{{ vmagent_ansible_no_log }}"
   notify: Restart VMagent service
 
 - name: Daemon-reload VMagent service # noqa: no-handler
@@ -199,7 +199,7 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config %s -dryRun"
-  no_log: true
+  no_log: "{{ vmagent_ansible_no_log }}"
   notify: Restart VMagent service
 
 # The template task above only runs `validate:` when config.yml itself changes,
@@ -211,7 +211,7 @@
   ansible.builtin.command:
     cmd: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -promscrape.config {{ (vmagent_config_dir ~ '/config.yml') | quote }} -dryRun"
   changed_when: false
-  no_log: true
+  no_log: "{{ vmagent_ansible_no_log }}"
 
 - name: Configure stream aggregation config
   ansible.builtin.template:
@@ -221,7 +221,7 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: "{{ vmagent_bin_dir }}/vmagent-prod {% for k, v in vmagent_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -streamAggr.config %s -dryRun"
-  no_log: true
+  no_log: "{{ vmagent_ansible_no_log }}"
   notify: Restart VMagent service
 
 - name: Prepare tmp data dir

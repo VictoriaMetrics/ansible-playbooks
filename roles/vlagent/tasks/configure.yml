@@ -64,7 +64,7 @@
     group: root
     mode: "0644"
   register: config_template
-  no_log: True
+  no_log: "{{ vlagent_ansible_no_log }}"
   notify: Restart VLagent service
 
 - name: Daemon-reload VLagent service # noqa: no-handler

@@ -65,7 +65,7 @@
     mode: "0644"
   register: config_template
   notify: Restart VMalert service
-  no_log: True
+  no_log: "{{ vmalert_ansible_no_log }}"
 
 - name: Daemon-reload VMalert service # noqa: no-handler
   become: true
@@ -98,6 +98,6 @@
     group: "{{ vmalert_system_group }}"
     validate: "{{ vmalert_bin_dir }}/vmalert-prod {% for k, v in vmalert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -dryRun -rule %s"
     backup: yes
-  no_log: true
+  no_log: "{{ vmalert_ansible_no_log }}"
   notify: Restart VMalert service
   when: vmalert_default_rules_enabled | bool

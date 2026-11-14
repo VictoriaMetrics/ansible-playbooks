@@ -26,7 +26,7 @@
     group: root
     mode: "0644"
   register: config_template
-  no_log: True
+  no_log: "{{ vtsingle_ansible_no_log }}"
 
 - name: Daemon-reload VictoriaTraces service
   become: true
