@@ -31,6 +31,8 @@ vmauth_auth_config: |-
 
 vmauth_install_download_to_control: false
 
+vmauth_ansible_no_log: True
+
 vm_proxy_http: ""
 vm_proxy_https: ""
 

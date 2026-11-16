@@ -60,6 +60,8 @@ vmalert_rules: "{{ vic_vm_alert_rules | default(_vmalert_rules_default) }}"
 # Download behavior
 vmalert_install_download_to_control: "{{ vic_vm_alert_install_download_to_control | default(false) }}"
 
+vmalert_ansible_no_log: True
+
 # Proxy environment for downloads
 vm_proxy_http: ""
 vm_proxy_https: ""

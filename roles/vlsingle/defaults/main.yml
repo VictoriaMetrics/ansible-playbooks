@@ -29,6 +29,8 @@ vlsingle_service_envflag_file: "{{ victorialogs_service_envflag_file | default('
 # Download behavior
 vlsingle_install_download_to_control: "{{ victorialogs_install_download_to_control | default(false) }}"
 
+vlsingle_ansible_no_log: True
+
 # Proxy environment for downloads
 vm_proxy_http: ""
 vm_proxy_https: ""

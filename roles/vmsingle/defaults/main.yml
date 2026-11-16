@@ -43,6 +43,8 @@ vmsingle_backup_proxy_enable: "{{ victoriametrics_backup_proxy_enable | default(
 # Download behavior
 vmsingle_install_download_to_control: "{{ victoriametrics_install_download_to_control | default(false) }}"
 
+vmsingle_ansible_no_log: True
+
 # Proxy environment for downloads
 vm_proxy_http: ""
 vm_proxy_https: ""
