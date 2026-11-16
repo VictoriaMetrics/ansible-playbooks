@@ -68,7 +68,7 @@ molecule-converge-enterprise: $(addprefix molecule-converge-,$(addsuffix -enterp
 molecule-converge-proxy: $(addprefix molecule-converge-,$(addsuffix -proxy,$(ROLES)))
 molecule-converge-download-to-control: $(addprefix molecule-converge-,$(addsuffix -download-to-control,$(ROLES)))
 
-molecule-destroy: $(addprefix molecule-destroy-,$(ROLES)) molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration molecule-destroy-ha-integration
+molecule-destroy: $(addprefix molecule-destroy-,$(ROLES)) molecule-destroy-cluster-integration molecule-destroy-cluster-integration-deprecated-vars molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration molecule-destroy-ha-integration
 molecule-destroy-enterprise: $(addprefix molecule-destroy-,$(addsuffix -enterprise,$(ENTERPRISE_ROLES))) molecule-destroy-cluster-integration-enterprise
 molecule-destroy-proxy: $(addprefix molecule-destroy-,$(addsuffix -proxy,$(ROLES)))
 molecule-destroy-download-to-control: $(addprefix molecule-destroy-,$(addsuffix -download-to-control,$(ROLES)))
@@ -87,6 +87,10 @@ molecule-converge-cluster-integration:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule converge -s cluster
 
+molecule-converge-cluster-integration-deprecated-vars:
+	. .venv/bin/activate; \
+	cd playbooks/ && molecule converge -s cluster-deprecated-vars && molecule verify -s cluster-deprecated-vars
+
 molecule-converge-cluster-integration-enterprise:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule converge -s cluster-enterprise
@@ -94,6 +98,10 @@ molecule-converge-cluster-integration-enterprise:
 molecule-destroy-cluster-integration:
 	. .venv/bin/activate; \
 	cd playbooks/ && molecule destroy -s cluster
+
+molecule-destroy-cluster-integration-deprecated-vars:
+	. .venv/bin/activate; \
+	cd playbooks/ && molecule destroy -s cluster-deprecated-vars
 
 molecule-destroy-cluster-integration-enterprise:
 	. .venv/bin/activate; \
@@ -134,7 +142,7 @@ $(foreach scenario,$(HA_SCENARIOS),$(eval $(call ha-integration-targets,$(scenar
 molecule-converge-ha-integration: $(foreach scenario,$(HA_SCENARIOS),molecule-converge-$(scenario)-integration)
 molecule-destroy-ha-integration: $(foreach scenario,$(HA_SCENARIOS),molecule-destroy-$(scenario)-integration)
 
-molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-vlcluster-integration molecule-converge-vtcluster-integration molecule-converge-proxy molecule-converge-download-to-control
+molecule-converge-integration: molecule-converge-cluster-integration molecule-converge-cluster-integration-deprecated-vars molecule-converge-vlcluster-integration molecule-converge-vtcluster-integration molecule-converge-proxy molecule-converge-download-to-control
 molecule-converge-integration-enterprise: molecule-converge-cluster-integration-enterprise
-molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration molecule-destroy-ha-integration
+molecule-destroy-integration: molecule-destroy-cluster-integration molecule-destroy-cluster-integration-deprecated-vars molecule-destroy-vlcluster-integration molecule-destroy-vtcluster-integration molecule-destroy-ha-integration
 molecule-destroy-integration-enterprise: molecule-destroy-cluster-integration-enterprise

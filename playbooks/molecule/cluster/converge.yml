@@ -10,7 +10,7 @@
   hosts: vmselect
   vars:
     vmselect_cache_dir: "/var/lib/vmselect"
-    vmselect_config:
+    vmselect_service_envflag_data:
       cacheDataPath: "/var/lib/vmselect"
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
   roles:
@@ -20,7 +20,7 @@
   become: true
   hosts: vminsert
   vars:
-    vminsert_config:
+    vminsert_service_envflag_data:
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
   roles:
     - vminsert

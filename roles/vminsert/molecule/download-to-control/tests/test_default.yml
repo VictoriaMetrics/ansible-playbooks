@@ -6,3 +6,18 @@ service:
 port:
   tcp:8480:
     listening: true
+
+# envflag is off here, which makes this scenario the disabled-path regression
+# guard: no envflag artefacts in the unit, every flag on ExecStart.
+file:
+  /etc/systemd/system/vminsert.service:
+    exists: true
+    contains:
+      - "/^ExecStart=\\S*vminsert-prod --/"
+      - "!/-envflag\\.enable/"
+      - "!/^EnvironmentFile=/"
+      - "--storageNode=vmstorage1"
+      # relabelConfig moves from the env file to the command line here.
+      - "--relabelConfig=/opt/victoriametrics-vminsert/relabel.yaml"
+  /etc/default/vminsert:
+    exists: false

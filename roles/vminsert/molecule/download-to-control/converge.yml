@@ -4,6 +4,18 @@
   become: yes
   vars:
     vminsert_install_download_to_control: true
+    # envflag off makes this scenario the disabled-path regression guard; the
+    # default scenario covers the enabled path.
+    vminsert_service_envflag_enabled: false
+    vminsert_service_envflag_data: {}
+    vminsert_service_args:
+      replicationFactor: 1
+      storageNode: vmstorage1
+    vminsert_relabel_config: |-
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '(.+):.*'
+        replacement: '${1}'
   tasks:
     - name: "Include vminsert"
       ansible.builtin.include_role:

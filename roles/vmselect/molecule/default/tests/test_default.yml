@@ -11,6 +11,7 @@ file:
   /etc/systemd/system/vmselect.service:
     exists: true
     contains:
+      - "--search.maxUniqueTimeseries=500000"
       - "ProtectControlGroups=true"
       - "ProtectKernelModules=true"
       - "ProtectKernelTunables=yes"

@@ -18,9 +18,13 @@ vtsingle_retention_period: "{{ victoriatraces_retention_period_months | default(
 # more on envflags usage
 # https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/#environment-variables
 vtsingle_service_envflag_enabled: "{{ victoriatraces_service_envflag_enabled | default('false') }}"
-# Array of strings to pass
+# Array of "KEY=value" strings rendered into vtsingle_service_envflag_data_file.
 vtsingle_service_envflag_data: "{{ victoriatraces_service_envflag_data | default([]) }}"
 #  - "graphiteListenAddr=127.0.0.1:12345"
+# Role-managed env file holding vtsingle_service_envflag_data. Rewritten on every run.
+vtsingle_service_envflag_data_file: "/etc/default/{{ vtsingle_service_name }}.env"
+# User-managed env file, read after the role-managed one so its keys win.
+# The role creates it empty and never rewrites its contents.
 vtsingle_service_envflag_file: "{{ victoriatraces_service_envflag_file | default('/etc/default/victoriatraces') }}"
 
 # Download behavior
