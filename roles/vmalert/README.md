@@ -34,10 +34,9 @@ Installs `vmalert` as binary running with systemd
 | vmalert_service_envflag_data       | Flags data to pass to service                               | `[]`                                                                                                                                 |
 | vmalert_service_envflag_data_file  | Role-managed env file holding the entries above. Rewritten on every run.| `/etc/default/{{ vmalert_service_name }}.env`                                                                                        |
 | vmalert_service_envflag_file       | User-managed env file, read after the role-managed one so its keys win.| `/etc/default/{{ vmalert_service_name }}`                                                                                            |
-| vmalert_ansible_no_log             | No diff for tasks which might contain sensitive information | `True`                                                                                                                              |
+| vmalert_ansible_no_log             | Hide output (including `--diff`) of tasks that render files which may contain secrets. Falls back to `vm_ansible_no_log`, which sets it for all roles at once | `true`                                                                                                                              |
 | vm_proxy_http                      | Sets environment for downloading archive                    | `""`                                                                                                                                |
 | vm_proxy_https                     | Sets environment for downloading archive                    | `""`                                                                                                                                |
-
 
 ## Deprecated aliases
 

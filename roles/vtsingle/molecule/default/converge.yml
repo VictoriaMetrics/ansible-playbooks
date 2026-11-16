@@ -3,6 +3,7 @@
   hosts: all
   become: yes
   vars:
+    vm_ansible_no_log: false
     vtsingle_data_dir: "/tmp/victoria-traces/"
     # Deprecated alias set on purpose to prove backward-compatible resolution.
     victoriatraces_retention_period_months: "6"

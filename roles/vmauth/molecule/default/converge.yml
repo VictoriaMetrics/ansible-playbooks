@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    vm_ansible_no_log: false
   tasks:
     - name: "Include vmauth"
       ansible.builtin.include_role:

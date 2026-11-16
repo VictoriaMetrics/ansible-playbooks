@@ -3,6 +3,7 @@
   hosts: all
   become: yes
   vars:
+    vm_ansible_no_log: false
     # Deprecated alias set on purpose to prove backward-compatible resolution.
     vic_vm_alert_evaluation_interval: "45s"
     # String form on purpose - the vmagent and vlagent converges cover the

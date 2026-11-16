@@ -3,6 +3,7 @@
   hosts: all
   become: yes
   vars:
+    vm_ansible_no_log: false
     vmsingle_data_dir: "/tmp/victoria-metrics/"
     vmsingle_backup_enabled: false
     vmsingle_service_envflag_enabled: true

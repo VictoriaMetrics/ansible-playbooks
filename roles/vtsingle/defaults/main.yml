@@ -26,7 +26,7 @@ vtsingle_service_envflag_file: "{{ victoriatraces_service_envflag_file | default
 # Download behavior
 vtsingle_install_download_to_control: "{{ victoriatraces_install_download_to_control | default(false) }}"
 
-vtsingle_ansible_no_log: True
+vtsingle_ansible_no_log: "{{ vm_ansible_no_log | default(true) }}"
 
 # Proxy environment for downloads
 vm_proxy_http: ""

@@ -19,6 +19,8 @@ vtagent_service_args:
 vtagent_install_download_to_control: false
 vtagent_bin_dir: /usr/local/bin
 
+vtagent_ansible_no_log: "{{ vm_ansible_no_log | default(true) }}"
+
 vm_proxy_http: ""
 vm_proxy_https: ""
 

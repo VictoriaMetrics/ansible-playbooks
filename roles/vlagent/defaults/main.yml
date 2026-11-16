@@ -22,7 +22,7 @@ vlagent_service_args:
 vlagent_install_download_to_control: false
 vlagent_bin_dir: /usr/local/bin
 
-vlagent_ansible_no_log: True
+vlagent_ansible_no_log: "{{ vm_ansible_no_log | default(true) }}"
 
 vm_proxy_http: "{{ vl_proxy_http | default('') }}"
 vm_proxy_https: "{{ vl_proxy_https | default('') }}"

@@ -42,7 +42,7 @@
         owner: root
         group: root
         mode: "0600"
-      no_log: true
+      no_log: "{{ vlagent_ansible_no_log }}"
       notify: Restart VLagent service
 
     - name: Setup envfile

@@ -42,7 +42,7 @@
         owner: root
         group: root
         mode: "0600"
-      no_log: true
+      no_log: "{{ vtagent_ansible_no_log }}"
       notify: Restart VTagent service
 
     - name: Setup envfile
@@ -72,7 +72,7 @@
     group: root
     mode: "0644"
   register: config_template
-  no_log: True
+  no_log: "{{ vtagent_ansible_no_log }}"
   notify: Restart VTagent service
 
 - name: Daemon-reload VTagent service # noqa: no-handler

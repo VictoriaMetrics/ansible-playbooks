@@ -42,7 +42,7 @@
         owner: root
         group: root
         mode: "0600"
-      no_log: true
+      no_log: "{{ vmalert_ansible_no_log }}"
       notify: Restart VMalert service
 
     - name: Setup envfile

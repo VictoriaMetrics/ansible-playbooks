@@ -2,6 +2,8 @@
 - name: Converge
   hosts: all
   become: yes
+  vars:
+    vm_ansible_no_log: false
   pre_tasks:
     # Seeded before the role runs. The role touches this file without truncating
     # it, and lists it after its own env file, so this value must win at runtime.
