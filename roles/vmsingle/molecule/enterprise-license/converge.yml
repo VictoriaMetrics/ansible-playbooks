@@ -1,0 +1,21 @@
+---
+# License mode: a release that predates -eula still verifies the license key.
+# Needs a real key, so it is not part of CI:
+#   make molecule-converge-vmsingle-enterprise-license VM_LICENSE_KEY=xxx
+# or put a license file at /tmp/vm-license inside the instance.
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    vmsingle_version: v1.155.0
+    vmsingle_enterprise: true
+    vmsingle_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
+    vmsingle_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
+    vmsingle_data_dir: "/tmp/victoria-metrics/"
+    vmsingle_backup_enabled: false
+    vmsingle_service_args:
+      storageDataPath: "{{ vmsingle_data_dir }}"
+  tasks:
+    - name: "Include vmsingle"
+      ansible.builtin.include_role:
+        name: "vmsingle"

@@ -52,6 +52,18 @@ $(foreach role,$(ROLES),$(eval $(call role-default-targets,$(role))))
 # Generate enterprise targets (only for roles that support it)
 $(foreach role,$(ENTERPRISE_ROLES),$(eval $(call role-enterprise-targets,$(role))))
 
+# License mode (releases before -eula). Needs a real license key, so it is not
+# part of the aggregate targets: make molecule-converge-vmsingle-enterprise-license VM_LICENSE_KEY=xxx
+VM_LICENSE_KEY ?=
+
+molecule-converge-vmsingle-enterprise-license:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && VM_LICENSE_KEY="$(VM_LICENSE_KEY)" molecule converge -s enterprise-license && molecule verify -s enterprise-license
+
+molecule-destroy-vmsingle-enterprise-license:
+	. .venv/bin/activate; \
+	cd roles/vmsingle && molecule destroy -s enterprise-license
+
 # Generate proxy and download-to-control targets for all roles
 $(foreach role,$(ROLES),$(eval $(call role-scenario-targets,$(role),proxy)))
 $(foreach role,$(ROLES),$(eval $(call role-scenario-targets,$(role),download-to-control)))

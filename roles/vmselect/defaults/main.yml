@@ -34,3 +34,5 @@ vm_proxy_https: ""
 # See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
 # Available options: 'yes', 'read-only', 'tmpfs'
 vmselect_systemd_protect_home: "yes"
+
+vmselect_ansible_no_log: "{{ vm_ansible_no_log | default(true) }}"

@@ -61,9 +61,11 @@
         _vmauth_enterprise_args:
           license: "{{ vmauth_license_key }}"
       when: vmauth_license_key != ""
+      no_log: "{{ vmauth_ansible_no_log }}"
 
     - name: Add license key file parameter to service config
       ansible.builtin.set_fact:
         _vmauth_enterprise_args:
           licenseFile: "{{ vmauth_license_key_file }}"
       when: vmauth_license_key_file != ""
+      no_log: "{{ vmauth_ansible_no_log }}"

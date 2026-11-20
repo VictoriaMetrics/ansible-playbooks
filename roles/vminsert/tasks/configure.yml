@@ -40,4 +40,5 @@
     owner: "{{ vminsert_system_user }}"
     group: "{{ vminsert_system_group }}"
     mode: "0644"
+  no_log: "{{ vminsert_ansible_no_log }}"
   notify: Restart vminsert service

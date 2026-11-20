@@ -25,7 +25,7 @@ The roles compare `<role>_version` with the releases below and choose one of two
 
 | Product         | Roles                                                | Releases that run with `-eula`                    |
 |-----------------|------------------------------------------------------|---------------------------------------------------|
-| VictoriaMetrics | vmsingle, vmagent, vmalert, vmauth, vminsert, vmselect, vmstorage | v1.156.0 and later, LTS v1.148.9+ and v1.136.23+ |
+| VictoriaMetrics | vmsingle, vmagent, vmalert, vmauth, vminsert, vmselect, vmstorage | v1.156.0 and later, v1.148.9+ on the v1.148 line, v1.136.23+ on the v1.136 line |
 | VictoriaLogs    | vlsingle, vlagent                                    | v1.54.0 and later, v1.52.2+ on the v1.52 line     |
 
 See the [VictoriaMetrics](https://docs.victoriametrics.com/victoriametrics/changelog/#v11560) and [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/changelog/#v1540) changelogs.
@@ -182,7 +182,7 @@ To add flags such as `license_forceOffline` to those components, edit the dictio
 
 ## Hosts without internet access
 
-Target hosts need network access to download the release archive. In license mode, they also need it to verify the license. Each is handled separately.
+By default, target hosts need network access to download the release archive; set `<role>_install_download_to_control: true` to download it on the control node. In license mode, target hosts also need network access to verify the license.
 
 ### Download through the control node
 
