@@ -3,6 +3,7 @@ vmauth_version: "v1.156.0"
 vmauth_enterprise: false
 vmauth_license_key: ""
 vmauth_license_key_file: ""
+vmauth_accept_eula: "{{ vm_enterprise_accept_eula | default(false) }}"
 
 vmauth_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
 vmauth_platform: "{% if vmauth_version.replace('v', '') is version('1.79.0', '>=') %}-linux{% endif %}"

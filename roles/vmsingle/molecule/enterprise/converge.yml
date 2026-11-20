@@ -4,8 +4,7 @@
   become: yes
   vars:
     vmsingle_enterprise: true
-    vmsingle_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
-    vmsingle_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
+    vmsingle_accept_eula: true
     vmsingle_data_dir: "/tmp/victoria-metrics/"
     vmsingle_backup_enabled: false
     vmsingle_service_envflag_enabled: true

@@ -1,38 +1,70 @@
-- name: Ensure license key is provided
-  ansible.builtin.assert:
-    that: vlsingle_license_key != "" or vlsingle_license_key_file != ""
-    msg: Either license key or license key file location must be provided.
-  when: vlsingle_enterprise | bool
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vlsingle_license_key_file == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vlsingle_enterprise | bool
-    - vlsingle_license_key != ""
-
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vlsingle_license_key == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vlsingle_enterprise | bool
-    - vlsingle_license_key_file != ""
-
-
-- name: Add license key parameter to service config
+# Enterprise flags go to _vlsingle_enterprise_args, which the templates merge into
+# vlsingle_service_args. set_fact on vlsingle_service_args itself would be shadowed when users
+# pass it as include_role vars or extra vars.
+- name: Check whether the release accepts -eula instead of a license key
   ansible.builtin.set_fact:
-    vlsingle_service_args: "{{ vlsingle_service_args | combine({'license': vlsingle_license_key}) }}"
+    _vlsingle_enterprise_args: {}
+    _vlsingle_use_eula: >-
+      {{ (vlsingle_enterprise | bool) and (_version == 'latest'
+        or _version is version('1.54.0', '>=')
+        or (_version is version('1.52.2', '>=') and _version is version('1.53.0', '<'))) }}
+  vars:
+    # -eula replaced license keys in v1.54.0 and v1.52.2:
+    # https://docs.victoriametrics.com/victorialogs/changelog/#v1540
+    # "latest" is resolved to a tag later in preinstall.yml; the latest release
+    # already uses -eula, so it is not compared here.
+    _version: "{{ vlsingle_version | regex_replace('^v', '') }}"
+
+- name: Accept the Enterprise EULA
   when:
     - vlsingle_enterprise | bool
-    - vlsingle_license_key != ""
+    - _vlsingle_use_eula | bool
+  block:
+    - name: Ensure the Enterprise Software Agreement is accepted
+      ansible.builtin.assert:
+        that: vlsingle_accept_eula | bool
+        msg: >-
+          vlsingle {{ vlsingle_version }} Enterprise runs only with the Enterprise Software Agreement
+          (https://victoriametrics.com/legal/esa/) accepted. Set vlsingle_accept_eula (or vm_enterprise_accept_eula for all roles)
+          to true to accept it.
 
+    - name: Add eula parameter to service config
+      ansible.builtin.set_fact:
+        _vlsingle_enterprise_args:
+          eula: "true"
 
-- name: Add license key parameter to service config
-  ansible.builtin.set_fact:
-    vlsingle_service_args: "{{ vlsingle_service_args | combine({'licenseFile': vlsingle_license_key_file}) }}"
+    - name: Report ignored license variables
+      ansible.builtin.debug:
+        msg: >-
+          vlsingle {{ vlsingle_version }} does not verify license keys and runs with -eula,
+          so vlsingle_license_key and vlsingle_license_key_file are ignored.
+      when: vlsingle_license_key != "" or vlsingle_license_key_file != ""
+
+- name: Pass the license key
   when:
     - vlsingle_enterprise | bool
-    - vlsingle_license_key_file != ""
+    - not (_vlsingle_use_eula | bool)
+  block:
+    - name: Ensure license key is provided
+      ansible.builtin.assert:
+        that: vlsingle_license_key != "" or vlsingle_license_key_file != ""
+        msg: Either license key or license key file location must be provided.
+
+    - name: Ensure only one of key or file is provided
+      ansible.builtin.assert:
+        that: vlsingle_license_key == "" or vlsingle_license_key_file == ""
+        msg: Only one of license key or license key file must be provided.
+
+    - name: Add license key parameter to service config
+      ansible.builtin.set_fact:
+        _vlsingle_enterprise_args:
+          license: "{{ vlsingle_license_key }}"
+      when: vlsingle_license_key != ""
+      no_log: "{{ vlsingle_ansible_no_log }}"
+
+    - name: Add license key file parameter to service config
+      ansible.builtin.set_fact:
+        _vlsingle_enterprise_args:
+          licenseFile: "{{ vlsingle_license_key_file }}"
+      when: vlsingle_license_key_file != ""
+      no_log: "{{ vlsingle_ansible_no_log }}"

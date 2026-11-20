@@ -6,7 +6,6 @@
     - name: "Include vmselect"
       vars:
         vmselect_enterprise: true
-        vmselect_license_key: "{{ lookup('env', 'VM_LICENSE_KEY') }}"
-        vmselect_license_key_file: "{{ '' if lookup('env', 'VM_LICENSE_KEY') else '/tmp/vm-license' }}"
+        vmselect_accept_eula: true
       ansible.builtin.include_role:
         name: "vmselect"

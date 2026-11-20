@@ -6,3 +6,9 @@ service:
 port:
   tcp:8429:
     listening: true
+
+file:
+  /etc/systemd/system/vic-vmagent.service:
+    exists: true
+    contents:
+      - "-eula=true"

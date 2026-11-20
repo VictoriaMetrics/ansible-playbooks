@@ -1,0 +1,15 @@
+service:
+  "victoriametrics":
+    enabled: true
+    running: true
+
+port:
+  tcp:8428:
+    listening: true
+
+file:
+  /etc/systemd/system/victoriametrics.service:
+    exists: true
+    contents:
+      - "/-license(File)?=/"
+      - "!-eula"

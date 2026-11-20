@@ -1,0 +1,4 @@
+---
+- name: Verify
+  become: true
+  ansible.builtin.import_playbook: "../../../../playbooks/testing/goss.yml"

@@ -8,7 +8,7 @@ After=network.target
 Type=simple
 User={{ vmagent_system_user }}
 Group={{ vmagent_system_group }}
-ExecStart={{ vmagent_bin_dir }}/vmagent-prod{% if vmagent_service_envflag_enabled | bool %} -envflag.enable{% endif %} {%- for flag, flag_values in vmagent_service_args.items() -%}
+ExecStart={{ vmagent_bin_dir }}/vmagent-prod{% if vmagent_service_envflag_enabled | bool %} -envflag.enable{% endif %} {%- for flag, flag_values in (vmagent_service_args | combine(_vmagent_enterprise_args | default({}))).items() -%}
 {%- if flag_values | type_debug == "list" -%}
 {% for flag_value in flag_values %} --{{ flag }}={{ flag_value | quote }} {% endfor %}
 {% else %} --{{ flag }}={{ flag_values | quote }} {% endif %}

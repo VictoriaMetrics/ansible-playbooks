@@ -4,7 +4,7 @@
   hosts: vmstorage
   vars:
     vmstorage_enterprise: "true"
-    vmstorage_license_key: "fake"
+    vmstorage_accept_eula: true
     vmstorage_config:
       retentionPeriod: "12"
       storageDataPath: "/var/lib/vmstorage"
@@ -17,7 +17,7 @@
   hosts: vmselect
   vars:
     vmselect_enterprise: "true"
-    vmselect_license_key: "fake"
+    vmselect_accept_eula: true
     vmselect_cache_dir: "/var/lib/vmselect"
     vmselect_config:
       cacheDataPath: "/var/lib/vmselect"
@@ -31,7 +31,7 @@
   hosts: vminsert
   vars:
     vminsert_enterprise: "true"
-    vminsert_license_key: "fake"
+    vminsert_accept_eula: true
     vminsert_config:
       replicationFactor: 1
       storageNode: "{{ groups['vmstorage'] | join(',') }}"
@@ -72,7 +72,7 @@
 
     vmagent_mom_targets: [ ]
     vmagent_enterprise: true
-    vmagent_license_key: "fake"
+    vmagent_accept_eula: true
     vmagent_service_args:
       "remoteWrite.url": "http://{{ groups['vmauth'] | first }}:8427/insert/10/prometheus/api/v1/write"
       "promscrape.config": "{{ vmagent_config_dir }}/config.yml"

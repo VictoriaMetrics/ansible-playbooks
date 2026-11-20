@@ -5,3 +5,9 @@ service:
 port:
   tcp:8480:
     listening: true
+
+file:
+  /opt/victoriametrics-vminsert/vminsert.conf:
+    exists: true
+    contents:
+      - "/^eula=true$/"

@@ -59,7 +59,7 @@
 
     vmagent_mom_targets: [ ]
     vmagent_enterprise: true
-    vmagent_license_key: "fake"
+    vmagent_accept_eula: true
     vmagent_service_args:
       "remoteWrite.url": "http://{{ groups['vmauth'] | first }}:8427/insert/10/prometheus/api/v1/write"
       "promscrape.config": "{{ vmagent_config_dir }}/config.yml"

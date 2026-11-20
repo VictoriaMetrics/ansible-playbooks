@@ -1,37 +1,71 @@
-- name: Ensure license key is provided
-  ansible.builtin.assert:
-    that: vmagent_license_key != "" or vmagent_license_key_file != ""
-    msg: Either license key or license key file location must be provided.
-  when: vmagent_enterprise | bool
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmagent_license_key_file == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmagent_enterprise | bool
-    - vmagent_license_key != ""
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmagent_license_key == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmagent_enterprise | bool
-    - vmagent_license_key_file != ""
-
-
-- name: Add license key parameter to service config
+# Enterprise flags go to _vmagent_enterprise_args, which the templates merge into
+# vmagent_service_args. set_fact on vmagent_service_args itself would be shadowed when users
+# pass it as include_role vars or extra vars.
+- name: Check whether the release accepts -eula instead of a license key
   ansible.builtin.set_fact:
-    vmagent_service_args: "{{ vmagent_service_args | combine({'license': vmagent_license_key}) }}"
+    _vmagent_enterprise_args: {}
+    _vmagent_use_eula: >-
+      {{ (vmagent_enterprise | bool) and (_version == 'latest'
+        or _version is version('1.156.0', '>=')
+        or (_version is version('1.148.9', '>=') and _version is version('1.149.0', '<'))
+        or (_version is version('1.136.23', '>=') and _version is version('1.137.0', '<'))) }}
+  vars:
+    # -eula replaced license keys in v1.156.0 and LTS releases v1.148.9 and v1.136.23:
+    # https://docs.victoriametrics.com/victoriametrics/changelog/#v11560
+    # "latest" is resolved to a tag later in preinstall.yml; the latest release
+    # already uses -eula, so it is not compared here.
+    _version: "{{ vmagent_version | regex_replace('^v', '') }}"
+
+- name: Accept the Enterprise EULA
   when:
     - vmagent_enterprise | bool
-    - vmagent_license_key != ""
+    - _vmagent_use_eula | bool
+  block:
+    - name: Ensure the Enterprise Software Agreement is accepted
+      ansible.builtin.assert:
+        that: vmagent_accept_eula | bool
+        msg: >-
+          vmagent {{ vmagent_version }} Enterprise runs only with the Enterprise Software Agreement
+          (https://victoriametrics.com/legal/esa/) accepted. Set vmagent_accept_eula (or vm_enterprise_accept_eula for all roles)
+          to true to accept it.
 
+    - name: Add eula parameter to service config
+      ansible.builtin.set_fact:
+        _vmagent_enterprise_args:
+          eula: "true"
 
-- name: Add license key parameter to service config
-  ansible.builtin.set_fact:
-    vmagent_service_args: "{{ vmagent_service_args | combine({'licenseFile': vmagent_license_key_file}) }}"
+    - name: Report ignored license variables
+      ansible.builtin.debug:
+        msg: >-
+          vmagent {{ vmagent_version }} does not verify license keys and runs with -eula,
+          so vmagent_license_key and vmagent_license_key_file are ignored.
+      when: vmagent_license_key != "" or vmagent_license_key_file != ""
+
+- name: Pass the license key
   when:
     - vmagent_enterprise | bool
-    - vmagent_license_key_file != ""
+    - not (_vmagent_use_eula | bool)
+  block:
+    - name: Ensure license key is provided
+      ansible.builtin.assert:
+        that: vmagent_license_key != "" or vmagent_license_key_file != ""
+        msg: Either license key or license key file location must be provided.
+
+    - name: Ensure only one of key or file is provided
+      ansible.builtin.assert:
+        that: vmagent_license_key == "" or vmagent_license_key_file == ""
+        msg: Only one of license key or license key file must be provided.
+
+    - name: Add license key parameter to service config
+      ansible.builtin.set_fact:
+        _vmagent_enterprise_args:
+          license: "{{ vmagent_license_key }}"
+      when: vmagent_license_key != ""
+      no_log: "{{ vmagent_ansible_no_log }}"
+
+    - name: Add license key file parameter to service config
+      ansible.builtin.set_fact:
+        _vmagent_enterprise_args:
+          licenseFile: "{{ vmagent_license_key_file }}"
+      when: vmagent_license_key_file != ""
+      no_log: "{{ vmagent_ansible_no_log }}"

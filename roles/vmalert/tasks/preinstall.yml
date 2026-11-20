@@ -34,7 +34,7 @@
 
 - name: Setup default service config
   ansible.builtin.set_fact:
-    _runtime_vmalert_service_args: "{{ vmalert_service_args }}"
+    _runtime_vmalert_service_args: "{{ vmalert_service_args | combine(_vmalert_enterprise_args | default({})) }}"
 
 - name: Add rule parameter to service config for default rules
   ansible.builtin.set_fact:

@@ -3,6 +3,7 @@ vminsert_version: "v1.156.0"
 vminsert_enterprise: false
 vminsert_license_key: ""
 vminsert_license_key_file: ""
+vminsert_accept_eula: "{{ vm_enterprise_accept_eula | default(false) }}"
 vminsert_service_name: "vminsert"
 
 vminsert_repo_url: "https://github.com/VictoriaMetrics/VictoriaMetrics"
@@ -41,3 +42,5 @@ vm_proxy_https: ""
 # See https://www.freedesktop.org/software/systemd/man/systemd.exec.html#ProtectHome=
 # Available options: 'yes', 'read-only', 'tmpfs'
 vminsert_systemd_protect_home: "yes"
+
+vminsert_ansible_no_log: "{{ vm_ansible_no_log | default(true) }}"

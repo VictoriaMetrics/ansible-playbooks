@@ -96,7 +96,7 @@
     mode: "0600"
     owner: "{{ vmalert_system_user }}"
     group: "{{ vmalert_system_group }}"
-    validate: "{{ vmalert_bin_dir }}/vmalert-prod {% for k, v in vmalert_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -dryRun -rule %s"
+    validate: "{{ vmalert_bin_dir }}/vmalert-prod {% for k, v in (vmalert_service_args | combine(_vmalert_enterprise_args | default({}))).items() %}{% if k == 'eula' or k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -dryRun -rule %s"
     backup: yes
   no_log: "{{ vmalert_ansible_no_log }}"
   notify: Restart VMalert service

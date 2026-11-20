@@ -84,7 +84,7 @@ roles.
 
 ## Enterprise
 
-See [Enterprise installation](./enterprise.md) for installing VictoriaMetrics and VictoriaLogs Enterprise binaries, passing the license and offline license verification.
+See [Enterprise installation](./enterprise.md) for installing VictoriaMetrics and VictoriaLogs Enterprise binaries, accepting the EULA on recent releases and passing the license on older ones.
 
 # Development
 

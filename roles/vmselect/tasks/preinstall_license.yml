@@ -1,37 +1,71 @@
-- name: Ensure license key is provided
-  ansible.builtin.assert:
-    that: vmselect_license_key != "" or vmselect_license_key_file != ""
-    msg: Either license key or license key file location must be provided.
-  when: vmselect_enterprise | bool
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmselect_license_key_file == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmselect_enterprise | bool
-    - vmselect_license_key != ""
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmselect_license_key == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmselect_enterprise | bool
-    - vmselect_license_key_file != ""
-
-
-- name: Add license key parameter to service config
+# Enterprise flags go to _vmselect_enterprise_args, which the templates merge into
+# vmselect_config. set_fact on vmselect_config itself would be shadowed when users
+# pass it as include_role vars or extra vars.
+- name: Check whether the release accepts -eula instead of a license key
   ansible.builtin.set_fact:
-    vmselect_config: "{{ vmselect_config | combine({'license': vmselect_license_key}) }}"
+    _vmselect_enterprise_args: {}
+    _vmselect_use_eula: >-
+      {{ (vmselect_enterprise | bool) and (_version == 'latest'
+        or _version is version('1.156.0', '>=')
+        or (_version is version('1.148.9', '>=') and _version is version('1.149.0', '<'))
+        or (_version is version('1.136.23', '>=') and _version is version('1.137.0', '<'))) }}
+  vars:
+    # -eula replaced license keys in v1.156.0 and LTS releases v1.148.9 and v1.136.23:
+    # https://docs.victoriametrics.com/victoriametrics/changelog/#v11560
+    # "latest" is resolved to a tag later in preinstall.yml; the latest release
+    # already uses -eula, so it is not compared here.
+    _version: "{{ vmselect_version | regex_replace('^v', '') }}"
+
+- name: Accept the Enterprise EULA
   when:
     - vmselect_enterprise | bool
-    - vmselect_license_key != ""
+    - _vmselect_use_eula | bool
+  block:
+    - name: Ensure the Enterprise Software Agreement is accepted
+      ansible.builtin.assert:
+        that: vmselect_accept_eula | bool
+        msg: >-
+          vmselect {{ vmselect_version }} Enterprise runs only with the Enterprise Software Agreement
+          (https://victoriametrics.com/legal/esa/) accepted. Set vmselect_accept_eula (or vm_enterprise_accept_eula for all roles)
+          to true to accept it.
 
+    - name: Add eula parameter to service config
+      ansible.builtin.set_fact:
+        _vmselect_enterprise_args:
+          eula: "true"
 
-- name: Add license key parameter to service config
-  ansible.builtin.set_fact:
-    vmselect_config: "{{ vmselect_config | combine({'licenseFile': vmselect_license_key_file}) }}"
+    - name: Report ignored license variables
+      ansible.builtin.debug:
+        msg: >-
+          vmselect {{ vmselect_version }} does not verify license keys and runs with -eula,
+          so vmselect_license_key and vmselect_license_key_file are ignored.
+      when: vmselect_license_key != "" or vmselect_license_key_file != ""
+
+- name: Pass the license key
   when:
     - vmselect_enterprise | bool
-    - vmselect_license_key_file != ""
+    - not (_vmselect_use_eula | bool)
+  block:
+    - name: Ensure license key is provided
+      ansible.builtin.assert:
+        that: vmselect_license_key != "" or vmselect_license_key_file != ""
+        msg: Either license key or license key file location must be provided.
+
+    - name: Ensure only one of key or file is provided
+      ansible.builtin.assert:
+        that: vmselect_license_key == "" or vmselect_license_key_file == ""
+        msg: Only one of license key or license key file must be provided.
+
+    - name: Add license key parameter to service config
+      ansible.builtin.set_fact:
+        _vmselect_enterprise_args:
+          license: "{{ vmselect_license_key }}"
+      when: vmselect_license_key != ""
+      no_log: "{{ vmselect_ansible_no_log }}"
+
+    - name: Add license key file parameter to service config
+      ansible.builtin.set_fact:
+        _vmselect_enterprise_args:
+          licenseFile: "{{ vmselect_license_key_file }}"
+      when: vmselect_license_key_file != ""
+      no_log: "{{ vmselect_ansible_no_log }}"
