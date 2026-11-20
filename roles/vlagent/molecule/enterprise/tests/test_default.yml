@@ -6,3 +6,9 @@ service:
 port:
   tcp:9429:
     listening: true
+
+file:
+  /etc/systemd/system/vic-vlagent.service:
+    exists: true
+    contents:
+      - "-eula=true"

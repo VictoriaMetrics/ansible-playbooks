@@ -6,3 +6,9 @@ service:
 port:
   tcp:8427:
     listening: true
+
+file:
+  /etc/systemd/system/vmauth.service:
+    exists: true
+    contents:
+      - "-eula=true"

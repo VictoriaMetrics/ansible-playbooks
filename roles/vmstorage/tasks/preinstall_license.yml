@@ -1,35 +1,69 @@
-- name: Ensure license key is provided
-  ansible.builtin.assert:
-    that: vmstorage_license_key != "" or vmstorage_license_key_file != ""
-    msg: Either license key or license key file location must be provided.
-  when: vmstorage_enterprise | bool
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmstorage_license_key_file == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmstorage_enterprise | bool
-    - vmstorage_license_key != ""
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vmstorage_license_key == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vmstorage_enterprise | bool
-    - vmstorage_license_key_file != ""
-
-- name: Add license key parameter to service config
+# Enterprise flags go to _vmstorage_enterprise_args, which the templates merge into
+# vmstorage_config. set_fact on vmstorage_config itself would be shadowed when users
+# pass it as include_role vars or extra vars.
+- name: Check whether the release accepts -eula instead of a license key
   ansible.builtin.set_fact:
-    vmstorage_config: "{{ vmstorage_config | combine({'license': vmstorage_license_key}) }}"
-  when:
-    - vmstorage_enterprise | bool
-    - vmstorage_license_key != ""
+    _vmstorage_enterprise_args: {}
+    _vmstorage_use_eula: >-
+      {{ (vmstorage_enterprise | bool) and (_version == 'latest'
+        or _version is version('1.156.0', '>=')
+        or (_version is version('1.148.9', '>=') and _version is version('1.149.0', '<'))
+        or (_version is version('1.136.23', '>=') and _version is version('1.137.0', '<'))) }}
+  vars:
+    # -eula replaced license keys in v1.156.0 and LTS releases v1.148.9 and v1.136.23:
+    # https://docs.victoriametrics.com/victoriametrics/changelog/#v11560
+    # "latest" is resolved to a tag later in preinstall.yml; the latest release
+    # already uses -eula, so it is not compared here.
+    _version: "{{ vmstorage_version | regex_replace('^v', '') }}"
 
-- name: Add license key parameter to service config
-  ansible.builtin.set_fact:
-    vmstorage_config: "{{ vmstorage_config | combine({'licenseFile': vmstorage_license_key_file}) }}"
+- name: Accept the Enterprise EULA
   when:
     - vmstorage_enterprise | bool
-    - vmstorage_license_key_file != ""
+    - _vmstorage_use_eula | bool
+  block:
+    - name: Ensure the Enterprise Software Agreement is accepted
+      ansible.builtin.assert:
+        that: vmstorage_accept_eula | bool
+        msg: >-
+          vmstorage {{ vmstorage_version }} Enterprise runs only with the Enterprise Software Agreement
+          (https://victoriametrics.com/legal/esa/) accepted. Set vmstorage_accept_eula (or vm_enterprise_accept_eula for all roles)
+          to true to accept it.
+
+    - name: Add eula parameter to service config
+      ansible.builtin.set_fact:
+        _vmstorage_enterprise_args:
+          eula: "true"
+
+    - name: Report ignored license variables
+      ansible.builtin.debug:
+        msg: >-
+          vmstorage {{ vmstorage_version }} does not verify license keys and runs with -eula,
+          so vmstorage_license_key and vmstorage_license_key_file are ignored.
+      when: vmstorage_license_key != "" or vmstorage_license_key_file != ""
+
+- name: Pass the license key
+  when:
+    - vmstorage_enterprise | bool
+    - not (_vmstorage_use_eula | bool)
+  block:
+    - name: Ensure license key is provided
+      ansible.builtin.assert:
+        that: vmstorage_license_key != "" or vmstorage_license_key_file != ""
+        msg: Either license key or license key file location must be provided.
+
+    - name: Ensure only one of key or file is provided
+      ansible.builtin.assert:
+        that: vmstorage_license_key == "" or vmstorage_license_key_file == ""
+        msg: Only one of license key or license key file must be provided.
+
+    - name: Add license key parameter to service config
+      ansible.builtin.set_fact:
+        _vmstorage_enterprise_args:
+          license: "{{ vmstorage_license_key }}"
+      when: vmstorage_license_key != ""
+
+    - name: Add license key file parameter to service config
+      ansible.builtin.set_fact:
+        _vmstorage_enterprise_args:
+          licenseFile: "{{ vmstorage_license_key_file }}"
+      when: vmstorage_license_key_file != ""

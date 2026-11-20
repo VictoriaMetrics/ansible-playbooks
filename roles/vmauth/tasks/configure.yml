@@ -29,7 +29,7 @@
     owner: "{{ vmauth_system_user }}"
     group: "{{ vmauth_system_group }}"
     mode: "0600"
-    validate: "{{ vmauth_bin_dir }}/vmauth-prod {% for k, v in vmauth_service_args.items() %}{% if k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -auth.config=%s -dryRun"
+    validate: "{{ vmauth_bin_dir }}/vmauth-prod {% for k, v in (vmauth_service_args | combine(_vmauth_enterprise_args | default({}))).items() %}{% if k == 'eula' or k.startswith('license') %} -{{ k }}={{ v | quote }} {% endif %}{% endfor %} -auth.config=%s -dryRun"
   no_log: "{{ vmauth_ansible_no_log }}"
   when:
     - vmauth_auth_config != ""

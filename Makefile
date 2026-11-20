@@ -3,9 +3,6 @@ ROLES := vmsingle vmagent vmalert vminsert vmstorage vmselect vmauth vlsingle vl
 # Roles that have enterprise scenarios (vtsingle and vtagent don't)
 ENTERPRISE_ROLES := vmsingle vmagent vmalert vminsert vmstorage vmselect vmauth vlsingle vlagent
 
-# License key for enterprise tests (pass via: make molecule-converge-vmsingle-enterprise VM_LICENSE_KEY=xxx)
-VM_LICENSE_KEY ?=
-
 init-venv:
 	python3 -m venv .venv; \
 	. .venv/bin/activate; \
@@ -38,11 +35,11 @@ molecule-destroy-$(1)-$(2):
 	cd roles/$(1) && molecule destroy -s $(2)
 endef
 
-# Template for enterprise scenarios (passes license key)
+# Template for enterprise scenarios
 define role-enterprise-targets
 molecule-converge-$(1)-enterprise:
 	. .venv/bin/activate; \
-	cd roles/$(1) && VM_LICENSE_KEY="$(VM_LICENSE_KEY)" molecule converge -s enterprise && molecule verify -s enterprise
+	cd roles/$(1) && molecule converge -s enterprise && molecule verify -s enterprise
 
 molecule-destroy-$(1)-enterprise:
 	. .venv/bin/activate; \

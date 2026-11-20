@@ -3,6 +3,7 @@ vmalert_version: "{{ vic_vm_alert_version | default('v1.156.0') }}"
 vmalert_enterprise: "{{ vic_vm_alert_enterprise | default(false) }}"
 vmalert_license_key: "{{ vic_vm_alert_license_key | default('') }}"
 vmalert_license_key_file: "{{ vic_vm_alert_license_key_file | default('') }}"
+vmalert_accept_eula: "{{ vm_enterprise_accept_eula | default(false) }}"
 vmalert_service_name: "{{ vic_vm_alert_service_name | default('vic-vmalert') }}"
 
 vmalert_repo_url: "{{ vic_vm_alert_repo_url | default('https://github.com/VictoriaMetrics/VictoriaMetrics') }}"

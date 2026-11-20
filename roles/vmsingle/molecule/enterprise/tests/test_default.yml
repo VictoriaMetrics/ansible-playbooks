@@ -8,3 +8,9 @@ port:
     listening: true
   tcp:12345:
     listening: true
+
+file:
+  /etc/systemd/system/victoriametrics.service:
+    exists: true
+    contents:
+      - "-eula=true"

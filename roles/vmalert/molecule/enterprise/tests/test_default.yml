@@ -6,3 +6,9 @@ service:
 port:
   tcp:9431:
     listening: true
+
+file:
+  /etc/systemd/system/vic-vmalert.service:
+    exists: true
+    contents:
+      - "-eula=true"

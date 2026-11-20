@@ -1,37 +1,69 @@
-- name: Ensure license key is provided
-  ansible.builtin.assert:
-    that: vminsert_license_key != "" or vminsert_license_key_file != ""
-    msg: Either license key or license key file location must be provided.
-  when: vminsert_enterprise | bool
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vminsert_license_key_file == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vminsert_enterprise | bool
-    - vminsert_license_key != ""
-
-- name: Ensure only one of key or file is provided
-  ansible.builtin.assert:
-    that: vminsert_license_key == ""
-    msg: Only one of license key or license key file must be provided.
-  when:
-    - vminsert_enterprise | bool
-    - vminsert_license_key_file != ""
-
-
-- name: Add license key parameter to service config
+# Enterprise flags go to _vminsert_enterprise_args, which the templates merge into
+# vminsert_config. set_fact on vminsert_config itself would be shadowed when users
+# pass it as include_role vars or extra vars.
+- name: Check whether the release accepts -eula instead of a license key
   ansible.builtin.set_fact:
-    vminsert_config: "{{ vminsert_config | combine({'license': vminsert_license_key}) }}"
+    _vminsert_enterprise_args: {}
+    _vminsert_use_eula: >-
+      {{ (vminsert_enterprise | bool) and (_version == 'latest'
+        or _version is version('1.156.0', '>=')
+        or (_version is version('1.148.9', '>=') and _version is version('1.149.0', '<'))
+        or (_version is version('1.136.23', '>=') and _version is version('1.137.0', '<'))) }}
+  vars:
+    # -eula replaced license keys in v1.156.0 and LTS releases v1.148.9 and v1.136.23:
+    # https://docs.victoriametrics.com/victoriametrics/changelog/#v11560
+    # "latest" is resolved to a tag later in preinstall.yml; the latest release
+    # already uses -eula, so it is not compared here.
+    _version: "{{ vminsert_version | regex_replace('^v', '') }}"
+
+- name: Accept the Enterprise EULA
   when:
     - vminsert_enterprise | bool
-    - vminsert_license_key != ""
+    - _vminsert_use_eula | bool
+  block:
+    - name: Ensure the Enterprise Software Agreement is accepted
+      ansible.builtin.assert:
+        that: vminsert_accept_eula | bool
+        msg: >-
+          vminsert {{ vminsert_version }} Enterprise runs only with the Enterprise Software Agreement
+          (https://victoriametrics.com/legal/esa/) accepted. Set vminsert_accept_eula (or vm_enterprise_accept_eula for all roles)
+          to true to accept it.
 
+    - name: Add eula parameter to service config
+      ansible.builtin.set_fact:
+        _vminsert_enterprise_args:
+          eula: "true"
 
-- name: Add license key parameter to service config
-  ansible.builtin.set_fact:
-    vminsert_config: "{{ vminsert_config | combine({'licenseFile': vminsert_license_key_file}) }}"
+    - name: Report ignored license variables
+      ansible.builtin.debug:
+        msg: >-
+          vminsert {{ vminsert_version }} does not verify license keys and runs with -eula,
+          so vminsert_license_key and vminsert_license_key_file are ignored.
+      when: vminsert_license_key != "" or vminsert_license_key_file != ""
+
+- name: Pass the license key
   when:
     - vminsert_enterprise | bool
-    - vminsert_license_key_file != ""
+    - not (_vminsert_use_eula | bool)
+  block:
+    - name: Ensure license key is provided
+      ansible.builtin.assert:
+        that: vminsert_license_key != "" or vminsert_license_key_file != ""
+        msg: Either license key or license key file location must be provided.
+
+    - name: Ensure only one of key or file is provided
+      ansible.builtin.assert:
+        that: vminsert_license_key == "" or vminsert_license_key_file == ""
+        msg: Only one of license key or license key file must be provided.
+
+    - name: Add license key parameter to service config
+      ansible.builtin.set_fact:
+        _vminsert_enterprise_args:
+          license: "{{ vminsert_license_key }}"
+      when: vminsert_license_key != ""
+
+    - name: Add license key file parameter to service config
+      ansible.builtin.set_fact:
+        _vminsert_enterprise_args:
+          licenseFile: "{{ vminsert_license_key_file }}"
+      when: vminsert_license_key_file != ""

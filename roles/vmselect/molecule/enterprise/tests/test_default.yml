@@ -5,3 +5,9 @@ service:
 port:
   tcp:8481:
     listening: true
+
+file:
+  /opt/victoriametrics-vmselect/vmselect.conf:
+    exists: true
+    contents:
+      - "/^eula=true$/"
