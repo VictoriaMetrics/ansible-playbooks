@@ -10,7 +10,7 @@
         or (_version is version('1.148.9', '>=') and _version is version('1.149.0', '<'))
         or (_version is version('1.136.23', '>=') and _version is version('1.137.0', '<'))) }}
   vars:
-    # -eula replaced license keys in v1.157.0 and LTS releases v1.148.9 and v1.136.23:
+    # -eula replaced license keys in v1.156.0 and LTS releases v1.148.9 and v1.136.23:
     # https://docs.victoriametrics.com/victoriametrics/changelog/#v11560
     # "latest" is resolved to a tag later in preinstall.yml; the latest release
     # already uses -eula, so it is not compared here.
